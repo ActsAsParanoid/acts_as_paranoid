@@ -1,12 +1,7 @@
-ActiveRecord::Base.class_eval do
-  include ActiveRecord::Acts::Paranoid
-end
-
 module ActiveRecord
   module Acts #:nodoc:
     module Paranoid
-      def self.append_features(base) # :nodoc:
-        super
+      def self.included(base) # :nodoc:
         base.extend ClassMethods
       end
 
@@ -26,8 +21,7 @@ module ActiveRecord
     end
     
     module ParanoidMethods #:nodoc:
-      def self.append_features(base) # :nodoc:
-        super
+      def self.included(base) # :nodoc:
         base.extend ClassMethods
       end
       
@@ -59,6 +53,10 @@ module ActiveRecord
       end
     end
   end
+end
+
+ActiveRecord::Base.class_eval do
+  include ActiveRecord::Acts::Paranoid
 end
 
 #ActiveRecord::Associations::HasAndBelongsToManyAssociation.class_eval do
