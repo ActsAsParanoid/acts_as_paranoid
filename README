@@ -7,7 +7,7 @@ current timestamp.  ActiveRecord is required.
 
 Gem installation:
 
-  gem install acts_as_paranoid--source=http://techno-weenie.net/code
+  gem install acts_as_paranoid --source=http://techno-weenie.net/code
   
 Get a gzipped tar at http://techno-weenie.net/code/pkg
 
