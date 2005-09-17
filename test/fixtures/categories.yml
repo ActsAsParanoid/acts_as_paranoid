@@ -1,0 +1,9 @@
+category_1:
+  id: 1
+  widget_id: 1
+  title: 'category 1'
+category_2:
+  id: 2
+  widget_id: 1
+  title: 'category 2'
+  deleted_at: '2005-01-01 00:00:00'

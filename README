@@ -1,0 +1,16 @@
+= acts_as_paranoid
+
+Overrides some basic methods for the current model so that calling #destroy sets a 'deleted_at' field to the 
+current timestamp.  ActiveRecord is required.
+
+== Download
+
+Gem installation:
+
+  gem install acts_as_paranoid--source=http://techno-weenie.net/code
+  
+Get a gzipped tar at http://techno-weenie.net/code/pkg
+
+== Usage
+
+RDocs are online at http://techno-weenie.net/code/doc/acts_as_paranoid/.
