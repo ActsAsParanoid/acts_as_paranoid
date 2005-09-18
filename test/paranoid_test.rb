@@ -56,6 +56,11 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal [categories(:category_1)], widgets(:widget_1).habtm_categories
   end
   
+  def test_should_find_first_with_deleted
+    assert_equal widgets(:widget_1), Widget.find(:first)
+    assert_equal 2, Widget.find_with_deleted(:first, :order => 'id desc').id
+  end
+  
   def test_should_find_single_id
     assert Widget.find(1)
     assert Widget.find_with_deleted(2)

@@ -59,18 +59,17 @@ module ActiveRecord #:nodoc:
         module ClassMethods
           def find(*args)
             options = extract_options_from_args!(args)
-            if args.first == :all
-              if options[:with_deleted]
-                return original_find(args.first, options)
-              else
-                constrain = "#{table_name}.deleted_at IS NULL"
-                constrains = (scope_constrains.nil? or scope_constrains[:conditions].nil? or scope_constrains[:conditions] == constrain) ?
-                  constrain :
-                  "#{scope_constrains[:conditions]} AND #{constrain}"
-                constrain(:conditions => constrains) { return original_find(args.first, options) }
-              end
+            call_original_find = lambda { original_find(*(args << options)) }
+            
+            if !options[:with_deleted]
+              constrain = "#{table_name}.deleted_at IS NULL"
+              constrains = (scope_constrains.nil? or scope_constrains[:conditions].nil? or scope_constrains[:conditions] == constrain) ?
+                constrain :
+                "#{scope_constrains[:conditions]} AND #{constrain}"
+              constrain(:conditions => constrains) { return call_original_find.call }
             end
-            original_find(*(args << options))
+            
+            call_original_find.call
           end
 
           def find_with_deleted(*args)
