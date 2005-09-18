@@ -72,4 +72,9 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal [1,2], Widget.find_with_deleted([1,2]).sort_by { |w| w.id }.collect { |w| w.id }
     assert_raises(ActiveRecord::RecordNotFound) { Widget.find(1,2) }
   end
+  
+  def test_should_ignore_multiple_includes
+    Widget.class_eval { acts_as_paranoid }
+    assert Widget.find(1)
+  end
 end

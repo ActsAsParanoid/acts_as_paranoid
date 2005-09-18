@@ -40,6 +40,7 @@ module ActiveRecord #:nodoc:
 
       module ClassMethods
         def acts_as_paranoid
+          return if self.included_modules.include?(ActiveRecord::Acts::Paranoid::ParanoidMethods) # don't let AR call this twice
           class_eval do
             alias_method :destroy_without_callbacks!, :destroy_without_callbacks
             class << self
