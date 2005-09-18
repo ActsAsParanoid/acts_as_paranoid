@@ -16,6 +16,9 @@ module ActiveRecord #:nodoc:
     #   Widget.find_with_deleted(:all)
     #   # SELECT * FROM widgets
     #
+    #   Widget.find(:all, :with_deleted => true)
+    #   # SELECT * FROM widgets
+    #
     #   Widget.count
     #   # SELECT COUNT(*) FROM widgets WHERE widgets.deleted_at IS NULL
     #
@@ -40,7 +43,7 @@ module ActiveRecord #:nodoc:
           class_eval do
             alias_method :destroy_without_callbacks!, :destroy_without_callbacks
             class << self
-              alias_method :find_with_deleted, :find
+              alias_method :original_find, :find
               alias_method :count_with_deleted, :count
             end
             include ParanoidMethods
@@ -54,23 +57,31 @@ module ActiveRecord #:nodoc:
         end
       
         module ClassMethods
-          # 
           def find(*args)
-            if [:all, :first].include?(args.first)
-              constrain = "#{table_name}.deleted_at IS NULL"
-              constrains = (scope_constrains.nil? or scope_constrains[:conditions].nil? or scope_constrains[:conditions] == constrain) ?
-                constrain :
-                "#{scope_constrains[:conditions]} AND #{constrain}"
-              constrain(:conditions => constrains) { return find_with_deleted(*args) }
+            options = extract_options_from_args!(args)
+            if args.first == :all
+              if options[:with_deleted]
+                return original_find(args.first, options)
+              else
+                constrain = "#{table_name}.deleted_at IS NULL"
+                constrains = (scope_constrains.nil? or scope_constrains[:conditions].nil? or scope_constrains[:conditions] == constrain) ?
+                  constrain :
+                  "#{scope_constrains[:conditions]} AND #{constrain}"
+                constrain(:conditions => constrains) { return original_find(args.first, options) }
+              end
             end
-            find_with_deleted(*args)
+            original_find(*(args << options))
           end
-    
+
+          def find_with_deleted(*args)
+            original_find(*(args << extract_options_from_args!(args).merge(:with_deleted => true)))
+          end
+
           def count(conditions = nil, joins = nil)
             constrain(:conditions => "#{table_name}.deleted_at IS NULL") { count_with_deleted(conditions, joins) }
           end
         end
-      
+
         def destroy_without_callbacks
           unless new_record?
             sql = self.class.send(:sanitize_sql,
