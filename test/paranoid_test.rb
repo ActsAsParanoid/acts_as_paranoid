@@ -77,4 +77,16 @@ class ParanoidTest < Test::Unit::TestCase
     Widget.class_eval { acts_as_paranoid }
     assert Widget.find(1)
   end
+
+  def test_should_not_override_constrains_when_counting
+    assert_equal 1, Widget.constrain(:conditions => "title = 'widget 1'") { Widget.count }
+    assert_equal 0, Widget.constrain(:conditions => "title = 'deleted widget 2'") { Widget.count }
+    assert_equal 1, Widget.constrain(:conditions => "title = 'deleted widget 2'") { Widget.count_with_deleted }
+  end
+
+  def test_should_not_override_constrains_when_finding
+    assert_equal [1], Widget.constrain(:conditions => "title = 'widget 1'") { Widget.find(:all) }.collect { |w| w.id }
+    assert_equal [],  Widget.constrain(:conditions => "title = 'deleted widget 2'") { Widget.find(:all) }.collect { |w| w.id }
+    assert_equal [2], Widget.constrain(:conditions => "title = 'deleted widget 2'") { Widget.find_with_deleted(:all) }.collect { |w| w.id }
+  end
 end

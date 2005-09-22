@@ -63,11 +63,7 @@ module ActiveRecord #:nodoc:
             call_original_find = lambda { original_find(*(args << options)) }
             
             if !options[:with_deleted]
-              constrain = "#{table_name}.deleted_at IS NULL"
-              constrains = (scope_constrains.nil? or scope_constrains[:conditions].nil? or scope_constrains[:conditions] == constrain) ?
-                constrain :
-                "#{scope_constrains[:conditions]} AND #{constrain}"
-              constrain(:conditions => constrains) { return call_original_find.call }
+              constrain(scope_constrains.merge(:conditions => deleted_constrain)) { return call_original_find.call }
             end
             
             call_original_find.call
@@ -78,7 +74,14 @@ module ActiveRecord #:nodoc:
           end
 
           def count(conditions = nil, joins = nil)
-            constrain(:conditions => "#{table_name}.deleted_at IS NULL") { count_with_deleted(conditions, joins) }
+            constrain(scope_constrains.merge(:conditions => deleted_constrain)) { count_with_deleted(conditions, joins) }
+          end
+          
+          protected
+          def deleted_constrain
+            constrain = "#{table_name}.deleted_at IS NULL"
+            constrains = (scope_constrains.nil? or scope_constrains[:conditions].nil? or scope_constrains[:conditions] == constrain) ?
+              constrain : "#{scope_constrains[:conditions]} AND #{constrain}"
           end
         end
 
