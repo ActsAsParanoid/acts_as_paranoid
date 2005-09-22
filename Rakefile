@@ -53,21 +53,13 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_tar = true
 end
 
-desc "Publish the gem"
-task :pgem => [:package] do 
-  Rake::SshFilePublisher.new(PROD_HOST, "public_html/code/gems", "pkg", "#{PKG_FILE_NAME}.gem").upload
-  Rake::SshFilePublisher.new(PROD_HOST, "public_html/code/pkg", "pkg", "#{PKG_FILE_NAME}.tgz").upload
-  %x{ssh #{PROD_HOST} 'update_gems'}
-end
-
 desc "Publish the API documentation"
-task :pdoc => [:rdoc] do 
-  Rake::SshDirPublisher.new(PROD_HOST, "public_html/code/doc/#{PKG_NAME}", "doc").upload
+task :pdoc => [:rdoc] do
   Rake::RubyForgePublisher.new(RUBY_FORGE_PROJECT, RUBY_FORGE_USER).upload
 end
 
 desc 'Publish the gem and API docs'
-task :publish => [:pgem, :pdoc, :rubyforge_upload]
+task :publish => [:pdoc, :rubyforge_upload]
 
 desc "Publish the release files to RubyForge."
 task :rubyforge_upload do
