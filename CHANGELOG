@@ -1,6 +1,7 @@
 *0.1.5* (22 Sep 2005)
 
 * Fixed bug where acts_as_paranoid would clobber other constrains
+* Simplified acts_as_paranoid mixin including.
 
 *0.1.4* (18 Sep 2005)
 
