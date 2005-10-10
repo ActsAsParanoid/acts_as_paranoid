@@ -40,7 +40,7 @@ module ActiveRecord #:nodoc:
 
       module ClassMethods
         def acts_as_paranoid
-          unless self.included_modules.include?(ActiveRecord::Acts::Paranoid::ParanoidMethods) # don't let AR call this twice
+          unless self.included_modules.include?(ParanoidMethods) # don't let AR call this twice
             alias_method :destroy_without_callbacks!, :destroy_without_callbacks
             class << self
               alias_method :original_find, :find
@@ -53,6 +53,9 @@ module ActiveRecord #:nodoc:
     
       module ParanoidMethods #:nodoc:
         def self.included(base) # :nodoc:
+          class << base
+            alias_method :clobbering_constrain, :constrain
+          end
           base.extend ClassMethods
         end
       
@@ -75,12 +78,32 @@ module ActiveRecord #:nodoc:
           def count(conditions = nil, joins = nil)
             constrain(scope_constrains.merge(:conditions => deleted_constrain)) { count_with_deleted(conditions, joins) }
           end
-          
+
+          # Override #constrain so that nested constrains don't clobber each other.
+          #
+          #   Entry.constrain(:conditions => 'published_at IS NOT NULL') do
+          #     Entry.constrain(:conditions => 'deleted_at IS NULL') do
+          #       Entry.find(:all)
+          #     end
+          #   end
+          def constrain(options = {}, &block)
+            begin
+              is_new_scope = scope_constrains.empty?
+              self.scope_constrains = options
+              block.call if block_given?
+            ensure 
+              self.scope_constrains = nil if is_new_scope
+            end
+          end
+
           protected
           def deleted_constrain
-            constrain = "#{table_name}.deleted_at IS NULL"
-            constrains = (scope_constrains.nil? or scope_constrains[:conditions].nil? or scope_constrains[:conditions] == constrain) ?
-              constrain : "#{scope_constrains[:conditions]} AND #{constrain}"
+            deleted_cond = "#{table_name}.deleted_at IS NULL"
+            case scope_constrains[:conditions]
+              when /#{deleted_cond}/ then scope_constrains[:conditions]
+              when NilClass then deleted_cond
+              else "#{scope_constrains[:conditions]} AND #{deleted_cond}"
+            end
           end
         end
 

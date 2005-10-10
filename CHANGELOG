@@ -1,3 +1,7 @@
+*0.1.6* (25 Sep 2005)
+
+* Fixed bug where nested constrains would get clobbered after multiple queries
+
 *0.1.5* (22 Sep 2005)
 
 * Fixed bug where acts_as_paranoid would clobber other constrains
