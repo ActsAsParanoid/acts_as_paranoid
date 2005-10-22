@@ -1,3 +1,7 @@
+*0.1.7* (22 Oct 2005)
+
+* Added :with_deleted as a valid option of ActiveRecord::Base#find
+
 *0.1.6* (25 Sep 2005)
 
 * Fixed bug where nested constrains would get clobbered after multiple queries
