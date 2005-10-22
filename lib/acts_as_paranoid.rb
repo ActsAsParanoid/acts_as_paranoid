@@ -105,6 +105,10 @@ module ActiveRecord #:nodoc:
               else "#{scope_constrains[:conditions]} AND #{deleted_cond}"
             end
           end
+          
+          def validate_find_options(options)
+            options.assert_valid_keys [:conditions, :include, :joins, :limit, :offset, :order, :select, :readonly, :with_deleted]
+          end
         end
 
         def destroy_without_callbacks
