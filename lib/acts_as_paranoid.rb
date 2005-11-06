@@ -45,6 +45,7 @@ module ActiveRecord #:nodoc:
             class << self
               alias_method :original_find, :find
               alias_method :count_with_deleted, :count
+              alias_method :clobbering_with_scope, :with_scope
             end
           end
           include ParanoidMethods
@@ -53,9 +54,6 @@ module ActiveRecord #:nodoc:
     
       module ParanoidMethods #:nodoc:
         def self.included(base) # :nodoc:
-          class << base
-            alias_method :clobbering_constrain, :constrain
-          end
           base.extend ClassMethods
         end
       
@@ -65,7 +63,7 @@ module ActiveRecord #:nodoc:
             call_original_find = lambda { original_find(*(args << options)) }
             
             if !options[:with_deleted]
-              constrain(scope_constrains.merge(:conditions => deleted_constrain)) { return call_original_find.call }
+              with_deleted_scope { return call_original_find.call }
             end
             
             call_original_find.call
@@ -76,36 +74,53 @@ module ActiveRecord #:nodoc:
           end
 
           def count(conditions = nil, joins = nil)
-            constrain(scope_constrains.merge(:conditions => deleted_constrain)) { count_with_deleted(conditions, joins) }
+            with_deleted_scope { count_with_deleted(conditions, joins) }
           end
 
-          # Override #constrain so that nested constrains don't clobber each other.
-          #
-          #   Entry.constrain(:conditions => 'published_at IS NOT NULL') do
-          #     Entry.constrain(:conditions => 'deleted_at IS NULL') do
-          #       Entry.find(:all)
-          #     end
-          #   end
-          def constrain(options = {}, &block)
-            begin
-              is_new_scope = scope_constrains.empty?
-              self.scope_constrains = options
-              block.call if block_given?
-            ensure 
-              self.scope_constrains = nil if is_new_scope
+          def with_scope(method_scoping = {}, is_new_scope = true)
+            # Dup first and second level of hash (method and params).
+            method_scoping = method_scoping.inject({}) do |hash, (method, params)|
+              hash[method] = params.dup
+              hash
             end
+
+            method_scoping.assert_valid_keys [:find, :create]
+            if f = method_scoping[:find]
+              f.assert_valid_keys [:conditions, :joins, :offset, :limit, :readonly]
+              f[:readonly] = true if !f[:joins].blank? && !f.has_key?(:readonly)
+            end
+
+            raise ArgumentError, "Nested scopes are not yet supported: #{scoped_methods.inspect}" unless scoped_methods.nil?
+
+            self.scoped_methods = method_scoping
+            yield
+          ensure
+            self.scoped_methods = nil if is_new_scope
           end
 
           protected
-          def deleted_constrain
+          def with_deleted_scope(&block)
             deleted_cond = "#{table_name}.deleted_at IS NULL"
-            case scope_constrains[:conditions]
-              when /#{deleted_cond}/ then scope_constrains[:conditions]
-              when NilClass then deleted_cond
-              else "#{scope_constrains[:conditions]} AND #{deleted_cond}"
+            if scoped_methods.nil?
+              is_new_scope = true
+              current_scope = {}
+            else
+              is_new_scope = false
+              current_scope = scoped_methods.clone
+              self.scoped_methods = nil
             end
+            
+            current_scope ||= {}
+            current_scope[:find] ||= {}
+            if not current_scope[:find][:conditions] =~ /#{deleted_cond}/
+              current_scope[:find][:conditions] = current_scope[:find][:conditions].nil? ?
+                deleted_cond :
+                "(#{current_scope[:find][:conditions]}) AND #{deleted_cond}"
+            end
+            
+            with_scope(current_scope, is_new_scope, &block)
           end
-          
+
           def validate_find_options(options)
             options.assert_valid_keys [:conditions, :include, :joins, :limit, :offset, :order, :select, :readonly, :with_deleted]
           end

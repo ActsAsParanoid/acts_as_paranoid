@@ -1,3 +1,7 @@
+*0.2.0* (6 Nov 2005)
+
+* Upgrade to Rails 1.0 RC4.  ActiveRecord::Base#constrain has been replaced with scope_with.
+
 *0.1.7* (22 Oct 2005)
 
 * Added :with_deleted as a valid option of ActiveRecord::Base#find

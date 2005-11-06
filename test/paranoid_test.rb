@@ -1,4 +1,4 @@
-require 'abstract_unit'
+require File.join(File.dirname(__FILE__), 'test_helper')
 
 class Widget < ActiveRecord::Base
   acts_as_paranoid
@@ -78,20 +78,20 @@ class ParanoidTest < Test::Unit::TestCase
     assert Widget.find(1)
   end
 
-  def test_should_not_override_constrains_when_counting
-    assert_equal 1, Widget.constrain(:conditions => "title = 'widget 1'") { Widget.count }
-    assert_equal 0, Widget.constrain(:conditions => "title = 'deleted widget 2'") { Widget.count }
-    assert_equal 1, Widget.constrain(:conditions => "title = 'deleted widget 2'") { Widget.count_with_deleted }
+  def test_should_not_override_scopes_when_counting
+    assert_equal 1, Widget.with_scope(:find => { :conditions => "title = 'widget 1'" }) { Widget.count }
+    assert_equal 0, Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.count }
+    assert_equal 1, Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.count_with_deleted }
   end
 
-  def test_should_not_override_constrains_when_finding
-    assert_equal [1], Widget.constrain(:conditions => "title = 'widget 1'") { Widget.find(:all) }.ids
-    assert_equal [],  Widget.constrain(:conditions => "title = 'deleted widget 2'") { Widget.find(:all) }.ids
-    assert_equal [2], Widget.constrain(:conditions => "title = 'deleted widget 2'") { Widget.find_with_deleted(:all) }.ids
+  def test_should_not_override_scopes_when_finding
+    assert_equal [1], Widget.with_scope(:find => { :conditions => "title = 'widget 1'" }) { Widget.find(:all) }.ids
+    assert_equal [],  Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.find(:all) }.ids
+    assert_equal [2], Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.find_with_deleted(:all) }.ids
   end
 
-  def test_should_allow_multiple_constrained_calls_when_finding
-    Widget.constrain(:conditions => "title = 'deleted widget 2'") do
+  def test_should_allow_multiple_scoped_calls_when_finding
+    Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) do
       assert_equal [2], Widget.find_with_deleted(:all).ids
       assert_equal [2], Widget.find_with_deleted(:all).ids, "clobbers the constrain on the unmodified find"
       assert_equal [], Widget.find(:all).ids
@@ -99,8 +99,8 @@ class ParanoidTest < Test::Unit::TestCase
     end
   end
 
-  def test_should_allow_multiple_constrained_calls_when_counting
-    Widget.constrain(:conditions => "title = 'deleted widget 2'") do
+  def test_should_allow_multiple_scoped_calls_when_counting
+    Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) do
       assert_equal 1, Widget.count_with_deleted
       assert_equal 1, Widget.count_with_deleted, "clobbers the constrain on the unmodified find"
       assert_equal 0, Widget.count
