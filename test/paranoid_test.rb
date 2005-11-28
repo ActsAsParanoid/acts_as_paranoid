@@ -4,11 +4,16 @@ class Widget < ActiveRecord::Base
   acts_as_paranoid
   has_many :categories, :dependent => true
   has_and_belongs_to_many :habtm_categories, :class_name => 'Category'
+  has_one :category
+  belongs_to :parent_category, :class_name => 'Category'
 end
 
 class Category < ActiveRecord::Base
   belongs_to :widget
   acts_as_paranoid
+end
+
+class NonParanoidAndroid < ActiveRecord::Base
 end
 
 class ParanoidTest < Test::Unit::TestCase
@@ -21,7 +26,7 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal 0, Widget.count
     assert_equal 0, Category.count
     assert_equal 2, Widget.count_with_deleted
-    assert_equal 2, Category.count_with_deleted
+    assert_equal 4, Category.count_with_deleted
   end
   
   def test_should_destroy
@@ -32,7 +37,7 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal 0, Category.count
     assert_equal 1, Widget.count_with_deleted
     # Category doesn't get destroyed because the dependent before_destroy callback uses #destroy
-    assert_equal 2, Category.count_with_deleted
+    assert_equal 4, Category.count_with_deleted
   end
   
   def test_should_not_count_deleted
@@ -106,6 +111,35 @@ class ParanoidTest < Test::Unit::TestCase
       assert_equal 0, Widget.count
       assert_equal 0, Widget.count, 'clobbers the constrain on a paranoid find'
     end
+  end
+
+  def test_should_give_paranoid_status
+    assert Widget.paranoid?
+    assert !NonParanoidAndroid.paranoid?
+  end
+
+  def test_should_find_deleted_has_many_assocations_on_deleted_records_by_default
+    w = Widget.find_with_deleted 2
+    assert_equal 2, w.categories.length
+    assert_equal 2, w.categories(true).size
+  end
+
+  def test_should_find_deleted_habtm_assocations_on_deleted_records_by_default
+    w = Widget.find_with_deleted 2
+    assert_equal 2, w.habtm_categories.length
+    assert_equal 2, w.habtm_categories(true).size
+  end
+
+  def test_should_find_deleted_has_one_associations_on_deleted_records_by_default
+    c = Category.find_with_deleted 3
+    w = Widget.find_with_deleted 2
+    assert_equal c, w.category
+  end
+
+  def test_should_find_deleted_belongs_to_associations_on_deleted_records_by_default
+    c = Category.find_with_deleted 3
+    w = Widget.find_with_deleted 2
+    assert_equal c, w.parent_category
   end
 end
 

@@ -27,7 +27,7 @@ end
 
 desc 'Generate documentation for the acts_as_paranoid plugin.'
 Rake::RDocTask.new do |rdoc|
-  rdoc.rdoc_dir = 'doc'
+  rdoc.rdoc_dir = 'html'
   rdoc.title    = "#{PKG_NAME} -- protect your ActiveRecord objects from accidental deletion"
   rdoc.options << '--line-numbers --inline-source --accessor cattr_accessor=object'
   rdoc.template = "#{ENV['template']}.rb" if ENV['template']

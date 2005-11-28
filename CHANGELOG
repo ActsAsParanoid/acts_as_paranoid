@@ -1,3 +1,9 @@
+*0.3* (27 Nov 2005)
+
+* Deleted models will find deleted associations by default now [Erik Terpstra]
+* Added :group as valid option for find [Michael Dabney]
+* Changed the module namespace to Caboose::Acts::Paranoid
+
 *0.2.0* (6 Nov 2005)
 
 * Upgrade to Rails 1.0 RC4.  ActiveRecord::Base#constrain has been replaced with scope_with.
