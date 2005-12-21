@@ -229,7 +229,7 @@ module Caboose #:nodoc:
         def count_records_with_deleted
           count = if has_cached_counter?
             @owner.send(:read_attribute, cached_counter_attribute_name)
-          elsif @options[:counter_sql]
+          elsif @options and @options[:counter_sql]
             @association_class.count_by_sql(@counter_sql)
           else
             @association_class.send((find_with_deleted? ? :count_with_deleted : :count), @counter_sql)
@@ -249,7 +249,7 @@ module Caboose #:nodoc:
 
         private
         def find_target_with_deleted
-          if @options[:finder_sql]
+          if @options and @options[:finder_sql]
             records = @association_class.find_by_sql(@finder_sql)
           else
             records = find(:all, options_with_deleted!(:include => @options[:include]))
