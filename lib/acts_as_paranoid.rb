@@ -163,4 +163,4 @@ module Caboose #:nodoc:
   end
 end
 
-ActiveRecord::Base.send                                         :include, Caboose::Acts::Paranoid::ActiveRecord
+ActiveRecord::Base.send :include, Caboose::Acts::Paranoid::ActiveRecord

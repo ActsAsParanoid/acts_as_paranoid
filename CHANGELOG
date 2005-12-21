@@ -1,3 +1,8 @@
+*0.3.1* (20 Dec 2005)
+
+* took out deleted association code for 'chainsaw butchery of base classes' [sorry Erik Terpstra]
+* verified tests pass on Rails 1.0
+
 *0.3* (27 Nov 2005)
 
 * Deleted models will find deleted associations by default now [Erik Terpstra]

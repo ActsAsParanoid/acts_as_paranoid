@@ -9,7 +9,7 @@ require 'rake/testtask'
 require 'rake/contrib/rubyforgepublisher'
 
 PKG_NAME      = 'acts_as_paranoid'
-PKG_VERSION   = '0.2'
+PKG_VERSION   = '0.3.1'
 PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
 PROD_HOST     = "technoweenie@bidwell.textdrive.com"
 RUBY_FORGE_PROJECT = 'ar-paranoid'
