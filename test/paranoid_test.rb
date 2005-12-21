@@ -118,29 +118,30 @@ class ParanoidTest < Test::Unit::TestCase
     assert !NonParanoidAndroid.paranoid?
   end
 
-  def test_should_find_deleted_has_many_assocations_on_deleted_records_by_default
-    w = Widget.find_with_deleted 2
-    assert_equal 2, w.categories.length
-    assert_equal 2, w.categories(true).size
-  end
-
-  def test_should_find_deleted_habtm_assocations_on_deleted_records_by_default
-    w = Widget.find_with_deleted 2
-    assert_equal 2, w.habtm_categories.length
-    assert_equal 2, w.habtm_categories(true).size
-  end
-
-  def test_should_find_deleted_has_one_associations_on_deleted_records_by_default
-    c = Category.find_with_deleted 3
-    w = Widget.find_with_deleted 2
-    assert_equal c, w.category
-  end
-
-  def test_should_find_deleted_belongs_to_associations_on_deleted_records_by_default
-    c = Category.find_with_deleted 3
-    w = Widget.find_with_deleted 2
-    assert_equal c, w.parent_category
-  end
+  # sorry charlie, these are out!
+  #def test_should_find_deleted_has_many_assocations_on_deleted_records_by_default
+  #  w = Widget.find_with_deleted 2
+  #  assert_equal 2, w.categories.length
+  #  assert_equal 2, w.categories(true).size
+  #end
+  #
+  #def test_should_find_deleted_habtm_assocations_on_deleted_records_by_default
+  #  w = Widget.find_with_deleted 2
+  #  assert_equal 2, w.habtm_categories.length
+  #  assert_equal 2, w.habtm_categories(true).size
+  #end
+  #
+  #def test_should_find_deleted_has_one_associations_on_deleted_records_by_default
+  #  c = Category.find_with_deleted 3
+  #  w = Widget.find_with_deleted 2
+  #  assert_equal c, w.category
+  #end
+  #
+  #def test_should_find_deleted_belongs_to_associations_on_deleted_records_by_default
+  #  c = Category.find_with_deleted 3
+  #  w = Widget.find_with_deleted 2
+  #  assert_equal c, w.parent_category
+  #end
 end
 
 class Array
