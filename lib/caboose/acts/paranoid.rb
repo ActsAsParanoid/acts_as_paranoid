@@ -95,10 +95,8 @@ module Caboose #:nodoc:
 
         def destroy_without_callbacks
           unless new_record?
-            sql = self.class.send(:sanitize_sql,
-              ["UPDATE #{self.class.table_name} SET deleted_at = ? WHERE id = ?", 
-              self.class.default_timezone == :utc ? Time.now.utc : Time.now, id])
-            self.connection.update(sql)
+            now = self.class.default_timezone == :utc ? Time.now.utc : Time.now
+            self.class.update_all self.class.send(:sanitize_sql, ["deleted_at = ?", now]), "id = #{quote(id)}"
           end
           freeze
         end
