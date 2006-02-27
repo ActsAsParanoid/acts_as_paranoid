@@ -83,8 +83,8 @@ module Caboose #:nodoc:
             original_find(*(args << extract_options_from_args!(args).merge(:with_deleted => true)))
           end
 
-          def count(conditions = nil, joins = nil)
-            with_deleted_scope { count_with_deleted(conditions, joins) }
+          def count(*args)
+            with_deleted_scope { count_with_deleted(*args) }
           end
 
           protected
