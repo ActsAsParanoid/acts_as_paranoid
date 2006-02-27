@@ -11,6 +11,14 @@ end
 class Category < ActiveRecord::Base
   belongs_to :widget
   acts_as_paranoid
+
+  def self.search(name, options = {})
+    find :all, options.merge(:conditions => ['LOWER(title) LIKE ?', "%#{name.to_s.downcase}%"])
+  end
+
+  def self.search_with_deleted(name, options = {})
+    find_with_deleted :all, options.merge(:conditions => ['LOWER(title) LIKE ?', "%#{name.to_s.downcase}%"])
+  end
 end
 
 class NonParanoidAndroid < ActiveRecord::Base
@@ -129,10 +137,20 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal 2, w.habtm_categories.find_with_deleted(:all).length
     assert_equal 2, w.habtm_categories.find_with_deleted(:all).size
   end
+
+  def test_custom_finder_methods
+    w = Widget.find_with_deleted(:all).inject({}) { |all, w| all.merge(w.id => w) }
+    assert_equal [1],       Category.search('c').ids
+    assert_equal [1,2,3,4], Category.search_with_deleted('c', :order => 'id').ids
+    assert_equal [1],       widgets(:widget_1).categories.search('c').collect(&:id)
+    assert_equal [1,2],     widgets(:widget_1).categories.search_with_deleted('c').ids
+    assert_equal [],        w[2].categories.search('c').ids
+    assert_equal [3,4],     w[2].categories.search_with_deleted('c').ids
+  end
 end
 
 class Array
   def ids
-    collect { |i| i.id }
+    collect &:id
   end
 end
