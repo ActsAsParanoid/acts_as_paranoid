@@ -72,10 +72,11 @@ module Caboose #:nodoc:
 
         module ClassMethods
           def find(*args)
-            options = extract_options_from_args!(args)
+            options   = extract_options_from_args!(args)
+            find_args = args << options
             options[:with_deleted] ? 
-            original_find(*(args << options)) :
-            with_deleted_scope { return original_find(*(args << options)) }
+              original_find(*find_args) : 
+              with_deleted_scope { original_find(*find_args) }
           end
 
           def find_with_deleted(*args)
