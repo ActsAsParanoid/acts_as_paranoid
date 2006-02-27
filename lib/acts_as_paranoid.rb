@@ -51,7 +51,6 @@ module Caboose #:nodoc:
               class << self
                 alias_method :original_find, :find
                 alias_method :count_with_deleted, :count
-                alias_method :clobbering_with_scope, :with_scope
               end
             end
             include InstanceMethods
@@ -63,7 +62,7 @@ module Caboose #:nodoc:
           
           protected
           def validate_find_options_with_deleted(options)
-            options.assert_valid_keys [:conditions, :group, :include, :joins, :limit, :offset, :order, :select, :readonly, :with_deleted]
+            options.assert_valid_keys [:conditions, :include, :joins, :limit, :offset, :order, :select, :readonly, :group, :from, :with_deleted]
           end
         end
     
@@ -75,13 +74,9 @@ module Caboose #:nodoc:
           module ClassMethods
             def find(*args)
               options = extract_options_from_args!(args)
-              call_original_find = lambda { original_find(*(args << options)) }
-            
-              if !options[:with_deleted]
-                with_deleted_scope { return call_original_find.call }
-              end
-            
-              call_original_find.call
+              options[:with_deleted] ? 
+                original_find(*(args << options)) :
+                with_deleted_scope { return original_find(*(args << options)) }
             end
 
             def find_with_deleted(*args)
@@ -92,48 +87,9 @@ module Caboose #:nodoc:
               with_deleted_scope { count_with_deleted(conditions, joins) }
             end
 
-            def with_scope(method_scoping = {}, is_new_scope = true)
-              # Dup first and second level of hash (method and params).
-              method_scoping = method_scoping.inject({}) do |hash, (method, params)|
-                hash[method] = params.dup
-                hash
-              end
-
-              method_scoping.assert_valid_keys [:find, :create]
-              if f = method_scoping[:find]
-                f.assert_valid_keys [:conditions, :joins, :offset, :limit, :readonly]
-                f[:readonly] = true if !f[:joins].blank? && !f.has_key?(:readonly)
-              end
-
-              raise ArgumentError, "Nested scopes are not yet supported: #{scoped_methods.inspect}" unless scoped_methods.nil?
-
-              self.scoped_methods = method_scoping
-              yield
-            ensure
-              self.scoped_methods = nil if is_new_scope
-            end
-
             protected
             def with_deleted_scope(&block)
-              deleted_cond = "#{table_name}.deleted_at IS NULL"
-              if scoped_methods.nil?
-                is_new_scope = true
-                current_scope = {}
-              else
-                is_new_scope = false
-                current_scope = scoped_methods.clone
-                self.scoped_methods = nil
-              end
-            
-              current_scope ||= {}
-              current_scope[:find] ||= {}
-              if not current_scope[:find][:conditions] =~ /#{deleted_cond}/
-                current_scope[:find][:conditions] = current_scope[:find][:conditions].nil? ?
-                  deleted_cond :
-                  "(#{current_scope[:find][:conditions]}) AND #{deleted_cond}"
-              end
-            
-              with_scope(current_scope, is_new_scope, &block)
+              with_scope({:find => { :conditions => "#{table_name}.deleted_at IS NULL" } }, :merge, &block)
             end
           end
 
@@ -162,5 +118,3 @@ module Caboose #:nodoc:
     end
   end
 end
-
-ActiveRecord::Base.send :include, Caboose::Acts::Paranoid::ActiveRecord

@@ -1,1 +1,1 @@
-require 'acts_as_paranoid'
+ActiveRecord::Base.send :include, Caboose::Acts::Paranoid
