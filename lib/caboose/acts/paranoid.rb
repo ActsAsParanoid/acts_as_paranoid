@@ -37,10 +37,6 @@ module Caboose #:nodoc:
     module Paranoid
       def self.included(base) # :nodoc:
         base.extend ClassMethods
-        class << base
-          alias_method :validate_find_options_without_deleted, :validate_find_options
-          alias_method :validate_find_options, :validate_find_options_with_deleted
-        end
       end
 
       module ClassMethods
@@ -48,7 +44,7 @@ module Caboose #:nodoc:
           unless paranoid? # don't let AR call this twice
             alias_method :destroy_without_callbacks!, :destroy_without_callbacks
             class << self
-              alias_method :original_find, :find
+              alias_method :find_with_deleted,  :find
               alias_method :count_with_deleted, :count
             end
           end
@@ -57,11 +53,6 @@ module Caboose #:nodoc:
 
         def paranoid?
           self.included_modules.include?(InstanceMethods)
-        end
-
-        protected
-        def validate_find_options_with_deleted(options)
-          options.assert_valid_keys [:conditions, :include, :joins, :limit, :offset, :order, :select, :readonly, :group, :from, :with_deleted]
         end
       end
 
@@ -72,15 +63,7 @@ module Caboose #:nodoc:
 
         module ClassMethods
           def find(*args)
-            options   = extract_options_from_args!(args)
-            find_args = args << options
-            options[:with_deleted] ? 
-              original_find(*find_args) : 
-              with_deleted_scope { original_find(*find_args) }
-          end
-
-          def find_with_deleted(*args)
-            original_find(*(args << extract_options_from_args!(args).merge(:with_deleted => true)))
+            with_deleted_scope { find_with_deleted(*args) }
           end
 
           def count(*args)
@@ -88,9 +71,9 @@ module Caboose #:nodoc:
           end
 
           protected
-          def with_deleted_scope(&block)
-            with_scope({:find => { :conditions => "#{table_name}.deleted_at IS NULL" } }, :merge, &block)
-          end
+            def with_deleted_scope(&block)
+              with_scope({:find => { :conditions => "#{table_name}.deleted_at IS NULL" } }, :merge, &block)
+            end
         end
 
         def destroy_without_callbacks
