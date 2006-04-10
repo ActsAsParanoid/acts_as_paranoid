@@ -46,6 +46,7 @@ module Caboose #:nodoc:
             class << self
               alias_method :find_with_deleted,  :find
               alias_method :count_with_deleted, :count
+              alias_method :calculate_with_deleted, :calculate
             end
           end
           include InstanceMethods
@@ -68,6 +69,10 @@ module Caboose #:nodoc:
 
           def count(*args)
             with_deleted_scope { count_with_deleted(*args) }
+          end
+
+          def calculate(*args)
+            with_deleted_scope { calculate_with_deleted(*args) }
           end
 
           protected

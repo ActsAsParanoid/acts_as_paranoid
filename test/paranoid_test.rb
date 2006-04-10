@@ -33,8 +33,8 @@ class ParanoidTest < Test::Unit::TestCase
     widgets(:widget_1).destroy
     assert_equal 0, Widget.count
     assert_equal 0, Category.count
-    assert_equal 2, Widget.count_with_deleted
-    assert_equal 4, Category.count_with_deleted
+    assert_equal 2, Widget.calculate_with_deleted(:count, :all)
+    assert_equal 4, Category.calculate_with_deleted(:count, :all)
   end
   
   def test_should_destroy
@@ -43,15 +43,15 @@ class ParanoidTest < Test::Unit::TestCase
     widgets(:widget_1).destroy!
     assert_equal 0, Widget.count
     assert_equal 0, Category.count
-    assert_equal 1, Widget.count_with_deleted
+    assert_equal 1, Widget.calculate_with_deleted(:count, :all)
     # Category doesn't get destroyed because the dependent before_destroy callback uses #destroy
-    assert_equal 4, Category.count_with_deleted
+    assert_equal 4, Category.calculate_with_deleted(:count, :all)
   end
   
   def test_should_not_count_deleted
     assert_equal 1, Widget.count
     assert_equal 1, Widget.count(['title=?', 'widget 1'])
-    assert_equal 2, Widget.count_with_deleted
+    assert_equal 2, Widget.calculate_with_deleted(:count, :all)
   end
   
   def test_should_not_find_deleted
@@ -60,7 +60,7 @@ class ParanoidTest < Test::Unit::TestCase
   end
   
   def test_should_not_find_deleted_associations
-    assert_equal 2, Category.count_with_deleted('widget_id=1')
+    assert_equal 2, Category.calculate_with_deleted(:count, :all, :conditions => 'widget_id=1')
     
     assert_equal 1, widgets(:widget_1).categories.size
     assert_equal [categories(:category_1)], widgets(:widget_1).categories
@@ -94,7 +94,7 @@ class ParanoidTest < Test::Unit::TestCase
   def test_should_not_override_scopes_when_counting
     assert_equal 1, Widget.with_scope(:find => { :conditions => "title = 'widget 1'" }) { Widget.count }
     assert_equal 0, Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.count }
-    assert_equal 1, Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.count_with_deleted }
+    assert_equal 1, Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.calculate_with_deleted(:count, :all) }
   end
 
   def test_should_not_override_scopes_when_finding
@@ -114,8 +114,8 @@ class ParanoidTest < Test::Unit::TestCase
 
   def test_should_allow_multiple_scoped_calls_when_counting
     Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) do
-      assert_equal 1, Widget.count_with_deleted
-      assert_equal 1, Widget.count_with_deleted, "clobbers the constrain on the unmodified find"
+      assert_equal 1, Widget.calculate_with_deleted(:count, :all)
+      assert_equal 1, Widget.calculate_with_deleted(:count, :all), "clobbers the constrain on the unmodified find"
       assert_equal 0, Widget.count
       assert_equal 0, Widget.count, 'clobbers the constrain on a paranoid find'
     end
