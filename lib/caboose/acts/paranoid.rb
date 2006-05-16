@@ -44,9 +44,9 @@ module Caboose #:nodoc:
           unless paranoid? # don't let AR call this twice
             alias_method :destroy_without_callbacks!, :destroy_without_callbacks
             class << self
-              alias_method :find_with_deleted,  :find
-              alias_method :count_with_deleted, :count
-              alias_method :calculate_with_deleted, :calculate
+              alias_method :find_every_with_deleted,    :find_every
+              alias_method :count_with_deleted,         :count
+              alias_method :calculate_with_deleted,     :calculate
             end
           end
           include InstanceMethods
@@ -63,8 +63,17 @@ module Caboose #:nodoc:
         end
 
         module ClassMethods
-          def find(*args)
-            with_deleted_scope { find_with_deleted(*args) }
+          def find_with_deleted(*args)
+            options = extract_options_from_args!(args)
+            validate_find_options(options)
+            set_readonly_option!(options)
+            options[:with_deleted] = true # yuck!
+
+            case args.first
+              when :first then find_initial(options)
+              when :all   then find_every(options)
+              else             find_from_ids(args, options)
+            end
           end
 
           def count(*args)
@@ -78,6 +87,14 @@ module Caboose #:nodoc:
           protected
             def with_deleted_scope(&block)
               with_scope({:find => { :conditions => "#{table_name}.deleted_at IS NULL" } }, :merge, &block)
+            end
+          
+          private
+            # all find calls lead here
+            def find_every(options)
+              options.delete(:with_deleted) ? 
+                find_every_with_deleted(options) :
+                with_deleted_scope { find_every_with_deleted(options) }
             end
         end
 

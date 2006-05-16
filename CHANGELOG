@@ -1,3 +1,7 @@
+* (15 May 2006)
+
+Added support for dynamic finders
+
 * (28 Mar 2006)
 
 Updated for Rails 1.1.  I love removing code.

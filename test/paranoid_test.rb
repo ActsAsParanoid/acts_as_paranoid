@@ -138,6 +138,11 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal 2, w.habtm_categories.find_with_deleted(:all).size
   end
 
+  def test_dynamic_finders
+    assert     Widget.find_by_id(1)
+    assert_nil Widget.find_by_id(2)
+  end
+
   def test_custom_finder_methods
     w = Widget.find_with_deleted(:all).inject({}) { |all, w| all.merge(w.id => w) }
     assert_equal [1],       Category.search('c').ids
