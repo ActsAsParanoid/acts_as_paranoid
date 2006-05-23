@@ -100,8 +100,7 @@ module Caboose #:nodoc:
 
         def destroy_without_callbacks
           unless new_record?
-            now = self.class.default_timezone == :utc ? Time.now.utc : Time.now
-            self.class.update_all self.class.send(:sanitize_sql, ["deleted_at = ?", now]), "id = #{quote(id)}"
+            self.class.update_all self.class.send(:sanitize_sql, ["deleted_at = ?", current_time]), "id = #{quote(id)}"
           end
           freeze
         end
@@ -116,6 +115,11 @@ module Caboose #:nodoc:
         def destroy!
           transaction { destroy_with_callbacks! }
         end
+        
+        protected
+          def current_time
+            self.class.default_timezone == :utc ? Time.now.utc : Time.now
+          end
       end
     end
   end
