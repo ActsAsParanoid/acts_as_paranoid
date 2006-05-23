@@ -85,8 +85,12 @@ module Caboose #:nodoc:
           end
 
           protected
+            def current_time
+              default_timezone == :utc ? Time.now.utc : Time.now
+            end
+
             def with_deleted_scope(&block)
-              with_scope({:find => { :conditions => "#{table_name}.deleted_at IS NULL" } }, :merge, &block)
+              with_scope({:find => { :conditions => ["#{table_name}.deleted_at IS NULL OR #{table_name}.deleted_at > ?", current_time] } }, :merge, &block)
             end
           
           private
@@ -100,7 +104,7 @@ module Caboose #:nodoc:
 
         def destroy_without_callbacks
           unless new_record?
-            self.class.update_all self.class.send(:sanitize_sql, ["deleted_at = ?", current_time]), "id = #{quote(id)}"
+            self.class.update_all self.class.send(:sanitize_sql, ["deleted_at = ?", self.class.send(:current_time)]), "id = #{quote(id)}"
           end
           freeze
         end
@@ -115,11 +119,6 @@ module Caboose #:nodoc:
         def destroy!
           transaction { destroy_with_callbacks! }
         end
-        
-        protected
-          def current_time
-            self.class.default_timezone == :utc ? Time.now.utc : Time.now
-          end
       end
     end
   end
