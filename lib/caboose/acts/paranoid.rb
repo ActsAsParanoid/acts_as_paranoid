@@ -40,8 +40,10 @@ module Caboose #:nodoc:
       end
 
       module ClassMethods
-        def acts_as_paranoid
+        def acts_as_paranoid(options = {})
           unless paranoid? # don't let AR call this twice
+            cattr_accessor :deleted_attribute
+            self.deleted_attribute = options[:with] || :deleted_at
             alias_method :destroy_without_callbacks!, :destroy_without_callbacks
             class << self
               alias_method :find_every_with_deleted,    :find_every
@@ -90,7 +92,7 @@ module Caboose #:nodoc:
             end
 
             def with_deleted_scope(&block)
-              with_scope({:find => { :conditions => ["#{table_name}.deleted_at IS NULL OR #{table_name}.deleted_at > ?", current_time] } }, :merge, &block)
+              with_scope({:find => { :conditions => ["#{table_name}.#{deleted_attribute} IS NULL OR #{table_name}.#{deleted_attribute} > ?", current_time] } }, :merge, &block)
             end
           
           private
@@ -104,7 +106,7 @@ module Caboose #:nodoc:
 
         def destroy_without_callbacks
           unless new_record?
-            self.class.update_all self.class.send(:sanitize_sql, ["deleted_at = ?", self.class.send(:current_time)]), "id = #{quote(id)}"
+            self.class.update_all self.class.send(:sanitize_sql, ["#{self.class.deleted_attribute} = ?", self.class.send(:current_time)]), "id = #{quote(id)}"
           end
           freeze
         end
