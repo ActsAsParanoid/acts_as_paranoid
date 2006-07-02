@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'test_helper')
 
 class Widget < ActiveRecord::Base
   acts_as_paranoid
-  has_many :categories, :dependent => true
+  has_many :categories, :dependent => :destroy
   has_and_belongs_to_many :habtm_categories, :class_name => 'Category'
   has_one :category
   belongs_to :parent_category, :class_name => 'Category'
@@ -46,6 +46,41 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal 1, Widget.calculate_with_deleted(:count, :all)
     # Category doesn't get destroyed because the dependent before_destroy callback uses #destroy
     assert_equal 4, Category.calculate_with_deleted(:count, :all)
+  end
+  
+  def test_should_delete_all
+    assert_equal 1, Widget.count
+    assert_equal 2, Widget.calculate_with_deleted(:count, :all)
+    assert_equal 1, Category.count
+    Widget.delete_all
+    assert_equal 0, Widget.count
+    # delete_all doesn't call #destroy, so the dependent callback never fires
+    assert_equal 1, Category.count
+    assert_equal 2, Widget.calculate_with_deleted(:count, :all)
+  end
+  
+  def test_should_delete_all_with_conditions
+    assert_equal 1, Widget.count
+    assert_equal 2, Widget.calculate_with_deleted(:count, :all)
+    Widget.delete_all("id < 3")
+    assert_equal 0, Widget.count
+    assert_equal 2, Widget.calculate_with_deleted(:count, :all)
+  end
+  
+  def test_should_delete_all2
+    assert_equal 1, Category.count
+    assert_equal 4, Category.calculate_with_deleted(:count, :all)
+    Category.delete_all!
+    assert_equal 0, Category.count
+    assert_equal 0, Category.calculate_with_deleted(:count, :all)
+  end
+  
+  def test_should_delete_all_with_conditions2
+    assert_equal 1, Category.count
+    assert_equal 4, Category.calculate_with_deleted(:count, :all)
+    Category.delete_all!("id < 3")
+    assert_equal 0, Category.count
+    assert_equal 2, Category.calculate_with_deleted(:count, :all)    
   end
   
   def test_should_not_count_deleted

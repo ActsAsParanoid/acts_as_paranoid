@@ -28,6 +28,12 @@ module Caboose #:nodoc:
     #   Widget.count_with_deleted
     #   # SELECT COUNT(*) FROM widgets
     #
+    #   Widget.delete_all
+    #   # UPDATE widgets SET deleted_at = '2005-09-17 17:46:36'
+    #
+    #   Widget.delete_all!
+    #   # DELETE FROM widgets
+    #
     #   @widget.destroy
     #   # UPDATE widgets SET deleted_at = '2005-09-17 17:46:36' WHERE id = 1
     #
@@ -49,6 +55,7 @@ module Caboose #:nodoc:
               alias_method :find_every_with_deleted,    :find_every
               alias_method :count_with_deleted,         :count
               alias_method :calculate_with_deleted,     :calculate
+              alias_method :delete_all!,                :delete_all
             end
           end
           include InstanceMethods
@@ -84,6 +91,10 @@ module Caboose #:nodoc:
 
           def calculate(*args)
             with_deleted_scope { calculate_with_deleted(*args) }
+          end
+
+          def delete_all(conditions = nil)
+            self.update_all ["#{self.deleted_attribute} = ?", current_time], conditions
           end
 
           protected
