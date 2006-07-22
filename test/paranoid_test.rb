@@ -27,6 +27,12 @@ end
 class ParanoidTest < Test::Unit::TestCase
   fixtures :widgets, :categories, :categories_widgets
 
+  def test_should_count_with_deleted
+    assert_equal 1, Widget.count
+    assert_equal 2, Widget.count_with_deleted
+    assert_equal 2, Widget.calculate_with_deleted(:count, :all)
+  end
+
   def test_should_set_deleted_at
     assert_equal 1, Widget.count
     assert_equal 1, Category.count

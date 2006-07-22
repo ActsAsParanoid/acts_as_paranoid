@@ -53,7 +53,6 @@ module Caboose #:nodoc:
             alias_method :destroy_without_callbacks!, :destroy_without_callbacks
             class << self
               alias_method :find_every_with_deleted,    :find_every
-              alias_method :count_with_deleted,         :count
               alias_method :calculate_with_deleted,     :calculate
               alias_method :delete_all!,                :delete_all
             end
@@ -83,6 +82,10 @@ module Caboose #:nodoc:
               when :all   then find_every(options)
               else             find_from_ids(args, options)
             end
+          end
+
+          def count_with_deleted(*args)
+            calculate_with_deleted(:count, *construct_count_options_from_legacy_args(*args))
           end
 
           def count(*args)
