@@ -10,6 +10,7 @@ end
 
 class Category < ActiveRecord::Base
   belongs_to :widget
+  belongs_to :any_widget, :class_name => 'Widget', :foreign_key => 'widget_id', :with_deleted => true
   acts_as_paranoid
 
   def self.search(name, options = {})
@@ -100,16 +101,24 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal [1, 2], Widget.find_with_deleted(:all, :order => 'id').collect { |w| w.id }
   end
   
-  def test_should_not_find_deleted_associations
-    assert_equal 2, Category.calculate_with_deleted(:count, :all, :conditions => 'widget_id=1')
-    
+  def test_should_not_find_deleted_has_many_associations
     assert_equal 1, widgets(:widget_1).categories.size
     assert_equal [categories(:category_1)], widgets(:widget_1).categories
-    
+  end
+  
+  def test_should_not_find_deleted_habtm_associations
     assert_equal 1, widgets(:widget_1).habtm_categories.size
     assert_equal [categories(:category_1)], widgets(:widget_1).habtm_categories
   end
   
+  def test_should_not_find_deleted_belongs_to_associations
+    assert_nil Category.find_with_deleted(3).widget
+  end
+
+  def test_should_find_belongs_to_assocation_with_deleted
+    assert_equal Widget.find_with_deleted(2), Category.find_with_deleted(3).any_widget
+  end
+
   def test_should_find_first_with_deleted
     assert_equal widgets(:widget_1), Widget.find(:first)
     assert_equal 2, Widget.find_with_deleted(:first, :order => 'id desc').id
