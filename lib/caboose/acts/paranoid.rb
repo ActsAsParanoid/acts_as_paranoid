@@ -108,7 +108,7 @@ module Caboose #:nodoc:
             def with_deleted_scope(&block)
               with_scope({:find => { :conditions => ["#{table_name}.#{deleted_attribute} IS NULL OR #{table_name}.#{deleted_attribute} > ?", current_time] } }, :merge, &block)
             end
-          
+
           private
             # all find calls lead here
             def find_every(options)
