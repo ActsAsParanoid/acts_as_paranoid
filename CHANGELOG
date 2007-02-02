@@ -1,3 +1,7 @@
+* (2 Feb 2007)
+
+Add support for custom primary keys [Jeff Dean]
+
 * (2 July 2006)
 
 Add paranoid delete_all implementation [Marshall Roch]
