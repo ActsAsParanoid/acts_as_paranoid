@@ -72,7 +72,7 @@ module Caboose #:nodoc:
 
         module ClassMethods
           def find_with_deleted(*args)
-            options = extract_options_from_args!(args)
+            options = args.extract_options!
             validate_find_options(options)
             set_readonly_option!(options)
             options[:with_deleted] = true # yuck!
