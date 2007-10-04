@@ -92,7 +92,7 @@ class ParanoidTest < Test::Unit::TestCase
   
   def test_should_not_count_deleted
     assert_equal 1, Widget.count
-    assert_equal 1, Widget.count(['title=?', 'widget 1'])
+    assert_equal 1, Widget.count(:all, :conditions => ['title=?', 'widget 1'])
     assert_equal 2, Widget.calculate_with_deleted(:count, :all)
   end
   
@@ -142,19 +142,19 @@ class ParanoidTest < Test::Unit::TestCase
   end
 
   def test_should_not_override_scopes_when_counting
-    assert_equal 1, Widget.with_scope(:find => { :conditions => "title = 'widget 1'" }) { Widget.count }
-    assert_equal 0, Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.count }
-    assert_equal 1, Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.calculate_with_deleted(:count, :all) }
+    assert_equal 1, Widget.send(:with_scope, :find => { :conditions => "title = 'widget 1'" }) { Widget.count }
+    assert_equal 0, Widget.send(:with_scope, :find => { :conditions => "title = 'deleted widget 2'" }) { Widget.count }
+    assert_equal 1, Widget.send(:with_scope, :find => { :conditions => "title = 'deleted widget 2'" }) { Widget.calculate_with_deleted(:count, :all) }
   end
 
   def test_should_not_override_scopes_when_finding
-    assert_equal [1], Widget.with_scope(:find => { :conditions => "title = 'widget 1'" }) { Widget.find(:all) }.ids
-    assert_equal [],  Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.find(:all) }.ids
-    assert_equal [2], Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) { Widget.find_with_deleted(:all) }.ids
+    assert_equal [1], Widget.send(:with_scope, :find => { :conditions => "title = 'widget 1'" }) { Widget.find(:all) }.ids
+    assert_equal [],  Widget.send(:with_scope, :find => { :conditions => "title = 'deleted widget 2'" }) { Widget.find(:all) }.ids
+    assert_equal [2], Widget.send(:with_scope, :find => { :conditions => "title = 'deleted widget 2'" }) { Widget.find_with_deleted(:all) }.ids
   end
 
   def test_should_allow_multiple_scoped_calls_when_finding
-    Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) do
+    Widget.send(:with_scope, :find => { :conditions => "title = 'deleted widget 2'" }) do
       assert_equal [2], Widget.find_with_deleted(:all).ids
       assert_equal [2], Widget.find_with_deleted(:all).ids, "clobbers the constrain on the unmodified find"
       assert_equal [], Widget.find(:all).ids
@@ -163,7 +163,7 @@ class ParanoidTest < Test::Unit::TestCase
   end
 
   def test_should_allow_multiple_scoped_calls_when_counting
-    Widget.with_scope(:find => { :conditions => "title = 'deleted widget 2'" }) do
+    Widget.send(:with_scope, :find => { :conditions => "title = 'deleted widget 2'" }) do
       assert_equal 1, Widget.calculate_with_deleted(:count, :all)
       assert_equal 1, Widget.calculate_with_deleted(:count, :all), "clobbers the constrain on the unmodified find"
       assert_equal 0, Widget.count

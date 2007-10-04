@@ -85,7 +85,7 @@ module Caboose #:nodoc:
           end
 
           def count_with_deleted(*args)
-            calculate_with_deleted(:count, *construct_count_options_from_legacy_args(*args))
+            calculate_with_deleted(:count, *construct_count_options_from_args(*args))
           end
 
           def count(*args)

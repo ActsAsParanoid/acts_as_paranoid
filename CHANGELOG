@@ -1,3 +1,7 @@
+* (4 Oct 2007)
+
+Update for Edge rails: remove support for legacy #count args 
+
 * (2 Feb 2007)
 
 Add support for custom primary keys [Jeff Dean]
