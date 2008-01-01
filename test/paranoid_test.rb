@@ -176,6 +176,12 @@ class ParanoidTest < Test::Unit::TestCase
     assert !NonParanoidAndroid.paranoid?
   end
 
+  def test_should_give_record_status
+    assert_equal false, Widget.find(1).deleted? 
+    Widget.find(1).destroy
+    assert Widget.find_with_deleted(1).deleted?
+  end
+
   def test_should_find_deleted_has_many_assocations_on_deleted_records_by_default
     w = Widget.find_with_deleted 2
     assert_equal 2, w.categories.find_with_deleted(:all).length
