@@ -19,6 +19,9 @@ module Caboose #:nodoc:
     #   Widget.find(:all, :with_deleted => true)
     #   # SELECT * FROM widgets
     #
+    #   Widget.find_with_deleted(1).deleted?
+    #   # Returns true if the record was previously destroyed, false if not 
+    #
     #   Widget.count
     #   # SELECT COUNT(*) FROM widgets WHERE widgets.deleted_at IS NULL
     #
@@ -134,6 +137,10 @@ module Caboose #:nodoc:
 
         def destroy!
           transaction { destroy_with_callbacks! }
+        end
+
+        def deleted?
+          !!read_attribute(:deleted_at)
         end
       end
     end
