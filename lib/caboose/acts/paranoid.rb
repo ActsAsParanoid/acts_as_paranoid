@@ -142,6 +142,11 @@ module Caboose #:nodoc:
         def deleted?
           !!read_attribute(:deleted_at)
         end
+
+        def recover!
+          self.deleted_at = nil
+          save!
+        end
       end
     end
   end
