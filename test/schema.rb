@@ -16,5 +16,15 @@ ActiveRecord::Schema.define(:version => 1) do
     t.column :category_id, :integer
     t.column :widget_id, :integer
   end
+  
+  create_table :tags, :force => true do |t|
+    t.column :name, :string, :limit => 50
+  end
+  
+  create_table :taggings, :force => true do |t|
+    t.column :tag_id, :integer
+    t.column :widget_id, :integer
+    t.column :deleted_at, :timestamp
+  end
 
 end

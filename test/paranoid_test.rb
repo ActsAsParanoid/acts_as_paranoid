@@ -6,6 +6,9 @@ class Widget < ActiveRecord::Base
   has_and_belongs_to_many :habtm_categories, :class_name => 'Category'
   has_one :category
   belongs_to :parent_category, :class_name => 'Category'
+  has_many :taggings
+  has_many :tags, :through => :taggings
+  has_many :any_tags, :through => :taggings, :class_name => 'Tag', :source => :tag, :with_deleted => true
 end
 
 class Category < ActiveRecord::Base
@@ -22,11 +25,22 @@ class Category < ActiveRecord::Base
   end
 end
 
+class Tag < ActiveRecord::Base
+  has_many :taggings
+  has_many :widgets, :through => :taggings
+end
+
+class Tagging < ActiveRecord::Base
+  belongs_to :tag
+  belongs_to :widget
+  acts_as_paranoid
+end
+
 class NonParanoidAndroid < ActiveRecord::Base
 end
 
 class ParanoidTest < Test::Unit::TestCase
-  fixtures :widgets, :categories, :categories_widgets
+  fixtures :widgets, :categories, :categories_widgets, :tags, :taggings
 
   def test_should_count_with_deleted
     assert_equal 1, Widget.count
@@ -111,6 +125,16 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal [categories(:category_1)], widgets(:widget_1).habtm_categories
   end
   
+  def test_should_not_find_deleted_has_many_through_associations
+    assert_equal 1, widgets(:widget_1).tags.size
+    assert_equal [tags(:tag_2)], widgets(:widget_1).tags
+  end
+  
+  def test_should_find_has_many_through_associations_with_deleted
+    assert_equal 2, widgets(:widget_1).any_tags.size
+    assert_equal Tag.find(:all), widgets(:widget_1).any_tags
+  end
+
   def test_should_not_find_deleted_belongs_to_associations
     assert_nil Category.find_with_deleted(3).widget
   end
