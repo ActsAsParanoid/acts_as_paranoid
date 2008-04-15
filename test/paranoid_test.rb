@@ -41,6 +41,11 @@ end
 
 class ParanoidTest < Test::Unit::TestCase
   fixtures :widgets, :categories, :categories_widgets, :tags, :taggings
+  
+  def test_should_exists_with_deleted
+    assert Widget.exists_with_deleted?(2)
+    assert !Widget.exists?(2)
+  end
 
   def test_should_count_with_deleted
     assert_equal 1, Widget.count

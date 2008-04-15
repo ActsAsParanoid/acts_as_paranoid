@@ -87,6 +87,10 @@ module Caboose #:nodoc:
             end
           end
 
+          def exists?(*args)
+            with_deleted_scope { exists_with_deleted?(*args) }
+          end
+
           def count_with_deleted(*args)
             calculate_with_deleted(:count, *construct_count_options_from_args(*args))
           end
