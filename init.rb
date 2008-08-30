@@ -28,3 +28,7 @@ class << ActiveRecord::Base
   alias_method :exists_with_deleted?, :exists?
 end
 ActiveRecord::Base.send :include, Caboose::Acts::Paranoid
+ActiveRecord::Base.send :include, Caboose::Acts::ParanoidFindWrapper
+class << ActiveRecord::Base
+  alias_method_chain :acts_as_paranoid, :find_wrapper
+end

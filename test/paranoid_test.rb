@@ -42,6 +42,16 @@ end
 class ParanoidTest < Test::Unit::TestCase
   fixtures :widgets, :categories, :categories_widgets, :tags, :taggings
   
+  def test_should_recognize_with_deleted_option
+    assert_equal [1, 2], Widget.find(:all, :with_deleted => true).collect { |w| w.id }
+    assert_equal [1], Widget.find(:all, :with_deleted => false).collect { |w| w.id }
+  end
+  
+  def test_should_recognize_only_deleted_option
+    assert_equal [2], Widget.find(:all, :only_deleted => true).collect { |w| w.id }
+    assert_equal [1], Widget.find(:all, :only_deleted => false).collect { |w| w.id }
+  end
+  
   def test_should_exists_with_deleted
     assert Widget.exists_with_deleted?(2)
     assert !Widget.exists?(2)

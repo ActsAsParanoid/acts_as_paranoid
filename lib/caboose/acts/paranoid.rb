@@ -16,9 +16,6 @@ module Caboose #:nodoc:
     #   Widget.find_with_deleted(:all)
     #   # SELECT * FROM widgets
     #
-    #   Widget.find(:all, :with_deleted => true)
-    #   # SELECT * FROM widgets
-    #
     #   Widget.find_only_deleted(:all)
     #   # SELECT * FROM widgets WHERE widgets.deleted_at IS NOT NULL
     #
