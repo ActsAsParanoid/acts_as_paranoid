@@ -19,6 +19,9 @@ module Caboose #:nodoc:
     #   Widget.find(:all, :with_deleted => true)
     #   # SELECT * FROM widgets
     #
+    #   Widget.find_only_deleted(:all)
+    #   # SELECT * FROM widgets WHERE widgets.deleted_at IS NOT NULL
+    #
     #   Widget.find_with_deleted(1).deleted?
     #   # Returns true if the record was previously destroyed, false if not 
     #
@@ -30,6 +33,9 @@ module Caboose #:nodoc:
     #
     #   Widget.count_with_deleted
     #   # SELECT COUNT(*) FROM widgets
+    #
+    #   Widget.count_only_deleted
+    #   # SELECT COUNT(*) FROM widgets WHERE widgets.deleted_at IS NOT NULL
     #
     #   Widget.delete_all
     #   # UPDATE widgets SET deleted_at = '2005-09-17 17:46:36'
@@ -87,12 +93,33 @@ module Caboose #:nodoc:
             end
           end
 
+          def find_only_deleted(*args)
+            options = args.extract_options!
+            validate_find_options(options)
+            set_readonly_option!(options)
+            options[:only_deleted] = true # yuck!
+
+            case args.first
+              when :first then find_initial(options)
+              when :all   then find_every(options)
+              else             find_from_ids(args, options)
+            end
+          end
+
           def exists?(*args)
             with_deleted_scope { exists_with_deleted?(*args) }
           end
 
+          def exists_only_deleted?(*args)
+            with_only_deleted_scope { exists_with_deleted?(*args) }
+          end
+
           def count_with_deleted(*args)
             calculate_with_deleted(:count, *construct_count_options_from_args(*args))
+          end
+
+          def count_only_deleted(*args)
+            with_only_deleted_scope { count_with_deleted(*args) }
           end
 
           def count(*args)
@@ -116,12 +143,18 @@ module Caboose #:nodoc:
               with_scope({:find => { :conditions => ["#{table_name}.#{deleted_attribute} IS NULL OR #{table_name}.#{deleted_attribute} > ?", current_time] } }, :merge, &block)
             end
 
+            def with_only_deleted_scope(&block)
+              with_scope({:find => { :conditions => ["#{table_name}.#{deleted_attribute} IS NOT NULL AND #{table_name}.#{deleted_attribute} <= ?", current_time] } }, :merge, &block)
+            end
+
           private
             # all find calls lead here
             def find_every(options)
               options.delete(:with_deleted) ? 
                 find_every_with_deleted(options) :
-                with_deleted_scope { find_every_with_deleted(options) }
+                options.delete(:only_deleted) ? 
+                  with_only_deleted_scope { find_every_with_deleted(options) } :
+                  with_deleted_scope { find_every_with_deleted(options) }
             end
         end
 

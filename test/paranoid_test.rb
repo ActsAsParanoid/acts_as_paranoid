@@ -47,9 +47,15 @@ class ParanoidTest < Test::Unit::TestCase
     assert !Widget.exists?(2)
   end
 
+  def test_should_exists_only_deleted
+    assert Widget.exists_only_deleted?(2)
+    assert !Widget.exists_only_deleted?(1)
+  end
+
   def test_should_count_with_deleted
     assert_equal 1, Widget.count
     assert_equal 2, Widget.count_with_deleted
+    assert_equal 1, Widget.count_only_deleted
     assert_equal 2, Widget.calculate_with_deleted(:count, :all)
   end
 
@@ -69,6 +75,7 @@ class ParanoidTest < Test::Unit::TestCase
     widgets(:widget_1).destroy!
     assert_equal 0, Widget.count
     assert_equal 0, Category.count
+    assert_equal 1, Widget.count_only_deleted
     assert_equal 1, Widget.calculate_with_deleted(:count, :all)
     # Category doesn't get destroyed because the dependent before_destroy callback uses #destroy
     assert_equal 4, Category.calculate_with_deleted(:count, :all)
@@ -113,6 +120,12 @@ class ParanoidTest < Test::Unit::TestCase
     assert_equal 1, Widget.count
     assert_equal 1, Widget.count(:all, :conditions => ['title=?', 'widget 1'])
     assert_equal 2, Widget.calculate_with_deleted(:count, :all)
+    assert_equal 1, Widget.count_only_deleted
+  end
+  
+  def test_should_find_only_deleted
+    assert_equal [2], Widget.find_only_deleted(:all).collect { |w| w.id }
+    assert_equal [1, 2], Widget.find_with_deleted(:all, :order => 'id').collect { |w| w.id }
   end
   
   def test_should_not_find_deleted
