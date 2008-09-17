@@ -127,7 +127,7 @@ module Caboose #:nodoc:
 
         def destroy_without_callbacks
           unless new_record?
-            self.class.update_all self.class.send(:sanitize_sql, ["#{self.class.deleted_attribute} = ?", self.class.send(:current_time)]), ["#{self.class.primary_key} = ?", id]
+            self.class.update_all self.class.send(:sanitize_sql, ["#{self.class.deleted_attribute} = ?", (self.deleted_at = self.class.send(:current_time))]), ["#{self.class.primary_key} = ?", id]
           end
           freeze
         end
