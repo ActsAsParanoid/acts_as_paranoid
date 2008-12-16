@@ -181,6 +181,15 @@ module Caboose #:nodoc:
           self.deleted_at = nil
           save!
         end
+        
+        def recover_with_associations!(*associations)
+          self.recover!
+          associations.to_a.each do |assoc|
+            self.send(assoc).find_with_deleted(:all).each do |a|
+              a.recover! if a.class.paranoid?
+            end
+          end
+        end
       end
     end
   end
