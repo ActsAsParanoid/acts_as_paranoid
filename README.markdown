@@ -19,8 +19,8 @@ You can enable ActsAsParanoid like this:
 ### Options
 
 You can also specify the name of the column to store it's *deletion* and the type of data it holds:
--   :column => 'deleted_at'
 
+-   :column => 'deleted_at'
 -   :type => 'time'
 
 The values shown are the defaults. While *column* can be anything (as long as it exists in your database), *type* is restricted to "boolean" or "time".
@@ -49,8 +49,8 @@ Recovery is easy. Just invoke `recover` on it, like this:
 ## Caveats
 
 Watch out for these caveats:
--   If you use default\_scope in your model, you need to include it after the `acts_as_paranoid` invocation
 
+-   If you use default\_scope in your model, you need to include it after the `acts_as_paranoid` invocation
 -   You cannot use scopes named `with_deleted` and `only_deleted`
 
 Copyright © 2010 Gonçalo Silva, released under the MIT license
