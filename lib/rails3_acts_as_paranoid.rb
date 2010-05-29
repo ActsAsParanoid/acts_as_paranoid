@@ -43,9 +43,9 @@ module ActsAsParanoid
       
       def destroy
         if self.#{configuration[:column]} == nil
-          #{self.name}.delete_all(:id => self)
+          #{self.name}.delete_all(:id => self.id)
         else
-          #{self.name}.delete_all!(:id => self)
+          #{self.name}.delete_all!(:id => self.id)
         end
       end
 
