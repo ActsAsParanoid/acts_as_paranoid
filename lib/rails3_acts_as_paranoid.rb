@@ -1,6 +1,6 @@
 require 'active_record'
 
-module ActsAsParanoid
+module ActsAsParanoid  
   def acts_as_paranoid(options = {})
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
     
@@ -38,15 +38,23 @@ module ActsAsParanoid
       end
 
       def destroy!
+        before_destroy()
+        
         #{self.name}.delete_all!(:id => self)
+        
+        after_destroy()
       end
       
       def destroy
+        before_destroy()
+        
         if self.#{configuration[:column]} == nil
           #{self.name}.delete_all(:id => self.id)
         else
           #{self.name}.delete_all!(:id => self.id)
         end
+        
+        after_destroy()
       end
 
       def recover
