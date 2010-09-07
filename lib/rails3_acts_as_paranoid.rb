@@ -46,15 +46,13 @@ module ActsAsParanoid
       end
       
       def destroy
-        before_destroy() if respond_to?(:before_destroy)
-        
-        if self.#{configuration[:column]} == nil
-          #{self.name}.delete_all(:id => self.id)
-        else
-          #{self.name}.delete_all!(:id => self.id)
+        run_callbacks :destroy do          
+          if self.#{configuration[:column]} == nil
+            #{self.name}.delete_all(:id => self.id)
+          else
+            #{self.name}.delete_all!(:id => self.id)
+          end
         end
-        
-        after_destroy() if respond_to?(:after_destroy)
       end
 
       def recover
