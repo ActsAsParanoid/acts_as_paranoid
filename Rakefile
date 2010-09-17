@@ -1,6 +1,14 @@
-require 'rake'
-require 'rake/testtask'
-require 'rake/rdoctask'
+begin
+  require "bundler"
+  Bundler.setup
+rescue LoadError
+  $stderr.puts "You need to have Bundler installed to be able build this gem."
+end
+require "rake/testtask"
+require "rake/rdoctask"
+
+gemspec = eval(File.read(Dir["*.gemspec"].first))
+
 
 desc 'Default: run unit tests.'
 task :default => :test

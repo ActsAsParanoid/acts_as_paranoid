@@ -1,1 +1,2 @@
-rails3_acts_as_paranoid-*.gem
+pkg
+.bundle
