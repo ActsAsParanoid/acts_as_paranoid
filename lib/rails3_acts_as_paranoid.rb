@@ -23,7 +23,7 @@ module ActsAsParanoid
         end
 
         def only_deleted
-          self.unscoped.where("#{self.table_name}.#{configuration[:column]} IS NOT ?, nil)
+          self.unscoped.where("#{self.table_name}.#{configuration[:column]} IS NOT ?", nil)
         end
 
         def delete_all!(conditions = nil)
