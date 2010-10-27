@@ -14,20 +14,6 @@ module ActsAsParanoid
         raise ArgumentError, "'time' or 'boolean' expected for :column_type option, got #{configuration[:column_type]}"
     end
 
-    only_deleted_method_code = 
-    if configuration[:column_type] == 'time'
-      <<-EOV
-      self.unscoped.
-        where("#{self.table_name}.#{configuration[:column]} IS NOT ?", nil)
-EOV
-    else
-      <<-EOV
-      self.unscoped.
-        where("#{self.table_name}.#{configuration[:column]} IS NOT ?
-          OR #{self.table_name}.#{configuration[:column]} != ?", nil, true)
-EOV
-    end
-
     class_eval <<-EOV
       default_scope where("#{self.table_name}.#{configuration[:column]} IS ?", nil)
 
@@ -37,7 +23,7 @@ EOV
         end
 
         def only_deleted
-          #{only_deleted_method_code}
+          self.unscoped.where("#{self.table_name}.#{configuration[:column]} IS NOT ?, nil)
         end
 
         def delete_all!(conditions = nil)
