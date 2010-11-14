@@ -33,7 +33,7 @@ module ActsAsParanoid
         end
 
         def with_deleted
-          self.unscoped.reload
+          self.unscoped.where("") #self.unscoped.reload
         end
 
         def only_deleted
