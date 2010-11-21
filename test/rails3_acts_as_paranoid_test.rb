@@ -116,7 +116,7 @@ class ParanoidTest < ActiveSupport::TestCase
   def test_recursive_recovery
     setup_recursive_recovery_tests
 
-    @paranoid_time_object.recover(:recover_associations => true)
+    @paranoid_time_object.recover(:recursive => true)
 
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidHasManyDependant.count
@@ -128,7 +128,7 @@ class ParanoidTest < ActiveSupport::TestCase
   def test_non_recursive_recovery
     setup_recursive_recovery_tests
 
-    @paranoid_time_object.recover(:recover_associations => false)
+    @paranoid_time_object.recover(:recursive => false)
 
     assert_equal 3, ParanoidTime.count
     assert_equal 0, ParanoidHasManyDependant.count

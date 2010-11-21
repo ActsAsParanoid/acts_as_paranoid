@@ -28,23 +28,56 @@ The values shown are the defaults. While *column* can be anything (as long as it
 ### Filtering
 
 If a record is deleted by ActsAsParanoid, it won't be retrieved when accessing the database. So, `Paranoiac.all` will **not** include the deleted_records. if you want to access them, you have 2 choices:
+
     Paranoiac.only_deleted # retrieves the deleted records
     Paranoiac.with_deleted # retrieves all records, deleted or not
 
 ### Real deletion
 
 In order to really delete a record, just use:
+
     paranoiac.destroy!
     Paranoiac.delete_all!(conditions)
 
 You can also definitively delete a record by calling `destroy` or `delete_all` on it twice. If a record was already deleted (hidden by ActsAsParanoid) and you delete it again, it will be removed from the database. Take this example:
+
     Paranoiac.first.destroy # does NOT delete the first record, just hides it
     Paranoiac.only_deleted.destroy # deletes the first record from the database
 
 ### Recovery
 
 Recovery is easy. Just invoke `recover` on it, like this:
+
     Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover
+
+All associations marked as `:dependent => :destroy` are also recursively recovered.  If you would like to disable this behavior, you can call `recover` with the `recursive` option:
+
+    Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover(:recursive => false)
+
+If you would like to change the default behavior for a model, you can use the `recover_dependent_associations` option
+
+    class Paranoiac < ActiveRecord::Base
+        acts_as_paranoid :recover_dependent_associations => false
+    end
+
+By default when using timestamp fields to mark deletion, dependent records will be recovered if they were deleted within 5 seconds of the object upon which they depend.  This restores the objects to the state before the recursive deletion without restoring other objects that were deleted earlier.  This window can be changed with the `dependent_recovery_window` option
+
+    class Paranoiac < ActiveRecord::Base
+        acts_as_paranoid
+        has_many :paranoids, :dependent => :destroy
+    end
+
+    class Paranoid < ActiveRecord::Base
+        belongs_to :paranoic
+
+        # Paranoid objects will be recovered alongside Paranoic objects 
+        # if they were deleted within 1 minute of the Paranoic object
+        acts_as_paranoid :dependent_recovery_window => 1.minute
+    end
+
+or in the recover statement
+
+    Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover(:recovery_window => 30.seconds)
 
 ## Caveats
 
