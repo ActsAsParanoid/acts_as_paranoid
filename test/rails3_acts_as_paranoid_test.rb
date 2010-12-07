@@ -104,9 +104,11 @@ class ValidatesUniquenessTest < ParanoidBase
   end
 
   def test_should_validate_without_deleted
-    ParanoidBoolean.first.destroy
-    assert ParanoidBoolean.new(:name => 'paranoid').valid?
-    ParanoidBoolean.only_deleted.first.destroy!
-    assert ParanoidBoolean.new(:name => 'paranoid').valid?
+    ParanoidBoolean.new(:name => 'paranoid').tap do |record|
+      ParanoidBoolean.first.destroy
+      assert record.valid?
+      ParanoidBoolean.only_deleted.first.destroy!
+      assert record.valid?
+    end
   end
 end
