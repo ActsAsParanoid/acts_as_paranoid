@@ -1,4 +1,5 @@
 require 'active_record'
+require 'validations/uniqueness_without_deleted'
 
 module ActsAsParanoid
   def acts_as_paranoid(options = {})
@@ -66,4 +67,5 @@ module ActsAsParanoid
 end
 
 # Extend ActiveRecord's functionality
-ActiveRecord::Base.extend ActsAsParanoid
+ActiveRecord::Base.send :extend, ActsAsParanoid
+ActiveRecord::Base.send :extend, ParanoidValidations::ClassMethods
