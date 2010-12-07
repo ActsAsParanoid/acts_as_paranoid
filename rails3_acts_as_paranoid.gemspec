@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name              = "gravelpup-rails3_acts_as_paranoid"
-  s.version           = "0.0.2"
+  s.version           = "0.0.3"
   s.platform          = Gem::Platform::RUBY
   s.authors           = ["Gonçalo Silva", "Jonathan Vaught"]
   s.email             = ["jonathan.vaught@gmail.com"]
