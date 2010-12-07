@@ -2,9 +2,13 @@ require 'rubygems'
 require 'test/unit'
 require 'active_support'
 require 'active_record'
+require 'active_model'
 
+$:.unshift "#{File.dirname(__FILE__)}/../"
 $:.unshift "#{File.dirname(__FILE__)}/../lib/"
-require 'rails3_acts_as_paranoid'
+$:.unshift "#{File.dirname(__FILE__)}/../lib/validations"
+
+require 'init'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 
@@ -40,10 +44,12 @@ end
 
 class ParanoidTime < ActiveRecord::Base
   acts_as_paranoid
+  validates_uniqueness_of :name
 end
 
 class ParanoidBoolean < ActiveRecord::Base
   acts_as_paranoid :column_type => "boolean", :column => "is_deleted"
+  validates_uniqueness_of_without_deleted :name
 end
 
 class NotParanoid < ActiveRecord::Base

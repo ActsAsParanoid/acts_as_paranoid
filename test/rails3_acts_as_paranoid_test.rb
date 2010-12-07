@@ -13,8 +13,7 @@ require 'test_helper'
 #Parent.with_deleted.count
 #Son.with_deleted.count
 
-class ParanoidTest < ActiveSupport::TestCase
-
+class ParanoidBase < ActiveSupport::TestCase
   def setup
     setup_db
     
@@ -41,7 +40,9 @@ class ParanoidTest < ActiveSupport::TestCase
       false
     end
   end
+end
 
+class ParanoidTest < ParanoidBase
   def test_fake_removal
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidBoolean.count
@@ -88,5 +89,24 @@ class ParanoidTest < ActiveSupport::TestCase
     assert_equal 2, ParanoidBoolean.count
     ParanoidBoolean.only_deleted.first.recover
     assert_equal 3, ParanoidBoolean.count
+  end
+end
+
+class ValidatesUniquenessTest < ParanoidBase
+  def test_should_include_deleted_by_default
+    ParanoidTime.new(:name => 'paranoid').tap do |record|
+      assert !record.valid?
+      ParanoidTime.first.destroy
+      assert !record.valid?
+      ParanoidTime.only_deleted.first.destroy!
+      assert record.valid?
+    end
+  end
+
+  def test_should_validate_without_deleted
+    ParanoidBoolean.first.destroy
+    assert ParanoidBoolean.new(:name => 'paranoid').valid?
+    ParanoidBoolean.only_deleted.first.destroy!
+    assert ParanoidBoolean.new(:name => 'paranoid').valid?
   end
 end
