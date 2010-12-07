@@ -1,6 +1,5 @@
 require 'active_record'
 
-
 module ActsAsParanoid
   def acts_as_paranoid(options = {})
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
