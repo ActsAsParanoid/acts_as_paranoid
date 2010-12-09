@@ -98,18 +98,18 @@ module ActsAsParanoid
 
       def recover_dependent_associations(window, options)
         self.class.dependent_associations.each do |association|
-          if association.collection?
+          if association.collection? && self.send(association.name).is_paranoid?
             self.send(association.name).unscoped do
               self.send(association.name).deleted_around(paranoid_value, window).each do |object|
                 object.recover(options) if object.respond_to?(:recover)
               end
             end
-          elsif association.macro == :has_one
+          elsif association.macro == :has_one && association.klass.is_paranoid?
             association.klass.unscoped do
               object = association.klass.deleted_around(paranoid_value, window).send('find_by_'+association.primary_key_name, self.id)
               object.recover(options) if object && object.respond_to?(:recover)
             end
-          else
+          elsif association.klass.is_paranoid?
             association.klass.unscoped do
               id = self.send(association.primary_key_name)
               object = association.klass.deleted_around(paranoid_value, window).find_by_id(id)
