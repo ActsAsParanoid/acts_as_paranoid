@@ -95,12 +95,21 @@ class ParanoidTest < ActiveSupport::TestCase
       paranoid_boolean = @paranoid_time_object.paranoid_booleans.create(:name => "boolean_#{i}")
       paranoid_boolean.create_paranoid_has_one_dependant(:name => "has_one_#{i}")
       paranoid_boolean.save
+
+      @paranoid_time_object.not_paranoids.create(:name => "not_paranoid_a#{i}")
+
     end
+
+    @paranoid_time_object.create_not_paranoid(:name => "not_paranoid_belongs_to")
+
+    @paranoid_time_object.create_has_one_not_paranoid(:name => "has_one_not_paranoid")
 
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidHasManyDependant.count
     assert_equal 3, ParanoidBelongsDependant.count
     assert_equal 3, ParanoidHasOneDependant.count
+    assert_equal 5, NotParanoid.count
+    assert_equal 1, HasOneNotParanoid.count
     assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.count
 
     @paranoid_time_object.destroy
@@ -110,6 +119,9 @@ class ParanoidTest < ActiveSupport::TestCase
     assert_equal 0, ParanoidHasManyDependant.count
     assert_equal 0, ParanoidBelongsDependant.count
     assert_equal 0, ParanoidHasOneDependant.count
+    puts NotParanoid.all.inspect
+    assert_equal 1, NotParanoid.count
+    assert_equal 0, HasOneNotParanoid.count
     assert_equal @paranoid_boolean_count, ParanoidBoolean.count
   end
 
@@ -122,6 +134,8 @@ class ParanoidTest < ActiveSupport::TestCase
     assert_equal 3, ParanoidHasManyDependant.count
     assert_equal 3, ParanoidBelongsDependant.count
     assert_equal 3, ParanoidHasOneDependant.count
+    assert_equal 1, NotParanoid.count
+    assert_equal 0, HasOneNotParanoid.count
     assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.count
   end
 
@@ -134,6 +148,8 @@ class ParanoidTest < ActiveSupport::TestCase
     assert_equal 0, ParanoidHasManyDependant.count
     assert_equal 0, ParanoidBelongsDependant.count
     assert_equal 0, ParanoidHasOneDependant.count
+    assert_equal 1, NotParanoid.count
+    assert_equal 0, HasOneNotParanoid.count
     assert_equal @paranoid_boolean_count, ParanoidBoolean.count
 
   end

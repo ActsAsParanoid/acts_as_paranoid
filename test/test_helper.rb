@@ -15,6 +15,8 @@ def setup_db
       t.datetime  :deleted_at
       t.integer   :paranoid_belongs_dependant_id
 
+      t.integer   :not_paranoid_id
+
       t.timestamps
     end
 
@@ -28,6 +30,16 @@ def setup_db
 
     create_table :not_paranoids do |t|
       t.string    :name
+
+      t.integer   :paranoid_time_id
+
+      t.timestamps
+    end
+
+    create_table :has_one_not_paranoids do |t|
+      t.string    :name
+
+      t.integer   :paranoid_time_id
 
       t.timestamps
     end
@@ -69,6 +81,11 @@ class ParanoidTime < ActiveRecord::Base
 
   has_many :paranoid_has_many_dependants, :dependent => :destroy
   has_many :paranoid_booleans, :dependent => :destroy
+  has_many :not_paranoids, :dependent => :destroy
+
+  has_one :has_one_not_paranoid, :dependent => :destroy
+
+  belongs_to :not_paranoid, :dependent => :destroy
 end
 
 class ParanoidBoolean < ActiveRecord::Base
@@ -79,6 +96,9 @@ class ParanoidBoolean < ActiveRecord::Base
 end
 
 class NotParanoid < ActiveRecord::Base
+end
+
+class HasOneNotParanoid < ActiveRecord::Base
 end
 
 class ParanoidHasManyDependant < ActiveRecord::Base
