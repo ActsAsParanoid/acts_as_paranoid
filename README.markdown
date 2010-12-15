@@ -46,6 +46,18 @@ You can also definitively delete a record by calling `destroy` or `delete_all` o
 Recovery is easy. Just invoke `recover` on it, like this:
     Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover
 
+### Validation
+ActiveRecord's built-in uniqueness validation does not account for records deleted by ActsAsParanoid. If you want to check for uniqueness among non-deleted records only, use the macro `validates_as_paranoid` in your model. Then, instead of using `validates_uniqueness_of`, use `validates_uniqueness_of_without_deleted`. This will keep deleted records from counting against the uniqueness check.
+
+    class Paranoiac < ActiveRecord::Base
+      acts_as_paranoid
+      validates_as_paranoid
+      validates_uniqueness_of_without_deleted :name
+    end
+  
+    Paranoiac.create(:name => 'foo').destroy
+    Paranoiac.new(:name => 'foo').valid? #=> true
+  
 ## Caveats
 
 Watch out for these caveats:
