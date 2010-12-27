@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem "gravelpup-rails3_acts_as_paranoid", :path => File.expand_path("..", __FILE__)
+gem "rails3_acts_as_paranoid", :path => File.expand_path("..", __FILE__)
 
 # Development dependencies 
 gem "rake"

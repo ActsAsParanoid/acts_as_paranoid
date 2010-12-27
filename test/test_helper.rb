@@ -49,6 +49,7 @@ end
 
 class ParanoidBoolean < ActiveRecord::Base
   acts_as_paranoid :column_type => "boolean", :column => "is_deleted"
+  validates_as_paranoid
   validates_uniqueness_of_without_deleted :name
 end
 

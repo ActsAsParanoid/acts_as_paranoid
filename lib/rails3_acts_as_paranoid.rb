@@ -64,8 +64,13 @@ module ActsAsParanoid
       end
     EOV
   end
+  
+  def validates_as_paranoid
+    class_eval <<-EOV
+      send :extend, ParanoidValidations::ClassMethods
+    EOV
+  end
 end
 
 # Extend ActiveRecord's functionality
 ActiveRecord::Base.send :extend, ActsAsParanoid
-ActiveRecord::Base.send :extend, ParanoidValidations::ClassMethods
