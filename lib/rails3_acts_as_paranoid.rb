@@ -13,7 +13,7 @@ module ActsAsParanoid
   def acts_as_paranoid(options = {})
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
 
-    configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 5.seconds }
+    configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 5.minutes }
     configuration.update(options) unless options.nil?
 
     type = case configuration[:column_type]
