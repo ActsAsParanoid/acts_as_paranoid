@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name              = "rails3_acts_as_paranoid"
-  s.version           = "0.0.3"
+  s.version           = "0.0.4"
   s.platform          = Gem::Platform::RUBY
   s.authors           = ["Gonçalo Silva"]
   s.email             = ["goncalossilva@gmail.com"]
