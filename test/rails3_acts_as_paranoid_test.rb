@@ -153,6 +153,11 @@ class ParanoidTest < ParanoidBase
     assert_equal @paranoid_boolean_count, ParanoidBoolean.count
 
   end
+
+  def test_deleted?
+    ParanoidTime.first.destroy
+    assert ParanoidTime.with_deleted.first.deleted?
+  end
 end
 
 class ValidatesUniquenessTest < ParanoidBase

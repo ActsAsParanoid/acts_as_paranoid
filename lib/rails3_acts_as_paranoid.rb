@@ -120,6 +120,10 @@ module ActsAsParanoid
         end
       end
 
+      def deleted?
+        !self.#{configuration[:column]}.nil?
+      end
+
       scope :deleted_around, lambda {|value, window|
         if self.class.is_paranoid?
           if self.class.paranoid_column_type == 'time' && ![true, false].include?(value)
