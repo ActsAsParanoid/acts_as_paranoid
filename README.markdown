@@ -91,6 +91,13 @@ ActiveRecord's built-in uniqueness validation does not account for records delet
     Paranoiac.create(:name => 'foo').destroy
     Paranoiac.new(:name => 'foo').valid? #=> true
     
+
+### Status
+Once you retrieve data using `with_deleted` scope you can check deletion status using `deleted?` helper:
+
+    Paranoiac.create(:name => 'foo').destroy
+    Paranoiac.with_deleted.first.deleted? #=> true
+
 ## Caveats
 
 Watch out for these caveats:
