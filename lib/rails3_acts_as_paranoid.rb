@@ -93,7 +93,7 @@ module ActsAsParanoid
         self.class.transaction do
           recover_dependent_associations(options[:recovery_window], options) if options[:recursive]
 
-          self.update_attribute(self.class.paranoid_column, nil)
+          self.update_attributes(self.class.paranoid_column.to_sym => nil)
         end
       end
 
