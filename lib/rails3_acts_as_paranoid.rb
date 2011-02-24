@@ -57,7 +57,7 @@ module ActsAsParanoid
         end
 
         def dependent_associations
-          self.reflect_on_all_associations.select {|a| a.options[:dependent] == :destroy }
+          self.reflect_on_all_associations.select {|a| [:delete_all, :destroy].include?(a.options[:dependent]) }
         end
       end
 
