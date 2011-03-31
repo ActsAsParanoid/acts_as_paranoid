@@ -1,19 +1,10 @@
 require 'test_helper'
 
-#["paranoid", "really paranoid", "extremely paranoid"].each do |name|
-#  Parent.create! :name => name
-#  Son.create! :name => name
-#end
-#Parent.first.destroy
-#Son.delete_all("name = 'paranoid' OR name = 'really paranoid'")
-#Parent.count
-#Son.count
-#Parent.only_deleted.count 
-#Son.only_deleted.count
-#Parent.with_deleted.count
-#Son.with_deleted.count
-
 class ParanoidBase < ActiveSupport::TestCase
+  def assert_empty(collection)
+    assert(collection.respond_to?(:empty?) && collection.empty?)
+  end
+  
   def setup
     setup_db
 
@@ -23,6 +14,7 @@ class ParanoidBase < ActiveSupport::TestCase
     end
 
     NotParanoid.create! :name => "no paranoid goals"
+    ParanoidWithCallback.create! :name => 'paranoid with callbacks'
   end
 
   def teardown
@@ -119,7 +111,7 @@ class ParanoidTest < ParanoidBase
     assert_equal 0, ParanoidHasManyDependant.count
     assert_equal 0, ParanoidBelongsDependant.count
     assert_equal 0, ParanoidHasOneDependant.count
-    puts NotParanoid.all.inspect
+
     assert_equal 1, NotParanoid.count
     assert_equal 0, HasOneNotParanoid.count
     assert_equal @paranoid_boolean_count, ParanoidBoolean.count
@@ -151,13 +143,36 @@ class ParanoidTest < ParanoidBase
     assert_equal 1, NotParanoid.count
     assert_equal 0, HasOneNotParanoid.count
     assert_equal @paranoid_boolean_count, ParanoidBoolean.count
-
   end
 
   def test_deleted?
     ParanoidTime.first.destroy
     assert ParanoidTime.with_deleted.first.deleted?
   end
+  
+  def test_paranoid_destroy_callbacks    
+    @paranoid_with_callback = ParanoidWithCallback.first
+    ParanoidWithCallback.transaction do
+      @paranoid_with_callback.destroy
+    end
+    
+    assert @paranoid_with_callback.called_before_destroy
+    assert @paranoid_with_callback.called_after_destroy
+    assert @paranoid_with_callback.called_after_commit_on_destroy
+  end
+  
+  def test_hard_destroy_callbacks
+    @paranoid_with_callback = ParanoidWithCallback.first
+    
+    ParanoidWithCallback.transaction do
+      @paranoid_with_callback.destroy!
+    end
+    
+    assert @paranoid_with_callback.called_before_destroy
+    assert @paranoid_with_callback.called_after_destroy
+    assert @paranoid_with_callback.called_after_commit_on_destroy
+  end
+  
 end
 
 class ValidatesUniquenessTest < ParanoidBase
