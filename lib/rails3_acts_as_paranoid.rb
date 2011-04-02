@@ -31,9 +31,9 @@ module ActsAsParanoid
       alias_method :destroy!, :destroy
     end
     
-    default_scope where("#{paranoid_column_reference} IS ?", nil)
+    default_scope where("#{paranoid_column_reference} IS ?", nil) # Magic!
     
-    scope :deleted_around, lambda {|value, window|
+    scope :paranoid_deleted_around_time, lambda {|value, window|
       if self.class.respond_to?(:paranoid?) && self.class.paranoid?
         if self.class.paranoid_column_type == 'time' && ![true, false].include?(value)
           self.where("#{self.class.paranoid_column} > ? AND #{self.class.paranoid_column} < ?", (value - window), (value + window))
@@ -83,7 +83,6 @@ module ActsAsParanoid
         when "boolean" then true
       end
     end
-  
   end
   
   module InstanceMethods
@@ -95,7 +94,7 @@ module ActsAsParanoid
     def destroy!
       with_transaction_returning_status do
         run_callbacks :destroy do
-          self.class.delete_all!(:id => self)
+          self.class.delete_all!(:id => self.id)
           self.paranoid_value = self.class.delete_now_value
           freeze
         end
@@ -105,7 +104,7 @@ module ActsAsParanoid
     def destroy
       with_transaction_returning_status do
         run_callbacks :destroy do
-          if paranoid_value == nil
+          if paranoid_value.nil?
             self.class.delete_all(:id => self.id)
           else
             self.class.delete_all!(:id => self.id)
@@ -114,8 +113,8 @@ module ActsAsParanoid
         end
       end
     end
-
-    def recover(options = {})
+    
+    def recover(options={})
       options = {
                   :recursive => self.class.paranoid_configuration[:recover_dependent_associations],
                   :recovery_window => self.class.paranoid_configuration[:dependent_recovery_window]
@@ -132,19 +131,19 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |association|
         if association.collection? && self.send(association.name).paranoid?
           self.send(association.name).unscoped do
-            self.send(association.name).deleted_around(paranoid_value, window).each do |object|
+            self.send(association.name).paranoid_deleted_around_time(paranoid_value, window).each do |object|
               object.recover(options) if object.respond_to?(:recover)
             end
           end
         elsif association.macro == :has_one && association.klass.paranoid?
           association.klass.unscoped do
-            object = association.klass.deleted_around(paranoid_value, window).send('find_by_'+association.primary_key_name, self.id)
+            object = association.klass.paranoid_deleted_around_time(paranoid_value, window).send('find_by_'+association.primary_key_name, self.id)
             object.recover(options) if object && object.respond_to?(:recover)
           end
         elsif association.klass.paranoid?
           association.klass.unscoped do
             id = self.send(association.primary_key_name)
-            object = association.klass.deleted_around(paranoid_value, window).find_by_id(id)
+            object = association.klass.paranoid_deleted_around_time(paranoid_value, window).find_by_id(id)
             object.recover(options) if object && object.respond_to?(:recover)
           end
         end
