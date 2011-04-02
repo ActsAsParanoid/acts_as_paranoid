@@ -18,7 +18,6 @@ def setup_db
       t.string    :name
       t.datetime  :deleted_at
       t.integer   :paranoid_belongs_dependant_id
-
       t.integer   :not_paranoid_id
 
       t.timestamps
@@ -34,15 +33,13 @@ def setup_db
 
     create_table :not_paranoids do |t|
       t.string    :name
-
       t.integer   :paranoid_time_id
-
+      
       t.timestamps
     end
 
     create_table :has_one_not_paranoids do |t|
       t.string    :name
-
       t.integer   :paranoid_time_id
 
       t.timestamps
@@ -75,6 +72,29 @@ def setup_db
     create_table :paranoid_with_callbacks do |t|
       t.string    :name
       t.datetime  :deleted_at
+      
+      t.timestamps
+    end
+
+    create_table :paranoid_destroy_companies do |t|
+      t.string :name
+      t.datetime :deleted_at
+      
+      t.timestamps
+    end
+    
+    create_table :paranoid_delete_companies do |t|
+      t.string :name
+      t.datetime :deleted_at
+      
+      t.timestamps
+    end
+    
+    create_table :paranoid_products do |t|
+      t.integer :paranoid_destroy_company_id
+      t.integer :paranoid_delete_company_id
+      t.string :name
+      t.datetime :deleted_at
       
       t.timestamps
     end
@@ -160,5 +180,23 @@ class ParanoidWithCallback < ActiveRecord::Base
   def call_me_after_commit_on_destroy
     @called_after_commit_on_destroy = true
   end
-  
+end
+
+class ParanoidDestroyCompany < ActiveRecord::Base
+  acts_as_paranoid
+  validates :name, :presence => true
+  has_many :paranoid_products, :dependent => :destroy
+end
+
+class ParanoidDeleteCompany < ActiveRecord::Base
+  acts_as_paranoid
+  validates :name, :presence => true
+  has_many :paranoid_products, :dependent => :delete_all
+end
+
+class ParanoidProduct < ActiveRecord::Base
+  acts_as_paranoid
+  belongs_to :paranoid_destroy_company
+  belongs_to :paranoid_delete_company
+  validates_presence_of :name
 end
