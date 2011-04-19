@@ -88,14 +88,14 @@ module ActsAsParanoid
   module InstanceMethods
     
     def paranoid_value
-      self.send(self.class.paranoid_column)
+      self.send(self.class.base_class.paranoid_column)
     end
   
     def destroy!
       with_transaction_returning_status do
         run_callbacks :destroy do
-          self.class.delete_all!(:id => self.id)
-          self.paranoid_value = self.class.delete_now_value
+          self.class.base_class.delete_all!(:id => self.id)
+          self.paranoid_value = self.class.base_class.delete_now_value
           freeze
         end
       end
@@ -105,25 +105,25 @@ module ActsAsParanoid
       with_transaction_returning_status do
         run_callbacks :destroy do
           if paranoid_value.nil?
-            self.class.delete_all(:id => self.id)
+            self.class.base_class.delete_all(:id => self.id)
           else
-            self.class.delete_all!(:id => self.id)
+            self.class.base_class.delete_all!(:id => self.id)
           end
-          self.paranoid_value = self.class.delete_now_value
+          self.paranoid_value = self.class.base_class.delete_now_value
         end
       end
     end
     
     def recover(options={})
       options = {
-                  :recursive => self.class.paranoid_configuration[:recover_dependent_associations],
-                  :recovery_window => self.class.paranoid_configuration[:dependent_recovery_window]
+                  :recursive => self.class.base_class.paranoid_configuration[:recover_dependent_associations],
+                  :recovery_window => self.class.base_class.paranoid_configuration[:dependent_recovery_window]
                 }.merge(options)
 
       self.class.transaction do
         recover_dependent_associations(options[:recovery_window], options) if options[:recursive]
 
-        self.update_attributes(self.class.paranoid_column.to_sym => nil)
+        self.update_attributes(self.class.base_class.paranoid_column.to_sym => nil)
       end
     end
 
@@ -157,7 +157,7 @@ module ActsAsParanoid
     
   private
     def paranoid_value=(value)
-      self.send("#{self.class.paranoid_column}=", value)
+      self.send("#{self.class.base_class.paranoid_column}=", value)
     end
     
   end
