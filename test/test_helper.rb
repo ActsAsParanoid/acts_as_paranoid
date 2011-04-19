@@ -98,6 +98,21 @@ def setup_db
       
       t.timestamps
     end
+    
+    create_table :super_paranoids do |t|
+      t.string :type
+      t.references :has_many_inherited_super_paranoidz
+      t.datetime :deleted_at
+      
+      t.timestamps
+    end
+    
+    create_table :has_many_inherited_super_paranoidzs do |t|
+      t.datetime :deleted_at
+      t.references :super_paranoidz
+      
+      t.timestamps
+    end
   end
 end
 
@@ -199,4 +214,16 @@ class ParanoidProduct < ActiveRecord::Base
   belongs_to :paranoid_destroy_company
   belongs_to :paranoid_delete_company
   validates_presence_of :name
+end
+
+class SuperParanoid < ActiveRecord::Base
+  acts_as_paranoid
+  belongs_to :has_many_inherited_super_paranoidz
+end
+
+class HasManyInheritedSuperParanoidz < ActiveRecord::Base
+  has_many :super_paranoidz, :class_name => "InheritedParanoidTime", :dependent => :destroy
+end
+
+class InheritedParanoidTime < SuperParanoid
 end

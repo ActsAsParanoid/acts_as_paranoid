@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ParanoidBase < ActiveSupport::TestCase
+class ParanoidBaseTest < ActiveSupport::TestCase
   def assert_empty(collection)
     assert(collection.respond_to?(:empty?) && collection.empty?)
   end
@@ -22,7 +22,7 @@ class ParanoidBase < ActiveSupport::TestCase
   end
 end
 
-class ParanoidTest < ParanoidBase
+class ParanoidTest < ParanoidBaseTest
   def test_fake_removal
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidBoolean.count
@@ -174,7 +174,7 @@ class ParanoidTest < ParanoidBase
   end
 end
 
-class ValidatesUniquenessTest < ParanoidBase
+class ValidatesUniquenessTest < ParanoidBaseTest
   def test_should_include_deleted_by_default
     ParanoidTime.new(:name => 'paranoid').tap do |record|
       assert !record.valid?
@@ -195,7 +195,7 @@ class ValidatesUniquenessTest < ParanoidBase
   end
 end
 
-class AssociationsTest < ParanoidBase  
+class AssociationsTest < ParanoidBaseTest  
   def test_removal_with_associations
     # This test shows that the current implementation doesn't handle
     # assciation deletion correctly (when hard deleting via parent-object)
@@ -225,5 +225,14 @@ class AssociationsTest < ParanoidBase
     assert_equal 0, ParanoidProduct.count
     assert_equal 0, ParanoidDeleteCompany.with_deleted.count
     assert_equal 0, ParanoidProduct.with_deleted.count
+  end
+end
+
+class InheritanceTest < ParanoidBaseTest
+  def test_destroy_dependents_with_inheritance
+    has_many_inherited_super_paranoidz = HasManyInheritedSuperParanoidz.new
+    has_many_inherited_super_paranoidz.save
+    has_many_inherited_super_paranoidz.super_paranoidz.create
+    has_many_inherited_super_paranoidz.destroy
   end
 end
