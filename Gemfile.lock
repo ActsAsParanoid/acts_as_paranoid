@@ -1,22 +1,22 @@
 PATH
   remote: .
   specs:
-    rails3_acts_as_paranoid (0.0.5)
+    rails3_acts_as_paranoid (0.0.6)
       activerecord (>= 3.0)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    activemodel (3.0.5)
-      activesupport (= 3.0.5)
+    activemodel (3.0.7)
+      activesupport (= 3.0.7)
       builder (~> 2.1.2)
-      i18n (~> 0.4)
-    activerecord (3.0.5)
-      activemodel (= 3.0.5)
-      activesupport (= 3.0.5)
+      i18n (~> 0.5.0)
+    activerecord (3.0.7)
+      activemodel (= 3.0.7)
+      activesupport (= 3.0.7)
       arel (~> 2.0.2)
       tzinfo (~> 0.3.23)
-    activesupport (3.0.5)
+    activesupport (3.0.7)
     arel (2.0.9)
     builder (2.1.2)
     i18n (0.5.0)
