@@ -108,8 +108,8 @@ def setup_db
     end
     
     create_table :has_many_inherited_super_paranoidzs do |t|
-      t.datetime :deleted_at
       t.references :super_paranoidz
+      t.datetime :deleted_at
       
       t.timestamps
     end
@@ -222,8 +222,9 @@ class SuperParanoid < ActiveRecord::Base
 end
 
 class HasManyInheritedSuperParanoidz < ActiveRecord::Base
-  has_many :super_paranoidz, :class_name => "InheritedParanoidTime", :dependent => :destroy
+  has_many :super_paranoidz, :class_name => "InheritedParanoid", :dependent => :destroy
 end
 
-class InheritedParanoidTime < SuperParanoid
+class InheritedParanoid < SuperParanoid
+  acts_as_paranoid
 end
