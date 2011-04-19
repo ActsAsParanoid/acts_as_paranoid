@@ -112,6 +112,6 @@ Watch out for these caveats:
 * To [cheerfulstoic](https://github.com/cheerfulstoic) for adding recursive recovery
 * To [Jonathan Vaught](https://github.com/gravelpup) for adding paranoid validations
 * To [Geoffrey Hichborn](https://github.com/phene) for improving the overral code quality and adding support for after_commit
-* To [omricohen](https://github.com/omricohen) for adding support for STI-based associations (with :dependent)
+* To [flah00](https://github.com/flah00) for adding support for STI-based associations (with :dependent)
 
 Copyright © 2010 Gonçalo Silva, released under the MIT license
