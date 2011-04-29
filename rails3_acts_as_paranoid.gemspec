@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.description       = "Active Record (>=3.0) plugin which allows you to hide and restore records without actually deleting them. Check its GitHub page for more in-depth information."
   s.rubyforge_project = s.name
 
-  s.required_rubygems_version = ">= 1.3.7"
+  s.required_rubygems_version = ">= 1.3.6"
   
   s.add_dependency "activerecord", ">= 3.0"
 
