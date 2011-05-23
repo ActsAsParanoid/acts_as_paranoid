@@ -1,4 +1,4 @@
-# coding: UTF-8
+# encoding: UTF-8
 
 Gem::Specification.new do |s|
   s.name              = "rails3_acts_as_paranoid"
