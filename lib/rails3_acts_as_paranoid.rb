@@ -14,15 +14,13 @@ module ActsAsParanoid
   def acts_as_paranoid(options = {})
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
     
-    class << self
-      attr_accessor :paranoid_configuration, :paranoid_column_reference
-    end
-     
-    @paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 5.minutes }.merge(options)
+    class_attribute :paranoid_configuration, :paranoid_column_reference
+    
+    self.paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 5.minutes }.merge(options)
 
     raise ArgumentError, "'time' or 'boolean' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean'].include? paranoid_configuration[:column_type]
 
-    @paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
+    self.paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
     
     return if paranoid?
 
