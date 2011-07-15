@@ -46,7 +46,19 @@ module ActsAsParanoid
   end
 
   module ClassMethods
-    
+
+    def self.extended(base)
+      base.define_callbacks :recover
+    end
+
+    def before_recover(method)
+      set_callback :recover, :before, method
+    end
+
+    def after_recover(method)
+      set_callback :recover, :after, method
+    end
+
     def with_deleted
       self.unscoped.reload
     end
@@ -119,9 +131,11 @@ module ActsAsParanoid
                 }.merge(options)
 
       self.class.transaction do
-        recover_dependent_associations(options[:recovery_window], options) if options[:recursive]
+        run_callbacks :recover do
+          recover_dependent_associations(options[:recovery_window], options) if options[:recursive]
 
-        self.update_attributes(self.class.paranoid_column.to_sym => nil)
+          self.update_attributes(self.class.paranoid_column.to_sym => nil)
+        end
       end
     end
 
