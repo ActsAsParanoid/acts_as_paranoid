@@ -173,11 +173,15 @@ class ParanoidWithCallback < ActiveRecord::Base
   acts_as_paranoid
   
   attr_accessor :called_before_destroy, :called_after_destroy, :called_after_commit_on_destroy
+  attr_accessor :called_before_recover, :called_after_recover
   
   before_destroy :call_me_before_destroy
   after_destroy :call_me_after_destroy
   
   after_commit :call_me_after_commit_on_destroy, :on => :destroy
+
+  before_recover :call_me_before_recover
+  after_recover :call_me_after_recover
   
   def initialize(*attrs)
     @called_before_destroy = @called_after_destroy = @called_after_commit_on_destroy = false
@@ -194,6 +198,14 @@ class ParanoidWithCallback < ActiveRecord::Base
   
   def call_me_after_commit_on_destroy
     @called_after_commit_on_destroy = true
+  end
+
+  def call_me_before_recover
+    @called_before_recover = true
+  end
+
+  def call_me_after_recover
+    @called_after_recover = true
   end
 end
 

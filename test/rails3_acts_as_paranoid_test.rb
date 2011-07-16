@@ -172,6 +172,22 @@ class ParanoidTest < ParanoidBaseTest
     assert @paranoid_with_callback.called_after_destroy
     assert @paranoid_with_callback.called_after_commit_on_destroy
   end
+
+  def test_recovery_callbacks
+    @paranoid_with_callback = ParanoidWithCallback.first
+
+    ParanoidWithCallback.transaction do
+      @paranoid_with_callback.destroy
+
+      assert_nil @paranoid_with_callback.called_before_recover
+      assert_nil @paranoid_with_callback.called_after_recover
+
+      @paranoid_with_callback.recover
+    end
+
+      assert @paranoid_with_callback.called_before_recover
+      assert @paranoid_with_callback.called_after_recover    
+  end
 end
 
 class ValidatesUniquenessTest < ParanoidBaseTest
