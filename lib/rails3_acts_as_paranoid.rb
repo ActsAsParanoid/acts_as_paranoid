@@ -178,3 +178,6 @@ end
 
 # Extend ActiveRecord's functionality
 ActiveRecord::Base.send :extend, ActsAsParanoid
+
+# Push the recover callback onto the activerecord callback list
+ActiveRecord::Callbacks::CALLBACKS.push(:before_recover, :after_recover)
