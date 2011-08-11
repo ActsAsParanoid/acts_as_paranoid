@@ -120,6 +120,7 @@ module ActsAsParanoid
             self.class.delete_all!(:id => self.id)
           end
           self.paranoid_value = self.class.delete_now_value
+          freeze
         end
       end
     end
