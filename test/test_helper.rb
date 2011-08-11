@@ -240,3 +240,24 @@ end
 class InheritedParanoid < SuperParanoid
   acts_as_paranoid
 end
+
+class ParanoidObserver < ActiveRecord::Observer
+  observe :paranoid_with_callback
+
+  attr_accessor :called_before_recover, :called_after_recover
+
+  def before_recover(paranoid_object)
+    self.called_before_recover = paranoid_object
+  end
+
+  def after_recover(paranoid_object)
+    self.called_after_recover = paranoid_object
+  end
+
+  def reset
+    self.called_before_recover = nil
+    self.called_after_recover = nil
+  end
+end
+
+ParanoidWithCallback.add_observer(ParanoidObserver.instance)
