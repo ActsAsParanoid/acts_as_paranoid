@@ -31,10 +31,15 @@ def setup_db
       t.timestamps
     end
 
+    create_table :paranoid_strings do |t|
+      t.string    :name
+      t.string    :deleted
+    end
+
     create_table :not_paranoids do |t|
       t.string    :name
       t.integer   :paranoid_time_id
-      
+
       t.timestamps
     end
 
@@ -142,6 +147,10 @@ class ParanoidBoolean < ActiveRecord::Base
 
   belongs_to :paranoid_time
   has_one :paranoid_has_one_dependant, :dependent => :destroy
+end
+
+class ParanoidString < ActiveRecord::Base
+  acts_as_paranoid :column_type => "string", :column => "deleted", :deleted_value => "dead"
 end
 
 class NotParanoid < ActiveRecord::Base

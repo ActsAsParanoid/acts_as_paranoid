@@ -16,9 +16,11 @@ module ActsAsParanoid
     
     class_attribute :paranoid_configuration, :paranoid_column_reference
     
-    self.paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 5.minutes }.merge(options)
+    self.paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 2.minutes }
+    self.paranoid_configuration.merge!({ :deleted_value => "deleted" }) if options[:column_type] == "string"
+    self.paranoid_configuration.merge!(options) # user options
 
-    raise ArgumentError, "'time' or 'boolean' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean'].include? paranoid_configuration[:column_type]
+    raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean', 'string'].include? paranoid_configuration[:column_type]
 
     self.paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
     
@@ -29,7 +31,8 @@ module ActsAsParanoid
       alias_method :destroy!, :destroy
     end
     
-    default_scope where("#{paranoid_column_reference} IS ?", nil) # Magic!
+    # Magic!
+    default_scope where("#{paranoid_column_reference} IS ?", nil)
     
     scope :paranoid_deleted_around_time, lambda {|value, window|
       if self.class.respond_to?(:paranoid?) && self.class.paranoid?
@@ -38,7 +41,7 @@ module ActsAsParanoid
         else
           self.only_deleted
         end
-      end
+      end if paranoid_configuration[:column_type] == 'time'
     }
     
     include InstanceMethods
@@ -46,7 +49,6 @@ module ActsAsParanoid
   end
 
   module ClassMethods
-
     def self.extended(base)
       base.define_callbacks :recover
     end
@@ -86,11 +88,12 @@ module ActsAsParanoid
     def dependent_associations
       self.reflect_on_all_associations.select {|a| [:delete_all, :destroy].include?(a.options[:dependent]) }
     end
-  
+
     def delete_now_value
       case paranoid_configuration[:column_type]
         when "time" then Time.now
         when "boolean" then true
+        when "string" then paranoid_configuration[:deleted_value]
       end
     end
   end

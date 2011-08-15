@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rails3_acts_as_paranoid (0.0.6)
+    rails3_acts_as_paranoid (0.0.8)
       activerecord (>= 3.0)
 
 GEM
@@ -17,14 +17,14 @@ GEM
       arel (~> 2.0.2)
       tzinfo (~> 0.3.23)
     activesupport (3.0.7)
-    arel (2.0.9)
+    arel (2.0.10)
     builder (2.1.2)
     i18n (0.5.0)
     rake (0.8.7)
     sqlite3 (1.3.3)
     sqlite3-ruby (1.3.3)
       sqlite3 (>= 1.3.3)
-    tzinfo (0.3.26)
+    tzinfo (0.3.29)
 
 PLATFORMS
   ruby

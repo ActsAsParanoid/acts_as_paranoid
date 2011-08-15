@@ -13,8 +13,9 @@ class ParanoidBaseTest < ActiveSupport::TestCase
       ParanoidBoolean.create! :name => name
     end
 
+    ParanoidString.create! :name => "strings can be paranoid"
     NotParanoid.create! :name => "no paranoid goals"
-    ParanoidWithCallback.create! :name => 'paranoid with callbacks'
+    ParanoidWithCallback.create! :name => "paranoid with callbacks"
 
     ParanoidObserver.instance.reset
   end
@@ -28,26 +29,35 @@ class ParanoidTest < ParanoidBaseTest
   def test_fake_removal
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidBoolean.count
+    assert_equal 1, ParanoidString.count
 
     ParanoidTime.first.destroy
     ParanoidBoolean.delete_all("name = 'paranoid' OR name = 'really paranoid'")
+    ParanoidString.first.destroy
     assert_equal 2, ParanoidTime.count
     assert_equal 1, ParanoidBoolean.count
+    assert_equal 0, ParanoidString.count
     assert_equal 1, ParanoidTime.only_deleted.count 
     assert_equal 2, ParanoidBoolean.only_deleted.count
+    assert_equal 1, ParanoidString.only_deleted.count
     assert_equal 3, ParanoidTime.with_deleted.count
     assert_equal 3, ParanoidBoolean.with_deleted.count
+    assert_equal 1, ParanoidString.with_deleted.count
   end
 
   def test_real_removal
     ParanoidTime.first.destroy!
     ParanoidBoolean.delete_all!("name = 'extremely paranoid' OR name = 'really paranoid'")
+    ParanoidString.first.destroy!
     assert_equal 2, ParanoidTime.count
     assert_equal 1, ParanoidBoolean.count
+    assert_equal 0, ParanoidString.count
     assert_equal 2, ParanoidTime.with_deleted.count
     assert_equal 1, ParanoidBoolean.with_deleted.count
-    assert_equal 0, ParanoidBoolean.only_deleted.count
+    assert_equal 0, ParanoidString.with_deleted.count
     assert_equal 0, ParanoidTime.only_deleted.count
+    assert_equal 0, ParanoidBoolean.only_deleted.count
+    assert_equal 0, ParanoidString.only_deleted.count
 
     ParanoidTime.first.destroy
     ParanoidTime.only_deleted.first.destroy
@@ -55,7 +65,7 @@ class ParanoidTest < ParanoidBaseTest
 
     ParanoidTime.delete_all!
     assert_empty ParanoidTime.all
-    assert_empty ParanoidTime.with_deleted.all    
+    assert_empty ParanoidTime.with_deleted.all
   end
 
   def test_paranoid_scope
@@ -71,6 +81,12 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 2, ParanoidBoolean.count
     ParanoidBoolean.only_deleted.first.recover
     assert_equal 3, ParanoidBoolean.count
+
+    assert_equal 1, ParanoidString.count
+    ParanoidString.first.destroy
+    assert_equal 0, ParanoidString.count
+    ParanoidString.with_deleted.first.recover
+    assert_equal 1, ParanoidString.count
   end
 
   def setup_recursive_recovery_tests
@@ -150,6 +166,9 @@ class ParanoidTest < ParanoidBaseTest
   def test_deleted?
     ParanoidTime.first.destroy
     assert ParanoidTime.with_deleted.first.deleted?
+
+    ParanoidString.first.destroy
+    assert ParanoidString.with_deleted.first.deleted?
   end
   
   def test_paranoid_destroy_callbacks    
