@@ -23,7 +23,9 @@ You can also specify the name of the column to store it's *deletion* and the typ
 -   :column => 'deleted_at'
 -   :type => 'time'
 
-The values shown are the defaults. While *column* can be anything (as long as it exists in your database), *type* is restricted to "boolean" or "time".
+The values shown are the defaults. While *column* can be anything (as long as it exists in your database), *type* is restricted to "boolean", "time" or "string".
+
+If your column type is a "string", you can also specify which value to use when marking an object as deleted by passing `:deleted_value` (default is "deleted").
 
 ### Filtering
 
