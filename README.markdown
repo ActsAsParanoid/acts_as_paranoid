@@ -115,5 +115,7 @@ Watch out for these caveats:
 * To [Jonathan Vaught](https://github.com/gravelpup) for adding paranoid validations
 * To [Geoffrey Hichborn](https://github.com/phene) for improving the overral code quality and adding support for after_commit
 * To [flah00](https://github.com/flah00) for adding support for STI-based associations (with :dependent)
+* To [vikramdhillon](https://github.com/vikramdhillon) for the idea and
+  initial implementation of support for string column type
 
 Copyright © 2010 Gonçalo Silva, released under the MIT license
