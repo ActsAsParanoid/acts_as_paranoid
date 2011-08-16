@@ -250,7 +250,7 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal 1, ParanoidProduct.count
     assert_equal 1, ParanoidDestroyCompany.with_deleted.count
     assert_equal 2, ParanoidProduct.with_deleted.count
-	
+  
     ParanoidDestroyCompany.with_deleted.first.destroy!
     assert_equal 0, ParanoidDestroyCompany.count
     assert_equal 1, ParanoidProduct.count

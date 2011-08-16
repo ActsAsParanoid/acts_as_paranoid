@@ -62,7 +62,7 @@ module ActsAsParanoid
     end
 
     def with_deleted
-      self.unscoped.reload
+      self.unscoped
     end
 
     def only_deleted
@@ -86,7 +86,7 @@ module ActsAsParanoid
     end
 
     def dependent_associations
-      self.reflect_on_all_associations.select {|a| [:delete_all, :destroy].include?(a.options[:dependent]) }
+      self.reflect_on_all_associations.select {|a| [:destroy, :delete_all].include?(a.options[:dependent]) }
     end
 
     def delete_now_value
@@ -103,10 +103,11 @@ module ActsAsParanoid
     def paranoid_value
       self.send(self.class.paranoid_column)
     end
-  
+    
     def destroy!
       with_transaction_returning_status do
         run_callbacks :destroy do
+          act_on_dependent_destroy_associations
           self.class.delete_all!(:id => self.id)
           self.paranoid_value = self.class.delete_now_value
           freeze
@@ -115,15 +116,15 @@ module ActsAsParanoid
     end
 
     def destroy
-      with_transaction_returning_status do
-        run_callbacks :destroy do
-          if paranoid_value.nil?
+      if paranoid_value.nil?
+        with_transaction_returning_status do
+          run_callbacks :destroy do
             self.class.delete_all(:id => self.id)
-          else
-            self.class.delete_all!(:id => self.id)
+            self.paranoid_value = self.class.delete_now_value
           end
-          self.paranoid_value = self.class.delete_now_value
         end
+      else
+        destroy!
       end
     end
     
@@ -160,6 +161,16 @@ module ActsAsParanoid
             id = self.send(association.primary_key_name)
             object = association.klass.paranoid_deleted_around_time(paranoid_value, window).find_by_id(id)
             object.recover(options) if object && object.respond_to?(:recover)
+          end
+        end
+      end
+    end
+    
+    def act_on_dependent_destroy_associations
+      self.class.dependent_associations.each do |association|
+        if association.collection? && self.send(association.name).paranoid?
+          association.klass.with_deleted.instance_eval("find_all_by_#{association.primary_key_name}(#{self.id})").each do |object|
+            object.destroy!
           end
         end
       end
