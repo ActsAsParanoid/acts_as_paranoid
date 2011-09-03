@@ -121,6 +121,7 @@ module ActsAsParanoid
           run_callbacks :destroy do
             self.class.delete_all(:id => self.id)
             self.paranoid_value = self.class.delete_now_value
+            self
           end
         end
       else
