@@ -2,9 +2,9 @@
 
 Gem::Specification.new do |s|
   s.name              = "rails3_acts_as_paranoid"
-  s.version           = "0.1"
+  s.version           = "0.1.1"
   s.platform          = Gem::Platform::RUBY
-  s.authors           = ["Gonçalo Silva"]
+  s.authors           = ["Goncalo Silva"]
   s.email             = ["goncalossilva@gmail.com"]
   s.homepage          = "http://github.com/goncalossilva/rails3_acts_as_paranoid"
   s.summary           = "Active Record (>=3.0) plugin which allows you to hide and restore records without actually deleting them."
