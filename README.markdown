@@ -106,7 +106,6 @@ Watch out for these caveats:
 
 -   You cannot use default\_scope in your model. It is possible to work around this caveat, but it's not pretty. Have a look at [this article](http://joshuaclayton.github.com/code/default_scope/activerecord/is_paranoid/multiple-default-scopes.html) if you really need to have your own default scope.
 -   You cannot use scopes named `with_deleted`, `only_deleted` and `paranoid_deleted_around_time`
--   The `:dependent` option in associations is unavailable if your dependent model is paranoid
 -   `unscoped` will return all records, deleted or not
 
 ## Acknowledgements

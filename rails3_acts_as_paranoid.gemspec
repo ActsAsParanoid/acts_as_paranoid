@@ -1,5 +1,3 @@
-# -*- encoding: utf-8 -*-
-
 Gem::Specification.new do |s|
   s.name              = "rails3_acts_as_paranoid"
   s.version           = "0.1.1"
