@@ -154,12 +154,12 @@ module ActsAsParanoid
           end
         elsif association.macro == :has_one && association.klass.paranoid?
           association.klass.unscoped do
-            object = association.klass.paranoid_deleted_around_time(paranoid_value, window).send('find_by_'+association.primary_key_name, self.id)
+            object = association.klass.paranoid_deleted_around_time(paranoid_value, window).send('find_by_'+association.foreign_key, self.id)
             object.recover(options) if object && object.respond_to?(:recover)
           end
         elsif association.klass.paranoid?
           association.klass.unscoped do
-            id = self.send(association.primary_key_name)
+            id = self.send(association.foreign_key)
             object = association.klass.paranoid_deleted_around_time(paranoid_value, window).find_by_id(id)
             object.recover(options) if object && object.respond_to?(:recover)
           end
@@ -170,7 +170,7 @@ module ActsAsParanoid
     def act_on_dependent_destroy_associations
       self.class.dependent_associations.each do |association|
         if association.collection? && self.send(association.name).paranoid?
-          association.klass.with_deleted.instance_eval("find_all_by_#{association.primary_key_name}(#{self.id})").each do |object|
+          association.klass.with_deleted.instance_eval("find_all_by_#{association.foreign_key}(#{self.id})").each do |object|
             object.destroy!
           end
         end
