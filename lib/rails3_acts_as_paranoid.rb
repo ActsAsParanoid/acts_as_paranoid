@@ -174,7 +174,7 @@ module ActsAsParanoid
     def act_on_dependent_destroy_associations
       self.class.dependent_associations.each do |association|
         if association.collection? && self.send(association.name).paranoid?
-          association.klass.with_deleted.instance_eval("find_all_by_#{association.foreign_key}(#{self.id})").each do |object|
+          association.klass.with_deleted.instance_eval("find_all_by_#{association.foreign_key}(#{self.id.to_json})").each do |object|
             object.destroy!
           end
         end
