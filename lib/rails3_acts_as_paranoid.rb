@@ -133,6 +133,27 @@ module ActsAsParanoid
       end
     end
     
+    def delete!
+      with_transaction_returning_status do
+        act_on_dependent_destroy_associations
+        self.class.delete_all!(self.class.primary_key.to_sym => self.id)
+        self.paranoid_value = self.class.delete_now_value
+        freeze
+      end
+    end
+    
+    def delete
+      if paranoid_value.nil?
+        with_transaction_returning_status do
+          self.class.delete_all(self.class.primary_key.to_sym => self.id)
+          self.paranoid_value = self.class.delete_now_value
+          self
+        end
+      else
+        delete!
+      end
+    end
+    
     def recover(options={})
       options = {
                   :recursive => self.class.paranoid_configuration[:recover_dependent_associations],

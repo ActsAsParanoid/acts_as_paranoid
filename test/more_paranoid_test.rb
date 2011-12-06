@@ -1,6 +1,13 @@
 require 'test_helper'
 
 class MoreParanoidTest < ParanoidBaseTest
+  test "instance delete is paranoid" do
+    model = ParanoidBelongsDependant.create
+    model.delete
+    
+    assert_paranoid_deletion(model)
+  end
+  
   test "instance destroy is paranoid" do
     model = ParanoidBelongsDependant.create
     model.destroy
