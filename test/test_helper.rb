@@ -118,6 +118,24 @@ def setup_db
       
       t.timestamps
     end
+    
+    create_table :paranoid_many_many_parent_lefts do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :paranoid_many_many_parent_rights do |t|
+      t.string :name
+      t.timestamps
+    end
+    
+    create_table :paranoid_many_many_children do |t|
+      t.integer :paranoid_many_many_parent_left_id
+      t.integer :paranoid_many_many_parent_right_id
+      t.datetime :deleted_at
+      t.timestamps
+    end
+    
   end
 end
 
@@ -268,6 +286,24 @@ class ParanoidObserver < ActiveRecord::Observer
     self.called_after_recover = nil
   end
 end
+
+
+class ParanoidManyManyParentLeft < ActiveRecord::Base
+  has_many :paranoid_many_many_children
+  has_many :paranoid_many_many_parent_rights, :through => :paranoid_many_many_children
+end
+
+class ParanoidManyManyParentRight < ActiveRecord::Base
+  has_many :paranoid_many_many_children
+  has_many :paranoid_many_many_parent_lefts, :through => :paranoid_many_many_children
+end
+
+class ParanoidManyManyChild < ActiveRecord::Base
+  acts_as_paranoid
+  belongs_to :paranoid_many_many_parent_left
+  belongs_to :paranoid_many_many_parent_right
+end
+
 
 ParanoidWithCallback.add_observer(ParanoidObserver.instance)
 
