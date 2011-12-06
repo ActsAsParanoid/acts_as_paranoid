@@ -1,30 +1,5 @@
 require 'test_helper'
 
-class ParanoidBaseTest < ActiveSupport::TestCase
-  def assert_empty(collection)
-    assert(collection.respond_to?(:empty?) && collection.empty?)
-  end
-  
-  def setup
-    setup_db
-
-    ["paranoid", "really paranoid", "extremely paranoid"].each do |name|
-      ParanoidTime.create! :name => name
-      ParanoidBoolean.create! :name => name
-    end
-
-    ParanoidString.create! :name => "strings can be paranoid"
-    NotParanoid.create! :name => "no paranoid goals"
-    ParanoidWithCallback.create! :name => "paranoid with callbacks"
-
-    ParanoidObserver.instance.reset
-  end
-
-  def teardown
-    teardown_db
-  end
-end
-
 class ParanoidTest < ParanoidBaseTest
   def test_fake_removal
     assert_equal 3, ParanoidTime.count
