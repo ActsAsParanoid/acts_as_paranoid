@@ -72,6 +72,18 @@ module ActsAsParanoid
     def only_deleted
       self.unscoped.where("#{paranoid_column_reference} IS NOT ?", nil)
     end
+    
+    def deletion_conditions(id_or_array)
+      ["id in (?)", [id_or_array].flatten]
+    end
+    
+    def delete!(id_or_array)
+      delete_all!(deletion_conditions(id_or_array))
+    end
+    
+    def delete(id_or_array)
+      delete_all(deletion_conditions(id_or_array))
+    end
 
     def delete_all!(conditions = nil)
       self.unscoped.delete_all!(conditions)
