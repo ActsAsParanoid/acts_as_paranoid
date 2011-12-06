@@ -1,6 +1,15 @@
 require 'test_helper'
 
 class MoreParanoidTest < ParanoidBaseTest
+  test "delete by multiple id is paranoid" do
+    model_a = ParanoidBelongsDependant.create
+    model_b = ParanoidBelongsDependant.create
+    ParanoidBelongsDependant.delete([model_a.id, model_b.id])
+    
+    assert_paranoid_deletion(model_a)
+    assert_paranoid_deletion(model_b)
+  end
+  
   test "destroy by multiple id is paranoid" do
     model_a = ParanoidBelongsDependant.create
     model_b = ParanoidBelongsDependant.create
