@@ -2,6 +2,20 @@ require 'test_helper'
 
 
 class MoreParanoidTest < ParanoidBaseTest
+    test "bidirectional has_many :through association clear is paranoid" do
+    left = ParanoidManyManyParentLeft.create
+    right = ParanoidManyManyParentRight.create
+    left.paranoid_many_many_parent_rights << right
+    
+    child = left.paranoid_many_many_children.first
+    assert_equal left, child.paranoid_many_many_parent_left, "Child's left parent is incorrect"
+    assert_equal right, child.paranoid_many_many_parent_right, "Child's right parent is incorrect"
+    
+    left.paranoid_many_many_parent_rights.clear
+    
+    assert_paranoid_deletion(child)
+  end
+  
   test "bidirectional has_many :through association delete is paranoid" do
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create
