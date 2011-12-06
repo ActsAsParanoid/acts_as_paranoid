@@ -2,7 +2,16 @@ require 'test_helper'
 
 
 class MoreParanoidTest < ParanoidBaseTest
-    test "bidirectional has_many :through association clear is paranoid" do
+  test "cannot find a paranoid deleted model" do
+    model = ParanoidBelongsDependant.create
+    model.destroy
+    
+    assert_raises ActiveRecord::RecordNotFound do
+      ParanoidBelongsDependant.find(model.id)
+    end
+  end
+  
+  test "bidirectional has_many :through association clear is paranoid" do
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create
     left.paranoid_many_many_parent_rights << right
