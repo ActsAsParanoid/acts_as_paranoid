@@ -9,7 +9,8 @@ module ParanoidValidations
         value = YAML.dump value
       end
 
-      sql, params = build_relation(finder_class, record.class.quoted_table_name, attribute, value)
+      table = Arel::Table.new(record.class.table_name)
+      sql, params = build_relation(finder_class, table, attribute, value)
 
       # This is the only changed line from the base class version - it does finder_class.unscoped
       relation = finder_class.where(sql, *params)

@@ -32,10 +32,6 @@ module ActsAsParanoid
       alias_method :destroy!, :destroy
     end
     
-    ActiveRecord::Reflection::AssociationReflection.class_eval do
-      alias_method :foreign_key, :primary_key_name unless respond_to?(:foreign_key)
-    end
-    
     # Magic!
     default_scope where("#{paranoid_column_reference} IS ?", nil)
     
