@@ -1,7 +1,56 @@
 require 'test_helper'
 
-
 class MoreParanoidTest < ParanoidBaseTest
+  test "cannot find a paranoid deleted many:many association" do
+    left = ParanoidManyManyParentLeft.create
+    right = ParanoidManyManyParentRight.create
+    left.paranoid_many_many_parent_rights << right
+    
+    child = left.paranoid_many_many_children.first
+
+    left.paranoid_many_many_parent_rights.delete(right)
+
+    left.reload
+    
+    assert_equal [], left.paranoid_many_many_children
+    # assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
+    assert_equal right, ParanoidManyManyParentRight.find(right.id)
+  end
+  
+  test "cannot find a paranoid destroyed many:many association" do
+    left = ParanoidManyManyParentLeft.create
+    right = ParanoidManyManyParentRight.create
+    left.paranoid_many_many_parent_rights << right
+    
+    child = left.paranoid_many_many_children.first
+
+    left.paranoid_many_many_parent_rights.destroy(right)
+    
+    left.reload
+    
+    assert_equal [], left.paranoid_many_many_children, "Child records still exist"
+    assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
+    
+    # Destroying the associated really destroys it; it's not just removed from the collection
+    assert_raises ActiveRecord::RecordNotFound do
+      ParanoidManyManyParentRight.find(right.id)
+    end
+  end
+  
+  test "cannot find a has_many :through object when its linking object is paranoid destroyed" do
+    left = ParanoidManyManyParentLeft.create
+    right = ParanoidManyManyParentRight.create
+    left.paranoid_many_many_parent_rights << right
+    
+    child = left.paranoid_many_many_children.first
+
+    child.destroy
+    
+    left.reload
+    
+    assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
+  end
+  
   test "cannot find a paranoid deleted model" do
     model = ParanoidBelongsDependant.create
     model.destroy
@@ -21,6 +70,20 @@ class MoreParanoidTest < ParanoidBaseTest
     assert_equal right, child.paranoid_many_many_parent_right, "Child's right parent is incorrect"
     
     left.paranoid_many_many_parent_rights.clear
+    
+    assert_paranoid_deletion(child)
+  end
+  
+  test "bidirectional has_many :through association destroy is paranoid" do
+    left = ParanoidManyManyParentLeft.create
+    right = ParanoidManyManyParentRight.create
+    left.paranoid_many_many_parent_rights << right
+    
+    child = left.paranoid_many_many_children.first
+    assert_equal left, child.paranoid_many_many_parent_left, "Child's left parent is incorrect"
+    assert_equal right, child.paranoid_many_many_parent_right, "Child's right parent is incorrect"
+    
+    left.paranoid_many_many_parent_rights.destroy(right)
     
     assert_paranoid_deletion(child)
   end

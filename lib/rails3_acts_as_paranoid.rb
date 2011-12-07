@@ -1,4 +1,5 @@
 require 'active_record'
+require "active_record/associations/through_association_scope"
 require 'validations/uniqueness_without_deleted'
 
 module ActsAsParanoid
@@ -34,7 +35,7 @@ module ActsAsParanoid
     ActiveRecord::Reflection::AssociationReflection.class_eval do
       alias_method :foreign_key, :primary_key_name unless respond_to?(:foreign_key)
     end
-
+    
     # Magic!
     default_scope where("#{paranoid_column_reference} IS ?", nil)
     
@@ -227,6 +228,29 @@ module ActsAsParanoid
     
   end
   
+end
+
+module ActiveRecord
+  module Associations
+    module ThroughAssociationScope
+      alias_method :original_construct_conditions, :construct_conditions
+      def construct_conditions
+        conditions = original_construct_conditions
+        
+        if proxy_reflection.through_reflection.klass.paranoid?
+          table_name = proxy_reflection.through_reflection.quoted_table_name
+          deleted_attribute = proxy_reflection.through_reflection.klass.paranoid_column
+          deleted_condition = "#{table_name}.\"#{deleted_attribute}\" IS NULL"
+          if conditions.blank?
+            conditions = deleted_condition
+          else
+            conditions += " AND (#{deleted_condition})"
+          end
+        end
+        conditions
+      end
+    end
+  end
 end
 
 # Extend ActiveRecord's functionality
