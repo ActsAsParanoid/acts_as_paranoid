@@ -1,6 +1,26 @@
 require 'test_helper'
 
 class MoreParanoidTest < ParanoidBaseTest
+  test "models with scoped validations can be multiply deleted" do
+    model_a = ParanoidWithScopedValidation.create(:name => "Model A", :category => "Category A")
+    model_b = ParanoidWithScopedValidation.create(:name => "Model B", :category => "Category B")
+    
+    ParanoidWithScopedValidation.delete([model_a.id, model_b.id])
+    
+    assert_paranoid_deletion(model_a)
+    assert_paranoid_deletion(model_b)
+  end
+  
+  test "models with scoped validations can be multiply destroyed" do
+    model_a = ParanoidWithScopedValidation.create(:name => "Model A", :category => "Category A")
+    model_b = ParanoidWithScopedValidation.create(:name => "Model B", :category => "Category B")
+    
+    ParanoidWithScopedValidation.destroy([model_a.id, model_b.id])
+    
+    assert_paranoid_deletion(model_a)
+    assert_paranoid_deletion(model_b)
+  end
+
   test "cannot find a paranoid deleted many:many association" do
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create

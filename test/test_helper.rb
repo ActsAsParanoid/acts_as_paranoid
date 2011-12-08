@@ -136,6 +136,13 @@ def setup_db
       t.timestamps
     end
     
+    create_table :paranoid_with_scoped_validations do |t|
+      t.string :name
+      t.string :category
+      t.datetime :deleted_at
+      t.timestamps
+    end
+    
   end
 end
 
@@ -302,6 +309,11 @@ class ParanoidManyManyChild < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :paranoid_many_many_parent_left
   belongs_to :paranoid_many_many_parent_right
+end
+
+class ParanoidWithScopedValidation < ActiveRecord::Base
+  acts_as_paranoid
+  validates_uniqueness_of :name, :scope => :category
 end
 
 
