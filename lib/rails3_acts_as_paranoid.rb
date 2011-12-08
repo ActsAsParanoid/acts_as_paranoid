@@ -1,6 +1,45 @@
 require 'active_record'
-require "active_record/associations/through_association_scope"
 require 'validations/uniqueness_without_deleted'
+
+
+module ActiveRecord
+  class Relation
+    def paranoid?
+      klass.try(:paranoid?) ? true : false
+    end
+    
+    def paranoid_deletion_attributes
+      { klass.paranoid_column => klass.delete_now_value }
+    end
+    
+    alias_method :destroy!, :destroy
+    def destroy(id)
+      if paranoid?
+        update(id, paranoid_deletion_attributes)
+      else
+        destroy!(id)
+      end
+    end
+    
+    alias_method :really_delete_all!, :delete_all
+    
+    def delete_all!(conditions = nil)
+      if conditions
+        where(conditions).delete_all!
+      else
+        really_delete_all!
+      end
+    end
+    
+    def delete_all(conditions = nil)
+      if paranoid?
+        update_all(paranoid_deletion_attributes, conditions)
+      else
+        delete_all!(conditions)
+      end
+    end
+  end
+end
 
 module ActsAsParanoid
   
@@ -26,11 +65,6 @@ module ActsAsParanoid
     self.paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
     
     return if paranoid?
-
-    ActiveRecord::Relation.class_eval do
-      alias_method :delete_all!, :delete_all
-      alias_method :destroy!, :destroy
-    end
     
     # Magic!
     default_scope where("#{paranoid_column_reference} IS ?", nil)
@@ -226,28 +260,6 @@ module ActsAsParanoid
   
 end
 
-module ActiveRecord
-  module Associations
-    module ThroughAssociationScope
-      alias_method :original_construct_conditions, :construct_conditions
-      def construct_conditions
-        conditions = original_construct_conditions
-        
-        if proxy_reflection.through_reflection.klass.paranoid?
-          table_name = proxy_reflection.through_reflection.quoted_table_name
-          deleted_attribute = proxy_reflection.through_reflection.klass.paranoid_column
-          deleted_condition = "#{table_name}.\"#{deleted_attribute}\" IS NULL"
-          if conditions.blank?
-            conditions = deleted_condition
-          else
-            conditions += " AND (#{deleted_condition})"
-          end
-        end
-        conditions
-      end
-    end
-  end
-end
 
 # Extend ActiveRecord's functionality
 ActiveRecord::Base.send :extend, ActsAsParanoid
