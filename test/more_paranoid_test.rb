@@ -12,9 +12,9 @@ class MoreParanoidTest < ParanoidBaseTest
 
     left.reload
     
-    assert_equal [], left.paranoid_many_many_children
-    assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
-    assert_equal right, ParanoidManyManyParentRight.find(right.id)
+    assert_equal [], left.paranoid_many_many_children, "Linking objects not deleted"
+    assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not unlinked"
+    assert_equal right, ParanoidManyManyParentRight.find(right.id), "Associated object deleted"
   end
   
   test "cannot find a paranoid destroyed many:many association" do
@@ -28,9 +28,9 @@ class MoreParanoidTest < ParanoidBaseTest
     
     left.reload
     
-    assert_equal [], left.paranoid_many_many_children, "Child records still exist"
-    assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
-    assert_equal right, ParanoidManyManyParentRight.find(right.id)
+    assert_equal [], left.paranoid_many_many_children, "Linking objects not deleted"
+    assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not unlinked"
+    assert_equal right, ParanoidManyManyParentRight.find(right.id), "Associated object deleted"
   end
   
   test "cannot find a has_many :through object when its linking object is paranoid destroyed" do
