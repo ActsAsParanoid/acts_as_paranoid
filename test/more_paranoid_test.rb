@@ -30,11 +30,7 @@ class MoreParanoidTest < ParanoidBaseTest
     
     assert_equal [], left.paranoid_many_many_children, "Child records still exist"
     assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
-    
-    # Destroying the associated really destroys it; it's not just removed from the collection
-    assert_raises ActiveRecord::RecordNotFound do
-      ParanoidManyManyParentRight.find(right.id)
-    end
+    assert_equal right, ParanoidManyManyParentRight.find(right.id)
   end
   
   test "cannot find a has_many :through object when its linking object is paranoid destroyed" do
