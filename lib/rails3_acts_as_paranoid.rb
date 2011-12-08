@@ -15,7 +15,15 @@ module ActiveRecord
     alias_method :destroy!, :destroy
     def destroy(id)
       if paranoid?
-        update(id, paranoid_deletion_attributes)
+        attributes = paranoid_deletion_attributes
+        if id.is_a?(Array)
+          # For some reason, if you pass an array of IDs, ActiveRecord expects
+          # an array of attributes too; you can expect the same attributes to be 
+          # applied to all of the updated records.
+          # To compensate, pass an array of the same attributes instead
+          attributes = id.map {|i| attributes}
+        end
+        update(id, attributes)
       else
         destroy!(id)
       end
