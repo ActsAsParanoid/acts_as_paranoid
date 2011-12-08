@@ -13,7 +13,7 @@ class MoreParanoidTest < ParanoidBaseTest
     left.reload
     
     assert_equal [], left.paranoid_many_many_children
-    # assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
+    assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
     assert_equal right, ParanoidManyManyParentRight.find(right.id)
   end
   
