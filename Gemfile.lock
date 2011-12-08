@@ -1,9 +1,3 @@
-PATH
-  remote: .
-  specs:
-    rails3_acts_as_paranoid (0.1.1.2)
-      activerecord (~> 3.1)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -32,7 +26,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord (~> 3.1)
   activesupport (~> 3.1)
-  rails3_acts_as_paranoid!
   rake
   sqlite3-ruby

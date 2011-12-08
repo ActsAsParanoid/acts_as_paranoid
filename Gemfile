@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem "rails3_acts_as_paranoid", :path => File.expand_path("..", __FILE__)
+gem "activerecord", "~>3.1"
 
 # Development dependencies 
 gem "rake"
