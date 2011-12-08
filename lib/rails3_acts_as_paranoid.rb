@@ -25,6 +25,7 @@ module ActiveRecord
     
     def delete_all!(conditions = nil)
       if conditions
+        # This idea comes out of Rails 3.1 ActiveRecord::Record.delete_all
         where(conditions).delete_all!
       else
         really_delete_all!
