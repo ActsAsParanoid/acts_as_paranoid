@@ -39,6 +39,17 @@ module ActiveRecord
         delete_all!(conditions)
       end
     end
+    
+    def arel=(a)
+      @arel = a
+    end
+    
+    def with_deleted
+      wd = self.clone
+      wd.default_scoped = false
+      wd.arel = self.build_arel
+      wd
+    end
   end
 end
 

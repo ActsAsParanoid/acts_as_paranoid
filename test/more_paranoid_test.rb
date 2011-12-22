@@ -1,6 +1,23 @@
 require 'test_helper'
 
 class MoreParanoidTest < ParanoidBaseTest
+  test "only find associated records when finding with paranoid deleted" do
+    parent = ParanoidBelongsDependant.create
+    child = ParanoidHasManyDependant.create
+    parent.paranoid_has_many_dependants << child
+    
+    unrelated_parent = ParanoidBelongsDependant.create
+    unrelated_child = ParanoidHasManyDependant.create
+    unrelated_parent.paranoid_has_many_dependants << unrelated_child
+    
+    child.destroy
+    assert_paranoid_deletion(child)
+    
+    parent.reload
+    
+    assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
+  end
+  
   test "models with scoped validations can be multiply deleted" do
     model_a = ParanoidWithScopedValidation.create(:name => "Model A", :category => "Category A")
     model_b = ParanoidWithScopedValidation.create(:name => "Model B", :category => "Category B")
