@@ -211,6 +211,83 @@ class ParanoidTest < ParanoidBaseTest
   end
 end
 
+class FiltersTest < ParanoidBaseTest
+   def setup_filters_test
+    @paranoid_forest_1 = ParanoidForest.create! :name => "ParanoidForest #1"
+    @paranoid_forest_2 = ParanoidForest.create! :name => "ParanoidForest #2", :rainforest => true
+    @paranoid_forest_3 = ParanoidForest.create! :name => "ParanoidForest #3", :rainforest => true
+
+    assert_equal 3, ParanoidForest.count
+    assert_equal 2, ParanoidForest.rainforest.count
+
+    @paranoid_forest_1.paranoid_trees.create! :name => 'ParanoidTree #1'
+    @paranoid_forest_1.paranoid_trees.create! :name => 'ParanoidTree #2'
+    @paranoid_forest_2.paranoid_trees.create! :name => 'ParanoidTree #3'
+    @paranoid_forest_2.paranoid_trees.create! :name => 'ParanoidTree #4'
+
+    assert_equal 4, ParanoidTree.count
+  end
+
+  def test_filtering_with_scopes
+    setup_filters_test
+
+    assert_equal 2, ParanoidForest.rainforest.with_deleted.count
+    assert_equal 2, ParanoidForest.with_deleted.rainforest.count
+
+    assert_equal 0, ParanoidForest.rainforest.only_deleted.count
+    assert_equal 0, ParanoidForest.only_deleted.rainforest.count
+
+    ParanoidForest.scoped.where(:rainforest => true).first.destroy
+
+    assert_equal 2, ParanoidForest.rainforest.with_deleted.count
+    assert_equal 2, ParanoidForest.with_deleted.rainforest.count
+
+    assert_equal 1, ParanoidForest.rainforest.only_deleted.count
+    assert_equal 1, ParanoidForest.only_deleted.rainforest.count
+  end
+
+  def test_associations_filtered_by_with_deleted
+    setup_filters_test
+
+    assert_equal 2, @paranoid_forest_1.paranoid_trees.with_deleted.count
+    assert_equal 2, @paranoid_forest_2.paranoid_trees.with_deleted.count
+
+    @paranoid_forest_1.paranoid_trees.first.destroy
+    assert_equal 1, @paranoid_forest_1.paranoid_trees.count
+    assert_equal 2, @paranoid_forest_1.paranoid_trees.with_deleted.count
+    assert_equal 4, ParanoidTree.with_deleted.count
+
+    @paranoid_forest_2.paranoid_trees.first.destroy
+    assert_equal 1, @paranoid_forest_2.paranoid_trees.count
+    assert_equal 2, @paranoid_forest_2.paranoid_trees.with_deleted.count
+    assert_equal 4, ParanoidTree.with_deleted.count
+
+    @paranoid_forest_1.paranoid_trees.first.destroy
+    assert_equal 0, @paranoid_forest_1.paranoid_trees.count
+    assert_equal 2, @paranoid_forest_1.paranoid_trees.with_deleted.count
+    assert_equal 4, ParanoidTree.with_deleted.count
+  end
+
+  def test_associations_filtered_by_only_deleted
+    setup_filters_test
+
+    assert_equal 0, @paranoid_forest_1.paranoid_trees.only_deleted.count
+    assert_equal 0, @paranoid_forest_2.paranoid_trees.only_deleted.count
+
+    @paranoid_forest_1.paranoid_trees.first.destroy
+    assert_equal 1, @paranoid_forest_1.paranoid_trees.only_deleted.count
+    assert_equal 1, ParanoidTree.only_deleted.count
+
+    @paranoid_forest_2.paranoid_trees.first.destroy
+    assert_equal 1, @paranoid_forest_2.paranoid_trees.only_deleted.count
+    assert_equal 2, ParanoidTree.only_deleted.count
+
+    @paranoid_forest_1.paranoid_trees.first.destroy
+    assert_equal 2, @paranoid_forest_1.paranoid_trees.only_deleted.count
+    assert_equal 3, ParanoidTree.only_deleted.count
+  end
+end
+
 class ValidatesUniquenessTest < ParanoidBaseTest
   def test_should_include_deleted_by_default
     ParanoidTime.new(:name => 'paranoid').tap do |record|

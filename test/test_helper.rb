@@ -118,6 +118,22 @@ def setup_db
       
       t.timestamps
     end
+
+   create_table :paranoid_forests do |t|
+      t.string   :name
+      t.boolean  :rainforest
+      t.datetime :deleted_at
+      
+      t.timestamps
+    end
+    
+    create_table :paranoid_trees do |t|
+      t.integer  :paranoid_forest_id
+      t.string   :name
+      t.datetime :deleted_at
+      
+      t.timestamps
+    end
   end
 end
 
@@ -129,6 +145,7 @@ end
 
 class ParanoidTime < ActiveRecord::Base
   acts_as_paranoid
+
   validates_uniqueness_of :name
 
   has_many :paranoid_has_many_dependants, :dependent => :destroy
@@ -270,3 +287,17 @@ class ParanoidObserver < ActiveRecord::Observer
 end
 
 ParanoidWithCallback.add_observer(ParanoidObserver.instance)
+
+class ParanoidForest < ActiveRecord::Base
+  acts_as_paranoid
+
+  scope :rainforest, where('rainforest IS ?', true)
+
+  has_many :paranoid_trees, :dependent => :destroy
+end
+
+class ParanoidTree < ActiveRecord::Base
+  acts_as_paranoid
+  belongs_to :paranoid_forest
+  validates_presence_of :name
+end
