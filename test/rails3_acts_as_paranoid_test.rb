@@ -211,8 +211,10 @@ class ParanoidTest < ParanoidBaseTest
   end
 end
 
-class FiltersTest < ParanoidBaseTest
-   def setup_filters_test
+class RelationsTest < ParanoidBaseTest
+  def setup
+    setup_db 
+
     @paranoid_forest_1 = ParanoidForest.create! :name => "ParanoidForest #1"
     @paranoid_forest_2 = ParanoidForest.create! :name => "ParanoidForest #2", :rainforest => true
     @paranoid_forest_3 = ParanoidForest.create! :name => "ParanoidForest #3", :rainforest => true
@@ -229,15 +231,14 @@ class FiltersTest < ParanoidBaseTest
   end
 
   def test_filtering_with_scopes
-    setup_filters_test
-
     assert_equal 2, ParanoidForest.rainforest.with_deleted.count
     assert_equal 2, ParanoidForest.with_deleted.rainforest.count
 
     assert_equal 0, ParanoidForest.rainforest.only_deleted.count
     assert_equal 0, ParanoidForest.only_deleted.rainforest.count
 
-    ParanoidForest.scoped.where(:rainforest => true).first.destroy
+    ParanoidForest.rainforest.first.destroy
+    assert_equal 1, ParanoidForest.rainforest.count
 
     assert_equal 2, ParanoidForest.rainforest.with_deleted.count
     assert_equal 2, ParanoidForest.with_deleted.rainforest.count
@@ -247,8 +248,6 @@ class FiltersTest < ParanoidBaseTest
   end
 
   def test_associations_filtered_by_with_deleted
-    setup_filters_test
-
     assert_equal 2, @paranoid_forest_1.paranoid_trees.with_deleted.count
     assert_equal 2, @paranoid_forest_2.paranoid_trees.with_deleted.count
 
@@ -269,8 +268,6 @@ class FiltersTest < ParanoidBaseTest
   end
 
   def test_associations_filtered_by_only_deleted
-    setup_filters_test
-
     assert_equal 0, @paranoid_forest_1.paranoid_trees.only_deleted.count
     assert_equal 0, @paranoid_forest_2.paranoid_trees.only_deleted.count
 
@@ -285,6 +282,40 @@ class FiltersTest < ParanoidBaseTest
     @paranoid_forest_1.paranoid_trees.first.destroy
     assert_equal 2, @paranoid_forest_1.paranoid_trees.only_deleted.count
     assert_equal 3, ParanoidTree.only_deleted.count
+  end
+  
+  def test_fake_removal_through_relation
+    # destroy: through a relation.
+    ParanoidForest.rainforest.destroy(@paranoid_forest_3)
+    assert 1, ParanoidForest.rainforest
+    assert 2, ParanoidForest.rainforest.with_deleted.count
+    assert 1, ParanoidForest.rainforest.only_deleted.count
+
+    # delete_all: through a relation
+    @paranoid_forest_2.paranoid_trees.order(:id).delete_all
+    assert 0, @paranoid_forest_2.paranoid_trees(true).count
+    assert 2, @paranoid_forest_2.paranoid_trees(true).with_deleted.count
+  end
+  
+  def test_real_removal_through_relation
+    # destroy!: through a relation.
+    ParanoidForest.rainforest.destroy!(@paranoid_forest_3)
+    assert 1, ParanoidForest.rainforest
+    assert 0, ParanoidForest.rainforest.with_deleted.count
+    assert 0, ParanoidForest.rainforest.only_deleted.count
+    
+    # destroy: two-step through a relation
+    @paranoid_forest_1.paranoid_trees.first.destroy
+    @paranoid_forest_1.paranoid_trees.only_deleted.first.destroy
+    assert 0, @paranoid_forest_1.paranoid_trees(true).count
+    assert 0, @paranoid_forest_1.paranoid_trees(true).with_deleted.count
+    assert 0, @paranoid_forest_1.paranoid_trees(true).only_deleted.count
+
+    # delete_all!: through a relation
+    @paranoid_forest_2.paranoid_trees.order(:id).delete_all!
+    assert 0, @paranoid_forest_2.paranoid_trees(true).count
+    assert 0, @paranoid_forest_2.paranoid_trees(true).with_deleted.count
+    assert 0, @paranoid_forest_2.paranoid_trees(true).only_deleted.count
   end
 end
 
