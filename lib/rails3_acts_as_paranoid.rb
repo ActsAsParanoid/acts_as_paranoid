@@ -32,8 +32,8 @@ module ActsAsParanoid
     end
 
     # Magic!
-    default_scope where("#{paranoid_column_reference} IS ?", nil)
-    
+    default_scope { where(paranoid_default_scope_sql) }
+
     scope :paranoid_deleted_around_time, lambda {|value, window|
       if self.class.respond_to?(:paranoid?) && self.class.paranoid?
         if self.class.paranoid_column_type == 'time' && ![true, false].include?(value)
@@ -77,6 +77,10 @@ module ActsAsParanoid
       update_all ["#{paranoid_configuration[:column]} = ?", delete_now_value], conditions
     end
 
+    def paranoid_default_scope_sql
+      self.scoped.table[paranoid_column].eq(nil).to_sql
+    end
+
     def paranoid_column
       paranoid_configuration[:column].to_sym
     end
@@ -100,7 +104,8 @@ module ActsAsParanoid
     protected 
 
     def disable_default_scope
-      scope = self.scoped
+      scope = self.scoped.with_default_scope
+      scope.where_values.delete(paranoid_default_scope_sql)
       scope.default_scoped = false
 
       scope

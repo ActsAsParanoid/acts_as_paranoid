@@ -230,6 +230,21 @@ class RelationsTest < ParanoidBaseTest
     assert_equal 4, ParanoidTree.count
   end
 
+  def test_double_default_scope
+    # Naturally, the default scope for humans is male. Sexism++
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'female'
+
+    assert_equal 3, ParanoidHuman.count
+
+    ParanoidHuman.first.destroy
+
+    assert_equal 2, ParanoidHuman.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+  end
+
   def test_filtering_with_scopes
     assert_equal 2, ParanoidForest.rainforest.with_deleted.count
     assert_equal 2, ParanoidForest.with_deleted.rainforest.count

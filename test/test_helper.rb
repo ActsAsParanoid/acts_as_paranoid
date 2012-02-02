@@ -134,6 +134,13 @@ def setup_db
       
       t.timestamps
     end
+
+    create_table :paranoid_humen do |t|
+      t.string   :gender
+      t.datetime :deleted_at
+
+      t.timestamps
+    end
   end
 end
 
@@ -300,4 +307,9 @@ class ParanoidTree < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :paranoid_forest
   validates_presence_of :name
+end
+
+class ParanoidHuman < ActiveRecord::Base
+  acts_as_paranoid
+  default_scope where('gender IS ?', 'male')
 end
