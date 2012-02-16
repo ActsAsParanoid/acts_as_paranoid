@@ -54,6 +54,7 @@ def setup_db
       t.string    :name
       t.datetime  :deleted_at
       t.integer   :paranoid_time_id
+      t.string    :paranoid_time_polymorphic_with_deleted_type
       t.integer   :paranoid_belongs_dependant_id
 
       t.timestamps
@@ -186,6 +187,8 @@ end
 class ParanoidHasManyDependant < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :paranoid_time
+  belongs_to :paranoid_time_with_deleted, :class_name => 'ParanoidTime', :foreign_key => :paranoid_time_id, :with_deleted => true
+  belongs_to :paranoid_time_polymorphic_with_deleted, :class_name => 'ParanoidTime', :foreign_key => :paranoid_time_id, :polymorphic => true, :with_deleted => true
 
   belongs_to :paranoid_belongs_dependant, :dependent => :destroy
 end

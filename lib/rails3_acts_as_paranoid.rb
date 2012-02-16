@@ -1,5 +1,6 @@
 require 'active_record'
 require 'validations/uniqueness_without_deleted'
+require 'acts_as_paranoid/associations'
 
 module ActsAsParanoid
   
@@ -46,6 +47,7 @@ module ActsAsParanoid
     
     include InstanceMethods
     extend ClassMethods
+    include ActsAsParanoid::Associations
   end
 
   module ClassMethods
