@@ -62,11 +62,11 @@ module ActsAsParanoid
     end
 
     def with_deleted
-      disable_default_scope
+      without_paranoid_default_scope
     end
 
     def only_deleted
-      disable_default_scope.where("#{paranoid_column_reference} IS NOT ?", nil)
+      without_paranoid_default_scope.where("#{paranoid_column_reference} IS NOT ?", nil)
     end
 
     def delete_all!(conditions = nil)
@@ -103,10 +103,9 @@ module ActsAsParanoid
 
     protected 
 
-    def disable_default_scope
+    def without_paranoid_default_scope
       scope = self.scoped.with_default_scope
       scope.where_values.delete(paranoid_default_scope_sql)
-      scope.default_scoped = false
 
       scope
     end
