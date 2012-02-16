@@ -28,7 +28,7 @@ module ActsAsParanoid
 
     ActiveRecord::Relation.class_eval do
       alias_method :delete_all!, :delete_all
-      alias_method :destroy!, :destroy
+      alias_method :destroy!, :delete
     end
 
     # Magic!
