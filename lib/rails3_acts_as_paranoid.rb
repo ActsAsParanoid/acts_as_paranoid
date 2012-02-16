@@ -70,7 +70,7 @@ module ActsAsParanoid
     end
 
     def delete_all!(conditions = nil)
-      self.unscoped.delete_all!(conditions)
+      without_paranoid_default_scope.delete_all!(conditions)
     end
 
     def delete_all(conditions = nil)
