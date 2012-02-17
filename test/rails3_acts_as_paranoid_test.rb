@@ -26,6 +26,16 @@ class ParanoidBaseTest < ActiveSupport::TestCase
 end
 
 class ParanoidTest < ParanoidBaseTest
+  def test_paranoid?
+    assert !NotParanoid.paranoid?
+    assert_raise(NoMethodError) { NotParanoid.delete_all! }
+    assert_raise(NoMethodError) { NotParanoid.first.destroy! }
+    assert_raise(NoMethodError) { NotParanoid.with_deleted }
+    assert_raise(NoMethodError) { NotParanoid.only_deleted }    
+
+    assert ParanoidTime.paranoid?
+  end
+
   def test_fake_removal
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidBoolean.count
@@ -66,13 +76,6 @@ class ParanoidTest < ParanoidBaseTest
     ParanoidTime.delete_all!
     assert_empty ParanoidTime.all
     assert_empty ParanoidTime.with_deleted.all
-  end
-
-  def test_paranoid_scope
-    assert_raise(NoMethodError) { NotParanoid.delete_all! }
-    assert_raise(NoMethodError) { NotParanoid.first.destroy! }
-    assert_raise(NoMethodError) { NotParanoid.with_deleted }
-    assert_raise(NoMethodError) { NotParanoid.only_deleted }    
   end
 
   def test_recovery
