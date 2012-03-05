@@ -17,8 +17,8 @@ module ActsAsParanoid
         if with_deleted
           class_eval <<-RUBY, __FILE__, __LINE__
             def #{target}_with_unscoped(*args)
-              return #{target}_without_unscoped(*args) unless #{result.klass}.paranoid?
-              #{result.klass}.unscoped { #{target}_without_unscoped(*args) }
+              return #{target}_without_unscoped(*args) unless association(:#{target}).klass.paranoid?
+              association(:#{target}).klass.with_deleted.merge(association(:#{target}).association_scope)
             end
             alias_method_chain :#{target}, :unscoped
           RUBY
