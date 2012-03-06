@@ -6,3 +6,9 @@ gem "activerecord", "~>3.1"
 gem "rake"
 gem "activesupport", "~>3.1"
 gem "sqlite3-ruby"
+
+group :test do
+  gem "minitest"
+  gem "ZenTest"
+  gem "autotest-growl"
+end
