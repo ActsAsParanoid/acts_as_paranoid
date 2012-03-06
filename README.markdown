@@ -118,5 +118,6 @@ Watch out for these caveats:
 * To [flah00](https://github.com/flah00) for adding support for STI-based associations (with :dependent)
 * To [vikramdhillon](https://github.com/vikramdhillon) for the idea and
   initial implementation of support for string column type
+* To [Craig Walker](https://github.com/softcraft-development) for Rails 3.1 support and fixing various pending issues
 
 Copyright © 2010 Gonçalo Silva, released under the MIT license
