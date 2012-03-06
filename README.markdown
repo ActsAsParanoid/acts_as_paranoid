@@ -2,6 +2,8 @@
 
 A simple plugin which hides records instead of deleting them, being able to recover them.
 
+This is the development branch and is likely unstable. Check the other branches for stable releases targetting specific Rails versions (3.1, 3.2, etc).
+
 ## Credits
 
 This plugin was inspired by [acts_as_paranoid](http://github.com/technoweenie/acts_as_paranoid) and [acts_as_active](http://github.com/fernandoluizao/acts_as_active).
