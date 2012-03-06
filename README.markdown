@@ -1,6 +1,8 @@
 # ActsAsParanoid
 
-A simple plugin which hides records instead of deleting them, being able to recover them.
+A simple plugin for which hides records instead of deleting them, being able to recover them.
+
+This branch targets Rails 3.0.X. If you're working with other version, switch to the corresponding branch.
 
 ## Credits
 
