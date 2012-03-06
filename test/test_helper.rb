@@ -118,6 +118,31 @@ def setup_db
       
       t.timestamps
     end
+    
+    create_table :paranoid_many_many_parent_lefts do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table :paranoid_many_many_parent_rights do |t|
+      t.string :name
+      t.timestamps
+    end
+    
+    create_table :paranoid_many_many_children do |t|
+      t.integer :paranoid_many_many_parent_left_id
+      t.integer :paranoid_many_many_parent_right_id
+      t.datetime :deleted_at
+      t.timestamps
+    end
+    
+    create_table :paranoid_with_scoped_validations do |t|
+      t.string :name
+      t.string :category
+      t.datetime :deleted_at
+      t.timestamps
+    end
+    
   end
 end
 
@@ -269,4 +294,53 @@ class ParanoidObserver < ActiveRecord::Observer
   end
 end
 
+
+class ParanoidManyManyParentLeft < ActiveRecord::Base
+  has_many :paranoid_many_many_children
+  has_many :paranoid_many_many_parent_rights, :through => :paranoid_many_many_children
+end
+
+class ParanoidManyManyParentRight < ActiveRecord::Base
+  has_many :paranoid_many_many_children
+  has_many :paranoid_many_many_parent_lefts, :through => :paranoid_many_many_children
+end
+
+class ParanoidManyManyChild < ActiveRecord::Base
+  acts_as_paranoid
+  belongs_to :paranoid_many_many_parent_left
+  belongs_to :paranoid_many_many_parent_right
+end
+
+class ParanoidWithScopedValidation < ActiveRecord::Base
+  acts_as_paranoid
+  validates_uniqueness_of :name, :scope => :category
+end
+
+
 ParanoidWithCallback.add_observer(ParanoidObserver.instance)
+
+
+class ParanoidBaseTest < ActiveSupport::TestCase
+  def assert_empty(collection)
+    assert(collection.respond_to?(:empty?) && collection.empty?)
+  end
+  
+  def setup
+    setup_db
+
+    ["paranoid", "really paranoid", "extremely paranoid"].each do |name|
+      ParanoidTime.create! :name => name
+      ParanoidBoolean.create! :name => name
+    end
+
+    ParanoidString.create! :name => "strings can be paranoid"
+    NotParanoid.create! :name => "no paranoid goals"
+    ParanoidWithCallback.create! :name => "paranoid with callbacks"
+
+    ParanoidObserver.instance.reset
+  end
+
+  def teardown
+    teardown_db
+  end
+end

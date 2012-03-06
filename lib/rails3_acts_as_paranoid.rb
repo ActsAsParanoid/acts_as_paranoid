@@ -1,6 +1,58 @@
 require 'active_record'
 require 'validations/uniqueness_without_deleted'
 
+
+module ActiveRecord
+  class Relation
+    def paranoid?
+      klass.try(:paranoid?) ? true : false
+    end
+    
+    def paranoid_deletion_attributes
+      { klass.paranoid_column => klass.delete_now_value }
+    end
+    
+    alias_method :destroy!, :destroy
+    def destroy(id)
+      if paranoid?
+        update_all(paranoid_deletion_attributes, {:id => id})
+      else
+        destroy!(id)
+      end
+    end
+    
+    alias_method :really_delete_all!, :delete_all
+    
+    def delete_all!(conditions = nil)
+      if conditions
+        # This idea comes out of Rails 3.1 ActiveRecord::Record.delete_all
+        where(conditions).delete_all!
+      else
+        really_delete_all!
+      end
+    end
+    
+    def delete_all(conditions = nil)
+      if paranoid?
+        update_all(paranoid_deletion_attributes, conditions)
+      else
+        delete_all!(conditions)
+      end
+    end
+    
+    def arel=(a)
+      @arel = a
+    end
+    
+    def with_deleted
+      wd = self.clone
+      wd.default_scoped = false
+      wd.arel = self.build_arel
+      wd
+    end
+  end
+end
+
 module ActsAsParanoid
   
   def paranoid?
@@ -25,16 +77,7 @@ module ActsAsParanoid
     self.paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
     
     return if paranoid?
-
-    ActiveRecord::Relation.class_eval do
-      alias_method :delete_all!, :delete_all
-      alias_method :destroy!, :destroy
-    end
     
-    ActiveRecord::Reflection::AssociationReflection.class_eval do
-      alias_method :foreign_key, :primary_key_name unless respond_to?(:foreign_key)
-    end
-
     # Magic!
     default_scope where("#{paranoid_column_reference} IS ?", nil)
     
@@ -71,6 +114,18 @@ module ActsAsParanoid
 
     def only_deleted
       self.unscoped.where("#{paranoid_column_reference} IS NOT ?", nil)
+    end
+    
+    def deletion_conditions(id_or_array)
+      ["id in (?)", [id_or_array].flatten]
+    end
+    
+    def delete!(id_or_array)
+      delete_all!(deletion_conditions(id_or_array))
+    end
+    
+    def delete(id_or_array)
+      delete_all(deletion_conditions(id_or_array))
     end
 
     def delete_all!(conditions = nil)
@@ -130,6 +185,27 @@ module ActsAsParanoid
         end
       else
         destroy!
+      end
+    end
+    
+    def delete!
+      with_transaction_returning_status do
+        act_on_dependent_destroy_associations
+        self.class.delete_all!(self.class.primary_key.to_sym => self.id)
+        self.paranoid_value = self.class.delete_now_value
+        freeze
+      end
+    end
+    
+    def delete
+      if paranoid_value.nil?
+        with_transaction_returning_status do
+          self.class.delete_all(self.class.primary_key.to_sym => self.id)
+          self.paranoid_value = self.class.delete_now_value
+          self
+        end
+      else
+        delete!
       end
     end
     
@@ -195,6 +271,7 @@ module ActsAsParanoid
   end
   
 end
+
 
 # Extend ActiveRecord's functionality
 ActiveRecord::Base.send :extend, ActsAsParanoid
