@@ -6,3 +6,9 @@ gem "rails3_acts_as_paranoid", :path => File.expand_path("..", __FILE__)
 gem "rake"
 gem "activesupport", "~>3.0"
 gem "sqlite3-ruby"
+
+group :test do
+  gem "minitest"
+  gem "ZenTest"
+  gem "autotest-growl"
+end
