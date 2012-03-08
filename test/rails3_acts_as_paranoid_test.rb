@@ -438,26 +438,26 @@ class AssociationsTest < ParanoidBaseTest
     paranoid_time = ParanoidTime.first 
     paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(:name => 'dependant!')
 
-    assert paranoid_has_many_dependant.paranoid_time
-    assert paranoid_has_many_dependant.paranoid_time_with_deleted
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
 
     paranoid_time.destroy
     
     assert_nil paranoid_has_many_dependant.paranoid_time(true)
-    assert paranoid_has_many_dependant.paranoid_time_with_deleted(true)
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted(true)
   end
 
   def test_belongs_to_polymorphic_with_deleted
     paranoid_time = ParanoidTime.first 
     paranoid_has_many_dependant = ParanoidHasManyDependant.create!(:name => 'dependant!', :paranoid_time_polymorphic_with_deleted => paranoid_time)
 
-    assert paranoid_has_many_dependant.paranoid_time
-    assert paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
 
     paranoid_time.destroy
     
     assert_nil paranoid_has_many_dependant.paranoid_time(true)
-    assert paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
   end
 end
 
