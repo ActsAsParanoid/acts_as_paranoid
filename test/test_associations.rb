@@ -1,7 +1,64 @@
 require 'test_helper'
 
-class MoreParanoidTest < ParanoidBaseTest
-  test "only find associated records when finding with paranoid deleted" do
+class AssociationsTest < ParanoidBaseTest
+  def test_removal_with_associations
+    # This test shows that the current implementation doesn't handle
+    # assciation deletion correctly (when hard deleting via parent-object)
+    paranoid_company_1 = ParanoidDestroyCompany.create! :name => "ParanoidDestroyCompany #1"
+    paranoid_company_2 = ParanoidDeleteCompany.create! :name => "ParanoidDestroyCompany #1"
+    paranoid_company_1.paranoid_products.create! :name => "ParanoidProduct #1"
+    paranoid_company_2.paranoid_products.create! :name => "ParanoidProduct #2"
+    
+    assert_equal 1, ParanoidDestroyCompany.count
+    assert_equal 1, ParanoidDeleteCompany.count
+    assert_equal 2, ParanoidProduct.count
+
+    ParanoidDestroyCompany.first.destroy
+    assert_equal 0, ParanoidDestroyCompany.count
+    assert_equal 1, ParanoidProduct.count
+    assert_equal 1, ParanoidDestroyCompany.with_deleted.count
+    assert_equal 2, ParanoidProduct.with_deleted.count
+  
+    ParanoidDestroyCompany.with_deleted.first.destroy!
+    assert_equal 0, ParanoidDestroyCompany.count
+    assert_equal 1, ParanoidProduct.count
+    assert_equal 0, ParanoidDestroyCompany.with_deleted.count
+    assert_equal 1, ParanoidProduct.with_deleted.count
+    
+    ParanoidDeleteCompany.with_deleted.first.destroy!
+    assert_equal 0, ParanoidDeleteCompany.count
+    assert_equal 0, ParanoidProduct.count
+    assert_equal 0, ParanoidDeleteCompany.with_deleted.count
+    assert_equal 0, ParanoidProduct.with_deleted.count
+  end
+
+  def test_belongs_to_with_deleted
+    paranoid_time = ParanoidTime.first 
+    paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(:name => 'dependant!')
+
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
+
+    paranoid_time.destroy
+    
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted(true)
+  end
+
+  def test_belongs_to_polymorphic_with_deleted
+    paranoid_time = ParanoidTime.first 
+    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(:name => 'dependant!', :paranoid_time_polymorphic_with_deleted => paranoid_time)
+
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
+
+    paranoid_time.destroy
+    
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
+  end
+
+  def test_only_find_associated_records_when_finding_with_paranoid_deleted
     parent = ParanoidBelongsDependant.create
     child = ParanoidHasManyDependant.create
     parent.paranoid_has_many_dependants << child
@@ -13,32 +70,10 @@ class MoreParanoidTest < ParanoidBaseTest
     child.destroy
     assert_paranoid_deletion(child)
     
-    #parent.reload
-    
     assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
   end
-  
-  test "models with scoped validations can be multiply deleted" do
-    model_a = ParanoidWithScopedValidation.create(:name => "Model A", :category => "Category A")
-    model_b = ParanoidWithScopedValidation.create(:name => "Model B", :category => "Category B")
-    
-    ParanoidWithScopedValidation.delete([model_a.id, model_b.id])
-    
-    assert_paranoid_deletion(model_a)
-    assert_paranoid_deletion(model_b)
-  end
-  
-  test "models with scoped validations can be multiply destroyed" do
-    model_a = ParanoidWithScopedValidation.create(:name => "Model A", :category => "Category A")
-    model_b = ParanoidWithScopedValidation.create(:name => "Model B", :category => "Category B")
-    
-    ParanoidWithScopedValidation.destroy([model_a.id, model_b.id])
-    
-    assert_paranoid_deletion(model_a)
-    assert_paranoid_deletion(model_b)
-  end
 
-  test "cannot find a paranoid deleted many:many association" do
+  def test_cannot_find_a_paranoid_deleted_many_many_association
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create
     left.paranoid_many_many_parent_rights << right
@@ -54,7 +89,7 @@ class MoreParanoidTest < ParanoidBaseTest
     assert_equal right, ParanoidManyManyParentRight.find(right.id), "Associated object deleted"
   end
   
-  test "cannot find a paranoid destroyed many:many association" do
+  def test_cannot_find_a_paranoid_destroyed_many_many_association
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create
     left.paranoid_many_many_parent_rights << right
@@ -70,7 +105,7 @@ class MoreParanoidTest < ParanoidBaseTest
     assert_equal right, ParanoidManyManyParentRight.find(right.id), "Associated object deleted"
   end
   
-  test "cannot find a has_many :through object when its linking object is paranoid destroyed" do
+  def test_cannot_find_a_has_many_through_object_when_its_linking_object_is_paranoid_destroyed
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create
     left.paranoid_many_many_parent_rights << right
@@ -84,7 +119,7 @@ class MoreParanoidTest < ParanoidBaseTest
     assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
   end
   
-  test "cannot find a paranoid deleted model" do
+  def test_cannot_find_a_paranoid_deleted_model
     model = ParanoidBelongsDependant.create
     model.destroy
     
@@ -93,7 +128,7 @@ class MoreParanoidTest < ParanoidBaseTest
     end
   end
   
-  test "bidirectional has_many :through association clear is paranoid" do
+  def test_bidirectional_has_many_through_association_clear_is_paranoid
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create
     left.paranoid_many_many_parent_rights << right
@@ -107,7 +142,7 @@ class MoreParanoidTest < ParanoidBaseTest
     assert_paranoid_deletion(child)
   end
   
-  test "bidirectional has_many :through association destroy is paranoid" do
+  def test_bidirectional_has_many_through_association_destroy_is_paranoid
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create
     left.paranoid_many_many_parent_rights << right
@@ -121,7 +156,7 @@ class MoreParanoidTest < ParanoidBaseTest
     assert_paranoid_deletion(child)
   end
   
-  test "bidirectional has_many :through association delete is paranoid" do
+  def test_bidirectional_has_many_through_association_delete_is_paranoid
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create
     left.paranoid_many_many_parent_rights << right
@@ -133,68 +168,5 @@ class MoreParanoidTest < ParanoidBaseTest
     left.paranoid_many_many_parent_rights.delete(right)
     
     assert_paranoid_deletion(child)
-  end
-  
-  test "delete by multiple id is paranoid" do
-    model_a = ParanoidBelongsDependant.create
-    model_b = ParanoidBelongsDependant.create
-    ParanoidBelongsDependant.delete([model_a.id, model_b.id])
-    
-    assert_paranoid_deletion(model_a)
-    assert_paranoid_deletion(model_b)
-  end
-  
-  test "destroy by multiple id is paranoid" do
-    model_a = ParanoidBelongsDependant.create
-    model_b = ParanoidBelongsDependant.create
-    ParanoidBelongsDependant.destroy([model_a.id, model_b.id])
-    
-    assert_paranoid_deletion(model_a)
-    assert_paranoid_deletion(model_b)
-  end
-  
-  test "delete by single id is paranoid" do
-    model = ParanoidBelongsDependant.create
-    ParanoidBelongsDependant.delete(model.id)
-    
-    assert_paranoid_deletion(model)
-  end
-  
-  test "destroy by single id is paranoid" do
-    model = ParanoidBelongsDependant.create
-    ParanoidBelongsDependant.destroy(model.id)
-    
-    assert_paranoid_deletion(model)
-  end
-  
-  test "instance delete is paranoid" do
-    model = ParanoidBelongsDependant.create
-    model.delete
-    
-    assert_paranoid_deletion(model)
-  end
-  
-  test "instance destroy is paranoid" do
-    model = ParanoidBelongsDependant.create
-    model.destroy
-    
-    assert_paranoid_deletion(model)
-  end
-
-  def find_row(model)
-    sql = "select deleted_at from #{model.class.table_name} where id = #{model.id}"
-    # puts sql here if you want to debug
-    model.class.connection.select_one(sql)
-  end
-  
-  def assert_paranoid_deletion(model)
-    row = find_row(model)
-    assert_not_nil row, "#{model.class} entirely deleted"
-    assert_not_nil row["deleted_at"], "Deleted at not set"
-  end
-  
-  def assert_non_paranoid_deletion(model)
-    row = find_row(model)
-    assert_nil row, "#{model.class} still exists"
   end
 end

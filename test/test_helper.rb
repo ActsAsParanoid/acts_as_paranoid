@@ -342,14 +342,9 @@ class ParanoidWithScopedValidation < ActiveRecord::Base
   validates_uniqueness_of :name, :scope => :category
 end
 
-
 ParanoidWithCallback.add_observer(ParanoidObserver.instance)
 
 class ParanoidBaseTest < ActiveSupport::TestCase
-  def assert_empty(collection)
-    assert(collection.respond_to?(:empty?) && collection.empty?)
-  end
-  
   def setup
     setup_db
 
@@ -367,6 +362,27 @@ class ParanoidBaseTest < ActiveSupport::TestCase
 
   def teardown
     teardown_db
+  end
+  
+  def assert_empty(collection)
+    assert(collection.respond_to?(:empty?) && collection.empty?)
+  end
+  
+  def assert_paranoid_deletion(model)
+    row = find_row(model)
+    assert_not_nil row, "#{model.class} entirely deleted"
+    assert_not_nil row["deleted_at"], "Deleted at not set"
+  end
+  
+  def assert_non_paranoid_deletion(model)
+    row = find_row(model)
+    assert_nil row, "#{model.class} still exists"
+  end
+
+  def find_row(model)
+    sql = "select deleted_at from #{model.class.table_name} where id = #{model.id}"
+    # puts sql here if you want to debug
+    model.class.connection.select_one(sql)
   end
 end
 
