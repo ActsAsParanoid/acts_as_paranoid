@@ -373,7 +373,11 @@ end
 class ParanoidForest < ActiveRecord::Base
   acts_as_paranoid
 
-  scope :rainforest, where('rainforest = ?', true)
+  # HACK: scope throws an error on 1.8.7 because the logger isn't initialized (see https://github.com/Casecommons/pg_search/issues/26)
+  require "active_support/core_ext/logger.rb"
+  ActiveRecord::Base.logger = Logger.new(StringIO.new)
+
+  scope :rainforest, where('rainforest IS ?', true)
 
   has_many :paranoid_trees, :dependent => :destroy
 end
