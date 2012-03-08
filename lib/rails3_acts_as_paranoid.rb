@@ -37,6 +37,13 @@ module ActsAsParanoid
     
     # Magic!
     default_scope { where(paranoid_default_scope_sql) }
+
+    scope :deleted_inside_time_window, lambda {|time, window|
+      deleted_after_time((time - window)).deleted_before_time((time + window))
+    }
+
+    scope :deleted_after_time, lambda  { |time| where("#{paranoid_column} > ?", time) }
+    scope :deleted_before_time, lambda { |time| where("#{paranoid_column} < ?", time) }
   end
 end
 

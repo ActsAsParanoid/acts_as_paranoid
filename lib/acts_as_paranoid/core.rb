@@ -113,22 +113,22 @@ module ActsAsParanoid
     end
 
     def recover_dependent_associations(window, options)
-      self.class.dependent_associations.each do |association|
-        next unless association.klass.paranoid?
+      self.class.dependent_associations.each do |reflection|
+        next unless reflection.klass.paranoid?
 
-        association.klass.unscoped do
-          if association.collection?
-            only_deleted_inside_window_if_time_paranoid(self.send(:association, association.name).association_scope, paranoid_value, window).each do |object|
-              object.recover(options)
-            end
-          elsif association.macro == :has_one
-            object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).send('find_by_'+association.foreign_key, self.id)
-            object.recover(options) if object
-          else
-            id = self.send(association.foreign_key)
-            object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).find_by_id(id)
-            object.recover(options) if object
-          end
+        scope = reflection.klass.only_deleted
+        
+        # Merge in the association's scope
+        scope = scope.merge(association(reflection.name).association_scope)
+
+        # We can only recover by window if both parent and dependant have a
+        # paranoid column type of :time.
+        if self.class.paranoid_column_type == :time && reflection.klass.paranoid_column_type == :time
+          scope = scope.merge(reflection.klass.deleted_inside_time_window(paranoid_value, window))
+        end
+
+        scope.each do |object|
+          object.recover(options)
         end
       end
     end
@@ -152,16 +152,6 @@ module ActsAsParanoid
 
     def paranoid_value=(value)
       self.send("#{self.class.paranoid_column}=", value)
-    end
-
-    def only_deleted_inside_window_if_time_paranoid(klass, value, window)
-      # paranoid_column_type is available as a result of delegation.
-      # See: ActiveRecord::Relation(ActiveRecord::Delegation)
-      if klass.paranoid_column_type == 'time'
-        klass.where("#{klass.paranoid_column} > ? AND #{klass.paranoid_column} < ?", (value - window), (value + window))
-      else
-        klass.only_deleted
-      end
     end
   end
 end
