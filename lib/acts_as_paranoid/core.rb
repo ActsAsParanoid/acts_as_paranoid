@@ -74,7 +74,7 @@ module ActsAsParanoid
     def destroy!
       with_transaction_returning_status do
         run_callbacks :destroy do
-          act_on_dependent_destroy_associations
+          destroy_dependent_associations!
           self.class.delete_all!(self.class.primary_key.to_sym => self.id)
           self.paranoid_value = self.class.delete_now_value
           freeze
@@ -116,20 +116,20 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |association|
         if association.collection? && self.send(association.name).paranoid?
           self.send(association.name).unscoped do
-            self.send(association.name).paranoid_deleted_around_time(paranoid_value, window).each do |object|
+            only_deleted_inside_window_if_time_paranoid(self.send(association.name), paranoid_value, window).each do |object|
               object.recover(options)
             end
           end
         elsif association.klass.paranoid?
           if association.macro == :has_one
             association.klass.unscoped do
-              object = association.klass.paranoid_deleted_around_time(paranoid_value, window).send('find_by_'+association.foreign_key, self.id)
+              object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).send('find_by_'+association.foreign_key, self.id)
               object.recover(options) if object
             end
           else
             association.klass.unscoped do
               id = self.send(association.foreign_key)
-              object = association.klass.paranoid_deleted_around_time(paranoid_value, window).find_by_id(id)
+              object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).find_by_id(id)
               object.recover(options) if object
             end
           end
@@ -137,7 +137,15 @@ module ActsAsParanoid
       end
     end
 
-    def act_on_dependent_destroy_associations
+    def only_deleted_inside_window_if_time_paranoid(klass, value, window)
+      if klass.paranoid_column_type == 'time'
+        klass.where("#{klass.paranoid_column} > ? AND #{klass.paranoid_column} < ?", (value - window), (value + window))
+      else
+        klass.only_deleted
+      end
+    end
+
+    def destroy_dependent_associations!
       self.class.dependent_associations.each do |association|
         if association.collection? && self.send(association.name).paranoid?
           association.klass.with_deleted.instance_eval("find_all_by_#{association.foreign_key}(#{self.id.to_json})").each do |object|

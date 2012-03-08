@@ -31,22 +31,12 @@ module ActsAsParanoid
     self.paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
     
     return if paranoid?
-
-    # Magic!
-    default_scope { where(paranoid_default_scope_sql) }
-
-    scope :paranoid_deleted_around_time, lambda {|value, window|
-      if self.class.respond_to?(:paranoid?) && self.class.paranoid?
-        if self.class.paranoid_column_type == 'time' && ![true, false].include?(value)
-          self.where("#{self.class.paranoid_column} > ? AND #{self.class.paranoid_column} < ?", (value - window), (value + window))
-        else
-          self.only_deleted
-        end
-      end
-    }
     
     include ActsAsParanoid::Core
     include ActsAsParanoid::Associations
+    
+    # Magic!
+    default_scope { where(paranoid_default_scope_sql) }
   end
 end
 
