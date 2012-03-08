@@ -14,11 +14,11 @@ While porting it to Rails 3, I decided to apply the ideas behind those plugins t
 
 You can enable ActsAsParanoid like this:
 
-	```ruby
-    class Paranoiac < ActiveRecord::Base
-      acts_as_paranoid
-    end
-    ```
+```ruby
+class Paranoiac < ActiveRecord::Base
+  acts_as_paranoid
+end
+```
 
 ### Options
 
@@ -39,151 +39,154 @@ If your column type is a `string`, you can also specify which value to use when 
 
 If a record is deleted by ActsAsParanoid, it won't be retrieved when accessing the database. So, `Paranoiac.all` will **not** include the deleted_records. if you want to access them, you have 2 choices:
 
-	```ruby
-    Paranoiac.only_deleted # retrieves the deleted records
-    Paranoiac.with_deleted # retrieves all records, deleted or not
-    ```
+```ruby
+Paranoiac.only_deleted # retrieves the deleted records
+Paranoiac.with_deleted # retrieves all records, deleted or not
+```
 
 ### Real deletion
 
 In order to really delete a record, just use:
 
-	```ruby
-    paranoiac.destroy!
-    Paranoiac.delete_all!(conditions)
-    ```
+```ruby
+paranoiac.destroy!
+Paranoiac.delete_all!(conditions)
+```
 
 You can also permanently delete a record by calling `destroy` or `delete_all` on it **twice**. If a record was already deleted (hidden by ActsAsParanoid) and you delete it again, it will be removed from the database. Take this example:
 
-	```ruby
-    Paranoiac.first.destroy # does NOT delete the first record, just hides it
-    Paranoiac.only_deleted.destroy # deletes the first record from the database
-    ```
+```ruby
+Paranoiac.first.destroy # does NOT delete the first record, just hides it
+Paranoiac.only_deleted.destroy # deletes the first record from the database
+```
 
 ### Recovery
 
 Recovery is easy. Just invoke `recover` on it, like this:
 
-	```ruby
-    Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover
-    ```
+```ruby
+Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover
+```
     
 All associations marked as `:dependent => :destroy` are also recursively recovered. If you would like to disable this behavior, you can call `recover` with the `recursive` option:
 
-	```ruby
-    Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover(:recursive => false)
-    ```
+```ruby
+Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover(:recursive => false)
+```
 
 If you would like to change this default behavior for one model, you can use the `recover_dependent_associations` option
 
-	```ruby
-    class Paranoiac < ActiveRecord::Base
-        acts_as_paranoid :recover_dependent_associations => false
-    end
-    ```
+```ruby
+class Paranoiac < ActiveRecord::Base
+    acts_as_paranoid :recover_dependent_associations => false
+end
+```
 
 By default when using timestamp fields to mark deletion, dependent records will be recovered if they were deleted within 2 minutes of the object upon which they depend.  This restores the objects to the state before the recursive deletion without restoring other objects that were deleted earlier.  This window can be changed with the `dependent_recovery_window` option
 
-	```ruby
-    class Paranoiac < ActiveRecord::Base
-        acts_as_paranoid
-        has_many :paranoids, :dependent => :destroy
-    end
+```ruby
+class Paranoiac < ActiveRecord::Base
+    acts_as_paranoid
+    has_many :paranoids, :dependent => :destroy
+end
 
-    class Paranoid < ActiveRecord::Base
-        belongs_to :paranoic
+class Paranoid < ActiveRecord::Base
+    belongs_to :paranoic
 
-        # Paranoid objects will be recovered alongside Paranoic objects 
-        # if they were deleted within 1 minute of the Paranoic object
-        acts_as_paranoid :dependent_recovery_window => 10.minute
-    end
-    ```
+    # Paranoid objects will be recovered alongside Paranoic objects 
+    # if they were deleted within 1 minute of the Paranoic object
+    acts_as_paranoid :dependent_recovery_window => 10.minute
+end
+```
 
 or in the recover statement
 
-	```ruby
-    Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover(:recovery_window => 30.seconds)
-    ```
+```ruby
+Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover(:recovery_window => 30.seconds)
+```
 
 ### Validation
 ActiveRecord's built-in uniqueness validation does not account for records deleted by ActsAsParanoid. If you want to check for uniqueness among non-deleted records only, use the macro `validates_as_paranoid` in your model. Then, instead of using `validates_uniqueness_of`, use `validates_uniqueness_of_without_deleted`. This will keep deleted records from counting against the uniqueness check.
 
-	```ruby
-    class Paranoiac < ActiveRecord::Base
-      acts_as_paranoid
-      validates_as_paranoid
-      validates_uniqueness_of_without_deleted :name
-    end
+```ruby
+class Paranoiac < ActiveRecord::Base
+    acts_as_paranoid
+  	validates_as_paranoid
+  	validates_uniqueness_of_without_deleted :name
+end
   
-    p1 = Paranoiac.create(:name => 'foo')
-    p1.destroy
+p1 = Paranoiac.create(:name => 'foo')
+p1.destroy
     
-    p2 = Paranoiac.new(:name => 'foo') 
-    p2.valid? #=> true
-    p2.save
-    
-    p1.recover #=> fails validation!
-    ```
+p2 = Paranoiac.new(:name => 'foo') 
+p2.valid? #=> true
+p2.save
+ 
+p1.recover #=> fails validation!
+```
 
 ### Status
 You can check the status of your paranoid objects with the `deleted?` helper
 
-    Paranoiac.create(:name => 'foo').destroy
-    Paranoiac.with_deleted.first.deleted? #=> true
+```ruby
+Paranoiac.create(:name => 'foo').destroy
+Paranoiac.with_deleted.first.deleted? #=> true
+```
     
 ### Scopes
 
 As you've probably guessed, `with_deleted` and `only_deleted` are scopes. You can, however, chain them freely with other scopes you might have. This
 
-	```ruby
-	Paranoiac.pretty.with_deleted
-	```
+```ruby
+Paranoiac.pretty.with_deleted
+```
 
 is exactly the same as
 
-	```ruby
-	Paranoiac.with_deleted.pretty
-	```
+```ruby
+Paranoiac.with_deleted.pretty
+```
 
 You can work freely with scopes and it will just work:
 
-	```ruby
-	class Paranoiac < ActiveRecord::Base
-		acts_as_paranoid
-		scope :pretty, where(:pretty => true)
-	end
+```ruby
+class Paranoiac < ActiveRecord::Base
+	acts_as_paranoid
+	scope :pretty, where(:pretty => true)
+end
 	
-	Paranoiac.create(:pretty => true)
+Paranoiac.create(:pretty => true)
 	
-	Paranoiac.pretty.count #=> 1
-	Paranoiac.only_deleted.count #=> 0
-	Paranoiac.pretty.only_deleted.count #=> 0
+Paranoiac.pretty.count #=> 1
+Paranoiac.only_deleted.count #=> 0
+Paranoiac.pretty.only_deleted.count #=> 0
 	
-	Paranoiac.first.destroy
+Paranoiac.first.destroy
 	
-	Paranoiac.pretty.count #=> 0
-	Paranoiac.only_deleted.count #=> 1
-	Paranoiac.pretty.only_deleted.count #=> 1
+Paranoiac.pretty.count #=> 0
+Paranoiac.only_deleted.count #=> 1
+Paranoiac.pretty.only_deleted.count #=> 1
+```
 
 ### Associations
 
 Associations are also supported. From the simplest behaviors you'd expect to more nifty things like the ones mentioned previously or the usage of the `:with_deleted` option with `belongs_to`
 
-	```ruby
-	class ParanoiacParent < ActiveRecord::Base
-		has_many :children, :class_name => "ParanoiacChild"
-	end
+```ruby
+class ParanoiacParent < ActiveRecord::Base
+	has_many :children, :class_name => "ParanoiacChild"
+end
 	
-	class ParanoiacChild < ActiveRecord::Base
-		belongs_to :parent, :class_name => "ParanoiacParent", :with_deleted => true
-	end
+class ParanoiacChild < ActiveRecord::Base
+	belongs_to :parent, :class_name => "ParanoiacParent", :with_deleted => true
+end
 	
-	parent = ParanoiacParent.first 	
-    child = parent.children.create
-    parent.destroy
+parent = ParanoiacParent.first 	
+child = parent.children.create
+parent.destroy
      
-    child.parent #=> nil
-    child.parent_with_deleted #=> ParanoiacParent (it works!)
+child.parent #=> nil
+child.parent_with_deleted #=> ParanoiacParent (it works!)
 ```
 
 ## Caveats
@@ -210,6 +213,7 @@ For Rails 3.1 check the README at the [rails3.1](https://github.com/goncalossilv
 For Rails 3.0 check the README at the [rails3.0](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.0) branch and add this to your Gemfile:
 
 	gem "rails3_acts_as_paranoid", "~>0.0.9"
+	
 	
 ## Ruby
 
