@@ -29,6 +29,7 @@ PLATFORMS
 DEPENDENCIES
   ZenTest
   activerecord (~> 3.2)
+  activerecord-jdbcsqlite3-adapter
   activesupport (~> 3.2)
   autotest-growl
   minitest
