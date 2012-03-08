@@ -193,7 +193,7 @@ child.parent_with_deleted #=> ParanoiacParent (it works!)
 
 Watch out for these caveats:
 
--   You cannot use scopes named `with_deleted`, `only_deleted` and `paranoid_deleted_around_time`
+-   You cannot use scopes named `with_deleted` and `only_deleted`
 -   `unscoped` will return all records, deleted or not
 
 # Support
