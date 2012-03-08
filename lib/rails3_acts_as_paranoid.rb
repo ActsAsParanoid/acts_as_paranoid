@@ -42,7 +42,7 @@ module ActsAsParanoid
         else
           self.only_deleted
         end
-      end if paranoid_configuration[:column_type] == 'time'
+      end
     }
     
     include ActsAsParanoid::Core

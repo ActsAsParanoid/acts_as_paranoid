@@ -117,19 +117,21 @@ module ActsAsParanoid
         if association.collection? && self.send(association.name).paranoid?
           self.send(association.name).unscoped do
             self.send(association.name).paranoid_deleted_around_time(paranoid_value, window).each do |object|
-              object.recover(options) if object.respond_to?(:recover)
+              object.recover(options)
             end
           end
-        elsif association.macro == :has_one && association.klass.paranoid?
-          association.klass.unscoped do
-            object = association.klass.paranoid_deleted_around_time(paranoid_value, window).send('find_by_'+association.foreign_key, self.id)
-            object.recover(options) if object && object.respond_to?(:recover)
-          end
         elsif association.klass.paranoid?
-          association.klass.unscoped do
-            id = self.send(association.foreign_key)
-            object = association.klass.paranoid_deleted_around_time(paranoid_value, window).find_by_id(id)
-            object.recover(options) if object && object.respond_to?(:recover)
+          if association.macro == :has_one
+            association.klass.unscoped do
+              object = association.klass.paranoid_deleted_around_time(paranoid_value, window).send('find_by_'+association.foreign_key, self.id)
+              object.recover(options) if object
+            end
+          else
+            association.klass.unscoped do
+              id = self.send(association.foreign_key)
+              object = association.klass.paranoid_deleted_around_time(paranoid_value, window).find_by_id(id)
+              object.recover(options) if object
+            end
           end
         end
       end
