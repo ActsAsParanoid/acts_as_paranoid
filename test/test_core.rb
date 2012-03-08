@@ -11,6 +11,16 @@ class ParanoidTest < ParanoidBaseTest
     assert ParanoidTime.paranoid?
   end
 
+  def test_scope_inclusion_with_time_column_type
+    assert ParanoidTime.respond_to?(:deleted_inside_time_window)
+    assert ParanoidTime.respond_to?(:deleted_before_time)
+    assert ParanoidTime.respond_to?(:deleted_after_time)
+
+    assert !ParanoidBoolean.respond_to?(:deleted_inside_time_window)
+    assert !ParanoidBoolean.respond_to?(:deleted_before_time)
+    assert !ParanoidBoolean.respond_to?(:deleted_after_time)
+  end
+
   def test_fake_removal
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidBoolean.count
