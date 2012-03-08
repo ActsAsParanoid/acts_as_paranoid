@@ -13,7 +13,7 @@ class MoreParanoidTest < ParanoidBaseTest
     child.destroy
     assert_paranoid_deletion(child)
     
-    parent.reload
+    #parent.reload
     
     assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
   end

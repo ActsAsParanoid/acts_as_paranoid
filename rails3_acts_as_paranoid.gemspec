@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.platform          = Gem::Platform::RUBY
   s.authors           = ["Goncalo Silva"]
   s.email             = ["goncalossilva@gmail.com"]
-  s.homepage          = "https://github.com/softcraft-development/rails3_acts_as_paranoid"
+  s.homepage          = "https://github.com/goncalossilva/rails3_acts_as_paranoid"
   s.summary           = "Active Record (~>3.2) plugin which allows you to hide and restore records without actually deleting them."
   s.description       = "Active Record (~>3.2) plugin which allows you to hide and restore records without actually deleting them. Check its GitHub page for more in-depth information."
   s.rubyforge_project = s.name
