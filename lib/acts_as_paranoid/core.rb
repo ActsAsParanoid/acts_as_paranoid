@@ -114,24 +114,20 @@ module ActsAsParanoid
 
     def recover_dependent_associations(window, options)
       self.class.dependent_associations.each do |association|
-        if association.collection? && self.send(association.name).paranoid?
-          self.send(association.name).unscoped do
-            only_deleted_inside_window_if_time_paranoid(self.send(association.name), paranoid_value, window).each do |object|
+        next unless association.klass.paranoid?
+
+        association.klass.unscoped do
+          if association.collection?
+            only_deleted_inside_window_if_time_paranoid(self.send(:association, association.name).association_scope, paranoid_value, window).each do |object|
               object.recover(options)
             end
-          end
-        elsif association.klass.paranoid?
-          if association.macro == :has_one
-            association.klass.unscoped do
-              object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).send('find_by_'+association.foreign_key, self.id)
-              object.recover(options) if object
-            end
+          elsif association.macro == :has_one
+            object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).send('find_by_'+association.foreign_key, self.id)
+            object.recover(options) if object
           else
-            association.klass.unscoped do
-              id = self.send(association.foreign_key)
-              object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).find_by_id(id)
-              object.recover(options) if object
-            end
+            id = self.send(association.foreign_key)
+            object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).find_by_id(id)
+            object.recover(options) if object
           end
         end
       end
@@ -159,6 +155,8 @@ module ActsAsParanoid
     end
 
     def only_deleted_inside_window_if_time_paranoid(klass, value, window)
+      # paranoid_column_type is available as a result of delegation.
+      # See: ActiveRecord::Relation(ActiveRecord::Delegation)
       if klass.paranoid_column_type == 'time'
         klass.where("#{klass.paranoid_column} > ? AND #{klass.paranoid_column} < ?", (value - window), (value + window))
       else
