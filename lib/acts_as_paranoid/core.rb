@@ -136,15 +136,7 @@ module ActsAsParanoid
         end
       end
     end
-
-    def only_deleted_inside_window_if_time_paranoid(klass, value, window)
-      if klass.paranoid_column_type == 'time'
-        klass.where("#{klass.paranoid_column} > ? AND #{klass.paranoid_column} < ?", (value - window), (value + window))
-      else
-        klass.only_deleted
-      end
-    end
-
+    
     def destroy_dependent_associations!
       self.class.dependent_associations.each do |association|
         if association.collection? && self.send(association.name).paranoid?
@@ -164,6 +156,14 @@ module ActsAsParanoid
 
     def paranoid_value=(value)
       self.send("#{self.class.paranoid_column}=", value)
+    end
+
+    def only_deleted_inside_window_if_time_paranoid(klass, value, window)
+      if klass.paranoid_column_type == 'time'
+        klass.where("#{klass.paranoid_column} > ? AND #{klass.paranoid_column} < ?", (value - window), (value + window))
+      else
+        klass.only_deleted
+      end
     end
   end
 end
