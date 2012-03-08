@@ -1,6 +1,16 @@
 require 'test_helper'
 
 class ParanoidTest < ParanoidBaseTest
+  def test_paranoid?
+    assert !NotParanoid.paranoid?
+    assert_raise(NoMethodError) { NotParanoid.delete_all! }
+    assert_raise(NoMethodError) { NotParanoid.first.destroy! }
+    assert_raise(NoMethodError) { NotParanoid.with_deleted }
+    assert_raise(NoMethodError) { NotParanoid.only_deleted }    
+
+    assert ParanoidTime.paranoid?
+  end
+
   def test_fake_removal
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidBoolean.count
@@ -41,13 +51,6 @@ class ParanoidTest < ParanoidBaseTest
     ParanoidTime.delete_all!
     assert_empty ParanoidTime.all
     assert_empty ParanoidTime.with_deleted.all
-  end
-
-  def test_paranoid_scope
-    assert_raise(NoMethodError) { NotParanoid.delete_all! }
-    assert_raise(NoMethodError) { NotParanoid.first.destroy! }
-    assert_raise(NoMethodError) { NotParanoid.with_deleted }
-    assert_raise(NoMethodError) { NotParanoid.only_deleted }    
   end
 
   def test_recovery
@@ -186,6 +189,173 @@ class ParanoidTest < ParanoidBaseTest
   end
 end
 
+class MultipleDefaultScopesTest < ParanoidBaseTest
+  def setup
+    setup_db
+
+    # Naturally, the default scope for humans is male. Sexism++
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'female'
+
+    assert_equal 3, ParanoidHuman.count
+    assert_equal 4, ParanoidHuman.unscoped.count
+  end
+
+  def test_fake_removal_with_multiple_default_scope
+    ParanoidHuman.first.destroy
+    assert_equal 2, ParanoidHuman.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+    assert_equal 1, ParanoidHuman.only_deleted.count
+    assert_equal 4, ParanoidHuman.unscoped.count
+
+    ParanoidHuman.destroy_all
+    assert_equal 0, ParanoidHuman.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+    assert_equal 4, ParanoidHuman.unscoped.count
+  end
+  
+  def test_real_removal_with_multiple_default_scope
+    # two-step
+    ParanoidHuman.first.destroy
+    ParanoidHuman.only_deleted.first.destroy
+    assert_equal 2, ParanoidHuman.count
+    assert_equal 2, ParanoidHuman.with_deleted.count
+    assert_equal 0, ParanoidHuman.only_deleted.count
+    assert_equal 3, ParanoidHuman.unscoped.count
+
+    ParanoidHuman.first.destroy!
+    assert_equal 1, ParanoidHuman.count
+    assert_equal 1, ParanoidHuman.with_deleted.count
+    assert_equal 0, ParanoidHuman.only_deleted.count
+    assert_equal 2, ParanoidHuman.unscoped.count
+
+    ParanoidHuman.delete_all!
+    assert_equal 0, ParanoidHuman.count
+    assert_equal 0, ParanoidHuman.with_deleted.count
+    assert_equal 0, ParanoidHuman.only_deleted.count
+    assert_equal 1, ParanoidHuman.unscoped.count
+  end
+end
+
+class RelationsTest < ParanoidBaseTest
+  def setup
+    setup_db 
+
+    @paranoid_forest_1 = ParanoidForest.create! :name => "ParanoidForest #1"
+    @paranoid_forest_2 = ParanoidForest.create! :name => "ParanoidForest #2", :rainforest => true
+    @paranoid_forest_3 = ParanoidForest.create! :name => "ParanoidForest #3", :rainforest => true
+
+    assert_equal 3, ParanoidForest.count
+    assert_equal 2, ParanoidForest.rainforest.count
+
+    @paranoid_forest_1.paranoid_trees.create! :name => 'ParanoidTree #1'
+    @paranoid_forest_1.paranoid_trees.create! :name => 'ParanoidTree #2'
+    @paranoid_forest_2.paranoid_trees.create! :name => 'ParanoidTree #3'
+    @paranoid_forest_2.paranoid_trees.create! :name => 'ParanoidTree #4'
+
+    assert_equal 4, ParanoidTree.count
+  end
+
+  def test_filtering_with_scopes
+    assert_equal 2, ParanoidForest.rainforest.with_deleted.count
+    assert_equal 2, ParanoidForest.with_deleted.rainforest.count
+
+    assert_equal 0, ParanoidForest.rainforest.only_deleted.count
+    assert_equal 0, ParanoidForest.only_deleted.rainforest.count
+
+    ParanoidForest.rainforest.first.destroy
+    assert_equal 1, ParanoidForest.rainforest.count
+
+    assert_equal 2, ParanoidForest.rainforest.with_deleted.count
+    assert_equal 2, ParanoidForest.with_deleted.rainforest.count
+
+    assert_equal 1, ParanoidForest.rainforest.only_deleted.count
+    assert_equal 1, ParanoidForest.only_deleted.rainforest.count
+  end
+
+  def test_associations_filtered_by_with_deleted
+    assert_equal 2, @paranoid_forest_1.paranoid_trees.with_deleted.count
+    assert_equal 2, @paranoid_forest_2.paranoid_trees.with_deleted.count
+
+    @paranoid_forest_1.paranoid_trees.first.destroy
+    assert_equal 1, @paranoid_forest_1.paranoid_trees.count
+    assert_equal 2, @paranoid_forest_1.paranoid_trees.with_deleted.count
+    assert_equal 4, ParanoidTree.with_deleted.count
+
+    @paranoid_forest_2.paranoid_trees.first.destroy
+    assert_equal 1, @paranoid_forest_2.paranoid_trees.count
+    assert_equal 2, @paranoid_forest_2.paranoid_trees.with_deleted.count
+    assert_equal 4, ParanoidTree.with_deleted.count
+
+    @paranoid_forest_1.paranoid_trees.first.destroy
+    assert_equal 0, @paranoid_forest_1.paranoid_trees.count
+    assert_equal 2, @paranoid_forest_1.paranoid_trees.with_deleted.count
+    assert_equal 4, ParanoidTree.with_deleted.count
+  end
+
+  def test_associations_filtered_by_only_deleted
+    assert_equal 0, @paranoid_forest_1.paranoid_trees.only_deleted.count
+    assert_equal 0, @paranoid_forest_2.paranoid_trees.only_deleted.count
+
+    @paranoid_forest_1.paranoid_trees.first.destroy
+    assert_equal 1, @paranoid_forest_1.paranoid_trees.only_deleted.count
+    assert_equal 1, ParanoidTree.only_deleted.count
+
+    @paranoid_forest_2.paranoid_trees.first.destroy
+    assert_equal 1, @paranoid_forest_2.paranoid_trees.only_deleted.count
+    assert_equal 2, ParanoidTree.only_deleted.count
+
+    @paranoid_forest_1.paranoid_trees.first.destroy
+    assert_equal 2, @paranoid_forest_1.paranoid_trees.only_deleted.count
+    assert_equal 3, ParanoidTree.only_deleted.count
+  end
+  
+  def test_fake_removal_through_relation
+    # destroy: through a relation.
+    ParanoidForest.rainforest.destroy(@paranoid_forest_3)
+    assert_equal 1, ParanoidForest.rainforest.count
+    assert_equal 2, ParanoidForest.rainforest.with_deleted.count
+    assert_equal 1, ParanoidForest.rainforest.only_deleted.count
+
+    # destroy_all: through a relation
+    @paranoid_forest_2.paranoid_trees.order(:id).destroy_all
+    assert_equal 0, @paranoid_forest_2.paranoid_trees(true).count
+    assert_equal 2, @paranoid_forest_2.paranoid_trees(true).with_deleted.count
+  end
+  
+  def test_real_removal_through_relation
+    # destroy!: aliased to delete
+    ParanoidForest.rainforest.destroy!(@paranoid_forest_3)
+    assert_equal 1, ParanoidForest.rainforest.count
+    assert_equal 1, ParanoidForest.rainforest.with_deleted.count
+    assert_equal 0, ParanoidForest.rainforest.only_deleted.count
+    
+    # destroy: two-step through a relation
+    paranoid_tree = @paranoid_forest_1.paranoid_trees.first
+    @paranoid_forest_1.paranoid_trees.order(:id).destroy(paranoid_tree)
+    @paranoid_forest_1.paranoid_trees.only_deleted.destroy(paranoid_tree)
+    assert_equal 1, @paranoid_forest_1.paranoid_trees(true).count
+    assert_equal 1, @paranoid_forest_1.paranoid_trees(true).with_deleted.count
+    assert_equal 0, @paranoid_forest_1.paranoid_trees(true).only_deleted.count
+
+    # destroy_all: two-step through a relation
+    @paranoid_forest_1.paranoid_trees.order(:id).destroy_all
+    @paranoid_forest_1.paranoid_trees.only_deleted.destroy_all
+    assert_equal 0, @paranoid_forest_1.paranoid_trees(true).count
+    assert_equal 0, @paranoid_forest_1.paranoid_trees(true).with_deleted.count
+    assert_equal 0, @paranoid_forest_1.paranoid_trees(true).only_deleted.count
+
+    # delete_all!: through a relation
+    @paranoid_forest_2.paranoid_trees.order(:id).delete_all!
+    assert_equal 0, @paranoid_forest_2.paranoid_trees(true).count
+    assert_equal 0, @paranoid_forest_2.paranoid_trees(true).with_deleted.count
+    assert_equal 0, @paranoid_forest_2.paranoid_trees(true).only_deleted.count
+  end
+end
+
 class ValidatesUniquenessTest < ParanoidBaseTest
   def test_should_include_deleted_by_default
     ParanoidTime.new(:name => 'paranoid').tap do |record|
@@ -237,6 +407,32 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal 0, ParanoidProduct.count
     assert_equal 0, ParanoidDeleteCompany.with_deleted.count
     assert_equal 0, ParanoidProduct.with_deleted.count
+  end
+
+  def test_belongs_to_with_deleted
+    paranoid_time = ParanoidTime.first 
+    paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(:name => 'dependant!')
+
+    assert paranoid_has_many_dependant.paranoid_time
+    assert paranoid_has_many_dependant.paranoid_time_with_deleted
+
+    paranoid_time.destroy
+    
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert paranoid_has_many_dependant.paranoid_time_with_deleted(true)
+  end
+
+  def test_belongs_to_polymorphic_with_deleted
+    paranoid_time = ParanoidTime.first 
+    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(:name => 'dependant!', :paranoid_time_polymorphic_with_deleted => paranoid_time)
+
+    assert paranoid_has_many_dependant.paranoid_time
+    assert paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
+
+    paranoid_time.destroy
+    
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
   end
 end
 
