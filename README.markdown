@@ -110,7 +110,29 @@ Watch out for these caveats:
 -   You cannot use scopes named `with_deleted`, `only_deleted` and `paranoid_deleted_around_time`
 -   `unscoped` will return all records, deleted or not
 
-## Acknowledgements
+# Support
+
+This gem supports the most recent versions of Rails and Ruby.
+
+## Rails
+
+For Rails 3.2 check the README at the [rails3.2](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.2) branch and add this to your Gemfile:
+	
+	gem "rails3_acts_as_paranoid", "~>0.2.0"
+	
+For Rails 3.1 check the README at the [rails3.1](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.1) branch and add this to your Gemfile:
+
+	gem "rails3_acts_as_paranoid", "~>0.1.4"
+
+For Rails 3.0 check the README at the [rails3.0](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.0) branch and add this to your Gemfile:
+
+	gem "rails3_acts_as_paranoid", "~>0.0.9"
+		
+## Ruby
+
+This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode). It *might* work fine in 1.8, but it's not officially supported.
+
+# Acknowledgements
 
 * To [cheerfulstoic](https://github.com/cheerfulstoic) for adding recursive recovery
 * To [Jonathan Vaught](https://github.com/gravelpup) for adding paranoid validations
