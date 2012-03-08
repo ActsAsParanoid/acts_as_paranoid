@@ -1,3 +1,4 @@
+
 # ActsAsParanoid
 
 A simple plugin which hides records instead of deleting them, being able to recover them.
@@ -56,8 +57,9 @@ Paranoiac.delete_all!(conditions)
 You can also permanently delete a record by calling `destroy` or `delete_all` on it **twice**. If a record was already deleted (hidden by ActsAsParanoid) and you delete it again, it will be removed from the database. Take this example:
 
 ```ruby
-Paranoiac.first.destroy # does NOT delete the first record, just hides it
-Paranoiac.only_deleted.destroy # deletes the first record from the database
+p = Paranoiac.first
+p.destroy # does NOT delete the first record, just hides it
+Paranoiac.only_deleted.where(:id => p.id).destroy # deletes the first record from the database
 ```
 
 ### Recovery
@@ -178,7 +180,8 @@ class ParanoiacParent < ActiveRecord::Base
 end
 	
 class ParanoiacChild < ActiveRecord::Base
-	belongs_to :parent, :class_name => "ParanoiacParent", :with_deleted => true
+	belongs_to :parent, :class_name => "ParanoiacParent"
+	belongs_to :parent_with_deleted, :class_name => "ParanoiacParent", :with_deleted => true
 end
 	
 parent = ParanoiacParent.first 	
