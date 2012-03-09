@@ -1,4 +1,3 @@
-
 # ActsAsParanoid
 
 A simple plugin which hides records instead of deleting them, being able to recover them.
@@ -208,7 +207,8 @@ child.parent_with_deleted #=> ParanoiacParent (it works!)
 
 Watch out for these caveats:
 
--   You cannot use scopes named `with_deleted`, `only_deleted`, `deleted_inside_time_window`, `deleted_before_time`, `deleted_after_time`
+-   You cannot use scopes named `with_deleted` and `only_deleted`
+-   You cannot use scopes named `deleted_inside_time_window`, `deleted_before_time`, `deleted_after_time` **if** your paranoid column's type is `time`
 -   `unscoped` will return all records, deleted or not
 
 # Support
