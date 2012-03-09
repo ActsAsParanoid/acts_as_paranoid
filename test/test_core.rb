@@ -11,6 +11,16 @@ class ParanoidTest < ParanoidBaseTest
     assert ParanoidTime.paranoid?
   end
 
+  def test_scope_inclusion_with_time_column_type
+    assert ParanoidTime.respond_to?(:deleted_inside_time_window)
+    assert ParanoidTime.respond_to?(:deleted_before_time)
+    assert ParanoidTime.respond_to?(:deleted_after_time)
+
+    assert !ParanoidBoolean.respond_to?(:deleted_inside_time_window)
+    assert !ParanoidBoolean.respond_to?(:deleted_before_time)
+    assert !ParanoidBoolean.respond_to?(:deleted_after_time)
+  end
+
   def test_fake_removal
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidBoolean.count
@@ -69,11 +79,16 @@ class ParanoidTest < ParanoidBaseTest
 
   def setup_recursive_recovery_tests
     @paranoid_time_object = ParanoidTime.first
+   
+    # Create one extra ParanoidHasManyDependant record so that we can validate
+    # the correct dependants are recovered.
+    ParanoidTime.last.paranoid_has_many_dependants.create(:name => "should not be recovered").destroy
 
     @paranoid_boolean_count = ParanoidBoolean.count
 
     assert_equal 0, ParanoidHasManyDependant.count
     assert_equal 0, ParanoidBelongsDependant.count
+    assert_equal 1, NotParanoid.count
 
     (1..3).each do |i|
       has_many_object = @paranoid_time_object.paranoid_has_many_dependants.create(:name => "has_many_#{i}")
@@ -89,16 +104,15 @@ class ParanoidTest < ParanoidBaseTest
     end
 
     @paranoid_time_object.create_not_paranoid(:name => "not_paranoid_belongs_to")
-
     @paranoid_time_object.create_has_one_not_paranoid(:name => "has_one_not_paranoid")
 
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidHasManyDependant.count
     assert_equal 3, ParanoidBelongsDependant.count
+    assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.count
     assert_equal 3, ParanoidHasOneDependant.count
     assert_equal 5, NotParanoid.count
     assert_equal 1, HasOneNotParanoid.count
-    assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.count
 
     @paranoid_time_object.destroy
     @paranoid_time_object.reload
@@ -106,11 +120,10 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 2, ParanoidTime.count
     assert_equal 0, ParanoidHasManyDependant.count
     assert_equal 0, ParanoidBelongsDependant.count
+    assert_equal @paranoid_boolean_count, ParanoidBoolean.count
     assert_equal 0, ParanoidHasOneDependant.count
-
     assert_equal 1, NotParanoid.count
     assert_equal 0, HasOneNotParanoid.count
-    assert_equal @paranoid_boolean_count, ParanoidBoolean.count
   end
 
   def test_recursive_recovery
@@ -121,10 +134,10 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidHasManyDependant.count
     assert_equal 3, ParanoidBelongsDependant.count
+    assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.count
     assert_equal 3, ParanoidHasOneDependant.count
     assert_equal 1, NotParanoid.count
     assert_equal 0, HasOneNotParanoid.count
-    assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.count
   end
 
   def test_non_recursive_recovery
@@ -135,10 +148,10 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 3, ParanoidTime.count
     assert_equal 0, ParanoidHasManyDependant.count
     assert_equal 0, ParanoidBelongsDependant.count
+    assert_equal @paranoid_boolean_count, ParanoidBoolean.count
     assert_equal 0, ParanoidHasOneDependant.count
     assert_equal 1, NotParanoid.count
     assert_equal 0, HasOneNotParanoid.count
-    assert_equal @paranoid_boolean_count, ParanoidBoolean.count
   end
 
   def test_deleted?

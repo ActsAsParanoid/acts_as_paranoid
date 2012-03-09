@@ -25,8 +25,8 @@ end
 
 You can also specify the name of the column to store it's *deletion* and the type of data it holds:
 
--   `:column => 'deleted_at'`
--   `:type => 'time'`
+- `:column      => 'deleted_at'`
+- `:column_type => 'time'`
 
 The values shown are the defaults. While *column* can be anything (as long as it exists in your database), *type* is restricted to:
 
@@ -43,6 +43,18 @@ If a record is deleted by ActsAsParanoid, it won't be retrieved when accessing t
 ```ruby
 Paranoiac.only_deleted # retrieves the deleted records
 Paranoiac.with_deleted # retrieves all records, deleted or not
+```
+
+When using the default `column_type` of `'time'`, the following extra scopes are provided:
+
+```ruby
+time = Time.now
+
+Paranoiac.deleted_after_time(time)
+Paranoiac.deleted_before_time(time)
+
+# Or roll it all up and get a nice window:
+Paranoiac.deleted_inside_time_window(time, 2.minutes)
 ```
 
 ### Real deletion
@@ -84,7 +96,7 @@ class Paranoiac < ActiveRecord::Base
 end
 ```
 
-By default when using timestamp fields to mark deletion, dependent records will be recovered if they were deleted within 2 minutes of the object upon which they depend.  This restores the objects to the state before the recursive deletion without restoring other objects that were deleted earlier.  This window can be changed with the `dependent_recovery_window` option
+By default, dependent records will be recovered if they were deleted within 2 minutes of the object upon which they depend.  This restores the objects to the state before the recursive deletion without restoring other objects that were deleted earlier.  The behavior is only available when both parent and dependant are using timestamp fields to mark deletion, which is the default behavior. This window can be changed with the `dependent_recovery_window` option:
 
 ```ruby
 class Paranoiac < ActiveRecord::Base
@@ -96,8 +108,8 @@ class Paranoid < ActiveRecord::Base
     belongs_to :paranoic
 
     # Paranoid objects will be recovered alongside Paranoic objects 
-    # if they were deleted within 1 minute of the Paranoic object
-    acts_as_paranoid :dependent_recovery_window => 10.minute
+    # if they were deleted within 10 minutes of the Paranoic object
+    acts_as_paranoid :dependent_recovery_window => 10.minutes
 end
 ```
 
@@ -196,7 +208,7 @@ child.parent_with_deleted #=> ParanoiacParent (it works!)
 
 Watch out for these caveats:
 
--   You cannot use scopes named `with_deleted` and `only_deleted`
+-   You cannot use scopes named `with_deleted`, `only_deleted`, `deleted_inside_time_window`, `deleted_before_time`, `deleted_after_time`
 -   `unscoped` will return all records, deleted or not
 
 # Support

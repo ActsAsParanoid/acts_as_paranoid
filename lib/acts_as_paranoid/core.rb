@@ -113,26 +113,22 @@ module ActsAsParanoid
     end
 
     def recover_dependent_associations(window, options)
-      self.class.dependent_associations.each do |association|
-        if association.collection? && self.send(association.name).paranoid?
-          self.send(association.name).unscoped do
-            only_deleted_inside_window_if_time_paranoid(self.send(association.name), paranoid_value, window).each do |object|
-              object.recover(options)
-            end
-          end
-        elsif association.klass.paranoid?
-          if association.macro == :has_one
-            association.klass.unscoped do
-              object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).send('find_by_'+association.foreign_key, self.id)
-              object.recover(options) if object
-            end
-          else
-            association.klass.unscoped do
-              id = self.send(association.foreign_key)
-              object = only_deleted_inside_window_if_time_paranoid(association.klass, paranoid_value, window).find_by_id(id)
-              object.recover(options) if object
-            end
-          end
+      self.class.dependent_associations.each do |reflection|
+        next unless reflection.klass.paranoid?
+
+        scope = reflection.klass.only_deleted
+        
+        # Merge in the association's scope
+        scope = scope.merge(association(reflection.name).association_scope)
+
+        # We can only recover by window if both parent and dependant have a
+        # paranoid column type of :time.
+        if self.class.paranoid_column_type == :time && reflection.klass.paranoid_column_type == :time
+          scope = scope.merge(reflection.klass.deleted_inside_time_window(paranoid_value, window))
+        end
+
+        scope.each do |object|
+          object.recover(options)
         end
       end
     end
@@ -156,14 +152,6 @@ module ActsAsParanoid
 
     def paranoid_value=(value)
       self.send("#{self.class.paranoid_column}=", value)
-    end
-
-    def only_deleted_inside_window_if_time_paranoid(klass, value, window)
-      if klass.paranoid_column_type == 'time'
-        klass.where("#{klass.paranoid_column} > ? AND #{klass.paranoid_column} < ?", (value - window), (value + window))
-      else
-        klass.only_deleted
-      end
     end
   end
 end
