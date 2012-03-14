@@ -140,6 +140,27 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 0, HasOneNotParanoid.count
   end
 
+  def test_recursive_recovery_dependant_window
+    setup_recursive_recovery_tests
+
+    # Stop the following from recovering: 
+    #   - ParanoidHasManyDependant and its ParanoidBelongsDependant 
+    #   - A single ParanoidBelongsDependant, but not its parent
+    dependants = @paranoid_time_object.paranoid_has_many_dependants.with_deleted
+    dependants.first.update_attribute(:deleted_at, 2.days.ago)
+    ParanoidBelongsDependant.with_deleted.where(:id => dependants.last.paranoid_belongs_dependant_id).first.update_attribute(:deleted_at, 1.hour.ago)
+
+    @paranoid_time_object.recover(:recursive => true)
+
+    assert_equal 3, ParanoidTime.count
+    assert_equal 2, ParanoidHasManyDependant.count
+    assert_equal 1, ParanoidBelongsDependant.count
+    assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.count
+    assert_equal 3, ParanoidHasOneDependant.count
+    assert_equal 1, NotParanoid.count
+    assert_equal 0, HasOneNotParanoid.count
+  end
+
   def test_non_recursive_recovery
     setup_recursive_recovery_tests
 
