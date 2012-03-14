@@ -77,7 +77,7 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 1, ParanoidString.count
   end
 
-  def setup_recursive_recovery_tests
+  def setup_recursive_tests
     @paranoid_time_object = ParanoidTime.first
    
     # Create one extra ParanoidHasManyDependant record so that we can validate
@@ -113,9 +113,12 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 3, ParanoidHasOneDependant.count
     assert_equal 5, NotParanoid.count
     assert_equal 1, HasOneNotParanoid.count
+  end
+
+  def test_recursive_fake_removal
+    setup_recursive_tests
 
     @paranoid_time_object.destroy
-    @paranoid_time_object.reload
 
     assert_equal 2, ParanoidTime.count
     assert_equal 0, ParanoidHasManyDependant.count
@@ -127,7 +130,10 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_recursive_recovery
-    setup_recursive_recovery_tests
+    setup_recursive_tests
+
+    @paranoid_time_object.destroy
+    @paranoid_time_object.reload
 
     @paranoid_time_object.recover(:recursive => true)
 
@@ -141,7 +147,10 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_recursive_recovery_dependant_window
-    setup_recursive_recovery_tests
+    setup_recursive_tests
+
+    @paranoid_time_object.destroy
+    @paranoid_time_object.reload
 
     # Stop the following from recovering: 
     #   - ParanoidHasManyDependant and its ParanoidBelongsDependant 
@@ -162,7 +171,10 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_non_recursive_recovery
-    setup_recursive_recovery_tests
+    setup_recursive_tests
+
+    @paranoid_time_object.destroy
+    @paranoid_time_object.reload
 
     @paranoid_time_object.recover(:recursive => false)
 
