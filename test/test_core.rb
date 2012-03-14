@@ -82,7 +82,7 @@ class ParanoidTest < ParanoidBaseTest
    
     # Create one extra ParanoidHasManyDependant record so that we can validate
     # the correct dependants are recovered.
-    ParanoidTime.last.paranoid_has_many_dependants.create(:name => "should not be recovered").destroy
+    ParanoidTime.where('id IS NOT ?', @paranoid_time_object.id).first.paranoid_has_many_dependants.create(:name => "should not be recovered").destroy
 
     @paranoid_boolean_count = ParanoidBoolean.count
 
@@ -125,6 +125,20 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 0, ParanoidBelongsDependant.count
     assert_equal @paranoid_boolean_count, ParanoidBoolean.count
     assert_equal 0, ParanoidHasOneDependant.count
+    assert_equal 1, NotParanoid.count
+    assert_equal 0, HasOneNotParanoid.count
+  end
+
+  def test_recursive_real_removal
+    setup_recursive_tests 
+
+    @paranoid_time_object.destroy!
+
+    assert_equal 0, ParanoidTime.only_deleted.count
+    assert_equal 1, ParanoidHasManyDependant.only_deleted.count
+    assert_equal 0, ParanoidBelongsDependant.only_deleted.count
+    assert_equal 0, ParanoidBoolean.only_deleted.count
+    assert_equal 0, ParanoidHasOneDependant.only_deleted.count
     assert_equal 1, NotParanoid.count
     assert_equal 0, HasOneNotParanoid.count
   end
