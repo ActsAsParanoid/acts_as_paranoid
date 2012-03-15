@@ -137,7 +137,12 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |reflection|
         next unless reflection.klass.paranoid?
 
-        association(reflection.name).association_scope.each do |object|
+        scope = reflection.klass.only_deleted
+       
+        # Merge in the association's scope
+        scope = scope.merge(association(reflection.name).association_scope)
+
+        scope.each do |object|
           object.destroy!
         end
       end
