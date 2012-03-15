@@ -134,11 +134,16 @@ module ActsAsParanoid
     end
     
     def destroy_dependent_associations!
-      self.class.dependent_associations.each do |association|
-        if association.collection? && self.send(association.name).paranoid?
-          association.klass.with_deleted.instance_eval("find_all_by_#{association.foreign_key}(#{self.id.to_json})").each do |object|
-            object.destroy!
-          end
+      self.class.dependent_associations.each do |reflection|
+        next unless reflection.klass.paranoid?
+
+        scope = reflection.klass.only_deleted
+       
+        # Merge in the association's scope
+        scope = scope.merge(association(reflection.name).association_scope)
+
+        scope.each do |object|
+          object.destroy!
         end
       end
     end
