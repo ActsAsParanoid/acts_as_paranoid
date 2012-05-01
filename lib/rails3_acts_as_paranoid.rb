@@ -33,7 +33,6 @@ module ActsAsParanoid
     return if paranoid?
     
     include ActsAsParanoid::Core
-    include ActsAsParanoid::Associations
     
     # Magic!
     default_scope { where(paranoid_default_scope_sql) }
@@ -51,6 +50,9 @@ end
 
 # Extend ActiveRecord's functionality
 ActiveRecord::Base.send :extend, ActsAsParanoid
+
+# Extend ActiveRecord::Base with paranoid associations
+ActiveRecord::Base.send :include, ActsAsParanoid::Associations
 
 # Override ActiveRecord::Relation's behavior
 ActiveRecord::Relation.send :include, ActsAsParanoid::Relation

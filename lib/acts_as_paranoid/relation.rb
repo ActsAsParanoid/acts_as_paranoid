@@ -2,7 +2,6 @@ module ActsAsParanoid
   module Relation
     def self.included(base)
       base.class_eval do
-        
         def paranoid?
           klass.try(:paranoid?) ? true : false
         end
