@@ -169,4 +169,12 @@ class AssociationsTest < ParanoidBaseTest
     
     assert_paranoid_deletion(child)
   end
+
+  def test_belongs_to_on_normal_model_is_paranoid
+    not_paranoid = HasOneNotParanoid.create
+    not_paranoid.paranoid_time = ParanoidTime.create
+
+    assert not_paranoid.save
+    assert_not_nil not_paranoid.paranoid_time
+  end
 end

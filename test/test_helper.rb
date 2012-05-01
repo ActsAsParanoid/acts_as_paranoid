@@ -206,6 +206,7 @@ class NotParanoid < ActiveRecord::Base
 end
 
 class HasOneNotParanoid < ActiveRecord::Base
+  belongs_to :paranoid_time, :with_deleted => true
 end
 
 class ParanoidHasManyDependant < ActiveRecord::Base
