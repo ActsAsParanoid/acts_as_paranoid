@@ -13,6 +13,7 @@ module ActsAsParanoid
         result = belongs_to_without_deleted(target, options)
 
         if with_deleted
+          result.options[:with_deleted] = with_deleted
           class_eval <<-RUBY, __FILE__, __LINE__
             def #{target}_with_unscoped(*args)
               association = association(:#{target})
