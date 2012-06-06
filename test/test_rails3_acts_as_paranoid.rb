@@ -320,6 +320,21 @@ def test_belongs_to_with_deleted
     assert_equal :belongs_to, paranoid_time_polymorphic_with_deleted.macro
     assert paranoid_time_polymorphic_with_deleted.options[:with_deleted]
   end
+
+  def test_only_find_associated_records_when_finding_with_paranoid_deleted
+    parent = ParanoidBelongsDependant.create
+    child = ParanoidHasManyDependant.create
+    parent.paranoid_has_many_dependants << child
+
+    unrelated_parent = ParanoidBelongsDependant.create
+    unrelated_child = ParanoidHasManyDependant.create
+    unrelated_parent.paranoid_has_many_dependants << unrelated_child
+
+    child.destroy
+    assert_equal 0, parent.paranoid_has_many_dependants.count
+
+    assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
+  end
 end
 
 class InheritanceTest < ParanoidBaseTest
