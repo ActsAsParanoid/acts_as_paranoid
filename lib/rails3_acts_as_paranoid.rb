@@ -50,6 +50,10 @@ module ActsAsParanoid
     
     include InstanceMethods
     extend ClassMethods
+
+    class << self
+      alias_method_chain :belongs_to, :deleted
+    end
   end
 
   module ClassMethods
@@ -99,6 +103,26 @@ module ActsAsParanoid
         when "boolean" then true
         when "string" then paranoid_configuration[:deleted_value]
       end
+    end
+
+    def belongs_to_with_deleted(target, options = {})
+      with_deleted = options.delete(:with_deleted)
+      result = belongs_to_without_deleted(target, options)
+
+      if with_deleted
+        class_eval <<-RUBY, __FILE__, __LINE__
+          def #{target}_with_unscoped(*args)
+            reflection = self.class.reflect_on_association(:#{target})
+            reflection.options[:with_deleted] = #{with_deleted}
+            return nil if reflection.options[:polymorphic] && reflection.klass.nil?
+            return #{target}_without_unscoped(*args) unless reflection.klass.paranoid?
+            reflection.klass.with_deleted.scoping { #{target}_without_unscoped(*args) }
+          end
+          alias_method_chain :#{target}, :unscoped
+        RUBY
+      end
+
+      result
     end
   end
   
