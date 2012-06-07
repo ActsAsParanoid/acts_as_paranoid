@@ -263,6 +263,78 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal 0, ParanoidDeleteCompany.with_deleted.count
     assert_equal 0, ParanoidProduct.with_deleted.count
   end
+
+def test_belongs_to_with_deleted
+    paranoid_time = ParanoidTime.first
+    paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(:name => 'dependant!')
+
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
+
+    paranoid_time.destroy
+
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted(true)
+  end
+
+  def test_belongs_to_polymorphic_with_deleted
+    paranoid_time = ParanoidTime.first
+    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(:name => 'dependant!', :paranoid_time_polymorphic_with_deleted => paranoid_time)
+
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
+
+    paranoid_time.destroy
+
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
+  end
+
+  def test_belongs_to_nil_polymorphic_with_deleted
+    paranoid_time = ParanoidTime.first
+    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(:name => 'dependant!', :paranoid_time_polymorphic_with_deleted => nil)
+
+    assert_nil paranoid_has_many_dependant.paranoid_time
+    assert_nil paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
+
+    paranoid_time.destroy
+
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert_nil paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
+  end
+
+  def test_belongs_to_options
+    paranoid_time = ParanoidHasManyDependant.reflections[:paranoid_time]
+    assert_equal :belongs_to, paranoid_time.macro
+    assert_nil paranoid_time.options[:with_deleted]
+  end
+
+  def test_belongs_to_with_deleted_options
+    paranoid_time_with_deleted = ParanoidHasManyDependant.reflections[:paranoid_time_with_deleted]
+    assert_equal :belongs_to, paranoid_time_with_deleted.macro
+    assert paranoid_time_with_deleted.options[:with_deleted]
+  end
+
+  def test_belongs_to_polymorphic_with_deleted_options
+    paranoid_time_polymorphic_with_deleted = ParanoidHasManyDependant.reflections[:paranoid_time_polymorphic_with_deleted]
+    assert_equal :belongs_to, paranoid_time_polymorphic_with_deleted.macro
+    assert paranoid_time_polymorphic_with_deleted.options[:with_deleted]
+  end
+
+  def test_only_find_associated_records_when_finding_with_paranoid_deleted
+    parent = ParanoidBelongsDependant.create
+    child = ParanoidHasManyDependant.create
+    parent.paranoid_has_many_dependants << child
+
+    unrelated_parent = ParanoidBelongsDependant.create
+    unrelated_child = ParanoidHasManyDependant.create
+    unrelated_parent.paranoid_has_many_dependants << unrelated_child
+
+    child.destroy
+    assert_equal 0, parent.paranoid_has_many_dependants.count
+
+    assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
+  end
 end
 
 class InheritanceTest < ParanoidBaseTest

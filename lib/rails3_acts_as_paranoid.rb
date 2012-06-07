@@ -34,9 +34,6 @@ module ActsAsParanoid
     ActiveRecord::Reflection::AssociationReflection.class_eval do
       alias_method :foreign_key, :primary_key_name unless respond_to?(:foreign_key)
     end
-
-    # Magic!
-    default_scope where("#{paranoid_column_reference} IS ?", nil)
     
     scope :paranoid_deleted_around_time, lambda {|value, window|
       if self.class.respond_to?(:paranoid?) && self.class.paranoid?
@@ -50,6 +47,13 @@ module ActsAsParanoid
     
     include InstanceMethods
     extend ClassMethods
+
+    class << self
+      alias_method_chain :belongs_to, :deleted
+    end
+
+    # Magic!
+    default_scope where(paranoid_default_scope_sql)
   end
 
   module ClassMethods
@@ -66,7 +70,13 @@ module ActsAsParanoid
     end
 
     def with_deleted
-      self.unscoped
+      scope = self.scoped
+      where_values = scope.instance_variable_get(:'@where_values')
+
+      return self.unscoped unless where_values
+
+      where_values.delete(paranoid_default_scope_sql)
+      scope
     end
 
     def only_deleted
@@ -79,6 +89,10 @@ module ActsAsParanoid
 
     def delete_all(conditions = nil)
       update_all ["#{paranoid_configuration[:column]} = ?", delete_now_value], conditions
+    end
+
+    def paranoid_default_scope_sql
+      "#{self.scoped.table.name}.#{paranoid_configuration[:column]} IS NULL"
     end
 
     def paranoid_column
@@ -99,6 +113,26 @@ module ActsAsParanoid
         when "boolean" then true
         when "string" then paranoid_configuration[:deleted_value]
       end
+    end
+
+    def belongs_to_with_deleted(target, options = {})
+      with_deleted = options.delete(:with_deleted)
+      result = belongs_to_without_deleted(target, options)
+
+      if with_deleted
+        class_eval <<-RUBY, __FILE__, __LINE__
+          def #{target}_with_unscoped(*args)
+            reflection = self.class.reflect_on_association(:#{target})
+            reflection.options[:with_deleted] = #{with_deleted}
+            return nil if reflection.options[:polymorphic] && reflection.klass.nil?
+            return #{target}_without_unscoped(*args) unless reflection.klass.paranoid?
+            reflection.klass.with_deleted.scoping { #{target}_without_unscoped(*args) }
+          end
+          alias_method_chain :#{target}, :unscoped
+        RUBY
+      end
+
+      result
     end
   end
   

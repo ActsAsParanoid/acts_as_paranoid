@@ -17,7 +17,7 @@ desc 'Test the rails3_acts_as_paranoid plugin.'
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
   t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
+  t.pattern = 'test/test_rails3_acts_as_paranoid.rb'
   t.verbose = true
 end
 
