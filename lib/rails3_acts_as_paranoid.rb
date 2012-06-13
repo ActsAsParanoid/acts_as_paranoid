@@ -70,21 +70,15 @@ module ActsAsParanoid
     end
 
     def with_deleted
-      scope = self.scoped
-      where_values = scope.instance_variable_get(:'@where_values')
-
-      return self.unscoped unless where_values
-
-      where_values.delete(paranoid_default_scope_sql)
-      scope
+      without_paranoid_default_scope
     end
 
     def only_deleted
-      self.unscoped.where("#{paranoid_column_reference} IS NOT ?", nil)
+      without_paranoid_default_scope.where("#{paranoid_column_reference} IS NOT ?", nil)
     end
 
     def delete_all!(conditions = nil)
-      self.unscoped.delete_all!(conditions)
+      without_paranoid_default_scope.delete_all!(conditions)
     end
 
     def delete_all(conditions = nil)
@@ -134,6 +128,19 @@ module ActsAsParanoid
 
       result
     end
+
+  protected
+
+    def without_paranoid_default_scope
+      scope = self.scoped
+      where_values = scope.instance_variable_get(:'@where_values')
+
+      return self.unscoped unless where_values
+
+      where_values.delete(paranoid_default_scope_sql)
+      scope
+    end
+
   end
   
   module InstanceMethods
