@@ -149,6 +149,20 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.count
   end
 
+  def test_recursive_recovery_only_recover_associated_records
+    setup_recursive_recovery_tests
+
+    another_time_object = ParanoidTime.last
+
+    another_time_object.paranoid_has_many_dependants.create(:name => "another_has_many")
+    another_time_object.destroy
+    another_time_object.recover(:recursive => true)
+
+    assert_equal 1, ParanoidTime.count
+    assert_equal 1, ParanoidHasManyDependant.count
+    assert_equal 3, ParanoidHasManyDependant.only_deleted.count
+  end
+
   def test_non_recursive_recovery
     setup_recursive_recovery_tests
 
@@ -363,5 +377,56 @@ class ParanoidObserverTest < ParanoidBaseTest
 
     assert_equal @subject, ParanoidObserver.instance.called_before_recover
     assert_equal @subject, ParanoidObserver.instance.called_after_recover
+  end
+end
+
+class MultipleDefaultScopesTest < ParanoidBaseTest
+  def setup
+    setup_db
+
+    # Naturally, the default scope for humans is male. Sexism++
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'female'
+
+    assert_equal 3, ParanoidHuman.count
+    assert_equal 4, ParanoidHuman.unscoped.count
+  end
+
+  def test_fake_removal_with_multiple_default_scope
+    ParanoidHuman.first.destroy
+    assert_equal 2, ParanoidHuman.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+    assert_equal 1, ParanoidHuman.only_deleted.count
+    assert_equal 4, ParanoidHuman.unscoped.count
+
+    ParanoidHuman.destroy_all
+    assert_equal 0, ParanoidHuman.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+    assert_equal 4, ParanoidHuman.unscoped.count
+  end
+
+  def test_real_removal_with_multiple_default_scope
+    # two-step
+    ParanoidHuman.first.destroy
+    ParanoidHuman.only_deleted.first.destroy
+    assert_equal 2, ParanoidHuman.count
+    assert_equal 2, ParanoidHuman.with_deleted.count
+    assert_equal 0, ParanoidHuman.only_deleted.count
+    assert_equal 3, ParanoidHuman.unscoped.count
+
+    ParanoidHuman.first.destroy!
+    assert_equal 1, ParanoidHuman.count
+    assert_equal 1, ParanoidHuman.with_deleted.count
+    assert_equal 0, ParanoidHuman.only_deleted.count
+    assert_equal 2, ParanoidHuman.unscoped.count
+
+    ParanoidHuman.delete_all!
+    assert_equal 0, ParanoidHuman.count
+    assert_equal 0, ParanoidHuman.with_deleted.count
+    assert_equal 0, ParanoidHuman.only_deleted.count
+    assert_equal 1, ParanoidHuman.unscoped.count
   end
 end
