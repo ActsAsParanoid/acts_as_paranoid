@@ -82,7 +82,7 @@ class ParanoidTest < ParanoidBaseTest
    
     # Create one extra ParanoidHasManyDependant record so that we can validate
     # the correct dependants are recovered.
-    ParanoidTime.where('id IS NOT ?', @paranoid_time_object.id).first.paranoid_has_many_dependants.create(:name => "should not be recovered").destroy
+    ParanoidTime.where('id <> ?', @paranoid_time_object.id).first.paranoid_has_many_dependants.create(:name => "should not be recovered").destroy
 
     @paranoid_boolean_count = ParanoidBoolean.count
 
