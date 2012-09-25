@@ -34,6 +34,7 @@ The values shown are the defaults. While *column* can be anything (as long as it
 - `string`
 
 If your column type is a `string`, you can also specify which value to use when marking an object as deleted by passing `:deleted_value` (default is "deleted").
+If your column type is a `string`, you can also specify which value to use when marking an object as deleted by passing `:deleted_value` (default is "deleted"). Any records not matching this string will be treated normally.
 
 ### Filtering
 
