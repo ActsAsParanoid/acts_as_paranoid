@@ -17,7 +17,11 @@ desc 'Test the rails3_acts_as_paranoid plugin.'
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
   t.libs << 'test'
-  t.pattern = 'test/**/test_*.rb'
+
+  test_files = FileList['test/**/test_*.rb']
+  test_files.exclude('test/test_helper.rb')
+  t.test_files = test_files
+
   t.verbose = true
 end
 
