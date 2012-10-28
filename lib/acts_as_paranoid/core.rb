@@ -81,6 +81,10 @@ module ActsAsParanoid
       end
     end
 
+    def persisted?
+      !(new_record? || @destroyed)
+    end
+
     def paranoid_value
       self.send(self.class.paranoid_column)
     end
@@ -131,7 +135,7 @@ module ActsAsParanoid
         next unless reflection.klass.paranoid?
 
         scope = reflection.klass.only_deleted
-        
+
         # Merge in the association's scope
         scope = scope.merge(association(reflection.name).association_scope)
 
@@ -146,13 +150,13 @@ module ActsAsParanoid
         end
       end
     end
-    
+
     def destroy_dependent_associations!
       self.class.dependent_associations.each do |reflection|
         next unless reflection.klass.paranoid?
 
         scope = reflection.klass.only_deleted
-       
+
         # Merge in the association's scope
         scope = scope.merge(association(reflection.name).association_scope)
 
@@ -163,7 +167,7 @@ module ActsAsParanoid
     end
 
     def deleted?
-      !(paranoid_value.nil? || 
+      !(paranoid_value.nil? ||
         (self.class.string_type_with_deleted_value? && paranoid_value != self.class.delete_now_value))
     end
 
