@@ -89,7 +89,7 @@ module ActsAsParanoid
       with_transaction_returning_status do
         run_callbacks :destroy do
           destroy_dependent_associations!
-          self.class.delete_all!(self.class.primary_key.to_sym => self.id)
+          self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
           self.paranoid_value = self.class.delete_now_value
           freeze
         end
@@ -100,7 +100,7 @@ module ActsAsParanoid
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
-            self.class.delete_all(self.class.primary_key.to_sym => self.id)
+            self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
             self.paranoid_value = self.class.delete_now_value
             self
           end
