@@ -18,7 +18,11 @@ module ActsAsParanoid
         end
 
         relation = build_relation(finder_class, table, attribute, value)
-        relation = relation.and(table[finder_class.primary_key.to_sym].not_eq(record.send(:id))) if record.persisted?
+        if record.persisted?
+          [Array(finder_class.primary_key),Array(record.send(:id))].transpose.each do |pk_key, pk_value|
+            relation = relation.and(table[pk_key.to_sym].not_eq(pk_value))
+          end
+        end
 
         Array.wrap(options[:scope]).each do |scope_item|
           scope_value = record.send(scope_item)
