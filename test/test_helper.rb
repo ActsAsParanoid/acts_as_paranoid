@@ -209,6 +209,11 @@ class HasOneNotParanoid < ActiveRecord::Base
   belongs_to :paranoid_time, :with_deleted => true
 end
 
+class DoubleHasOneNotParanoid < HasOneNotParanoid
+  belongs_to :paranoid_time, :with_deleted => true
+  belongs_to :paranoid_time, :with_deleted => true
+end
+
 class ParanoidHasManyDependant < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :paranoid_time
