@@ -93,6 +93,7 @@ module ActsAsParanoid
       with_transaction_returning_status do
         run_callbacks :destroy do
           destroy_dependent_associations!
+          # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
           self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
           self.paranoid_value = self.class.delete_now_value
           freeze
@@ -104,6 +105,7 @@ module ActsAsParanoid
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
+            # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
             self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
             self.paranoid_value = self.class.delete_now_value
             self
