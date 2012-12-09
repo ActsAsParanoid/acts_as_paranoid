@@ -53,7 +53,7 @@ You can also definitively delete a record by calling `destroy` or `delete_all` o
 Recovery is easy. Just invoke `recover` on it, like this:
 
     Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover
-    
+
 All associations marked as `:dependent => :destroy` are also recursively recovered. If you would like to disable this behavior, you can call `recover` with the `recursive` option:
 
     Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover(:recursive => false)
@@ -74,7 +74,7 @@ By default when using timestamp fields to mark deletion, dependent records will 
     class Paranoid < ActiveRecord::Base
         belongs_to :paranoic
 
-        # Paranoid objects will be recovered alongside Paranoic objects 
+        # Paranoid objects will be recovered alongside Paranoic objects
         # if they were deleted within 1 minute of the Paranoic object
         acts_as_paranoid :dependent_recovery_window => 1.minute
     end
@@ -91,10 +91,10 @@ ActiveRecord's built-in uniqueness validation does not account for records delet
       validates_as_paranoid
       validates_uniqueness_of_without_deleted :name
     end
-  
+
     Paranoiac.create(:name => 'foo').destroy
     Paranoiac.new(:name => 'foo').valid? #=> true
-    
+
 
 ### Status
 Once you retrieve data using `with_deleted` scope you can check deletion status using `deleted?` helper:
@@ -117,9 +117,9 @@ This gem supports the most recent versions of Rails and Ruby.
 ## Rails
 
 For Rails 3.2 check the README at the [rails3.2](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.2) branch and add this to your Gemfile:
-	
-	gem "rails3_acts_as_paranoid", "~>0.2.0"
-	
+
+	gem "acts_as_paranoid", "~>0.4.0"
+
 For Rails 3.1 check the README at the [rails3.1](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.1) branch and add this to your Gemfile:
 
 	gem "rails3_acts_as_paranoid", "~>0.1.4"
@@ -127,7 +127,7 @@ For Rails 3.1 check the README at the [rails3.1](https://github.com/goncalossilv
 For Rails 3.0 check the README at the [rails3.0](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.0) branch and add this to your Gemfile:
 
 	gem "rails3_acts_as_paranoid", "~>0.0.9"
-		
+
 ## Ruby
 
 This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode). It *might* work fine in 1.8, but it's not officially supported.
@@ -138,7 +138,6 @@ This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode). It *might
 * To [Jonathan Vaught](https://github.com/gravelpup) for adding paranoid validations
 * To [Geoffrey Hichborn](https://github.com/phene) for improving the overral code quality and adding support for after_commit
 * To [flah00](https://github.com/flah00) for adding support for STI-based associations (with :dependent)
-* To [vikramdhillon](https://github.com/vikramdhillon) for the idea and
-  initial implementation of support for string column type
+* To [vikramdhillon](https://github.com/vikramdhillon) for the idea and initial implementation of support for string column type
 
 Copyright © 2010 Gonçalo Silva, released under the MIT license
