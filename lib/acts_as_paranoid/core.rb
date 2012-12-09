@@ -22,7 +22,11 @@ module ActsAsParanoid
       end
 
       def only_deleted
-        without_paranoid_default_scope.where("#{paranoid_column_reference} IS NOT ?", nil)
+        if string_type_with_deleted_value?
+          without_paranoid_default_scope.where("#{paranoid_column_reference} IS ?", paranoid_configuration[:deleted_value])
+        else
+          without_paranoid_default_scope.where("#{paranoid_column_reference} IS NOT ?", nil)
+        end
       end
 
       def delete_all!(conditions = nil)
@@ -34,7 +38,17 @@ module ActsAsParanoid
       end
 
       def paranoid_default_scope_sql
-        self.scoped.table[paranoid_column].eq(nil).to_sql
+        if string_type_with_deleted_value?
+          self.scoped.table[paranoid_column].eq(nil).
+            or(self.scoped.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value])).
+            to_sql
+        else
+          self.scoped.table[paranoid_column].eq(nil).to_sql
+        end
+      end
+
+      def string_type_with_deleted_value?
+        paranoid_column_type == :string && !paranoid_configuration[:deleted_value].nil?
       end
 
       def paranoid_column
@@ -67,6 +81,10 @@ module ActsAsParanoid
       end
     end
 
+    def persisted?
+      !(new_record? || @destroyed)
+    end
+
     def paranoid_value
       self.send(self.class.paranoid_column)
     end
@@ -75,7 +93,8 @@ module ActsAsParanoid
       with_transaction_returning_status do
         run_callbacks :destroy do
           destroy_dependent_associations!
-          self.class.delete_all!(self.class.primary_key.to_sym => self.id)
+          # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
+          self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
           self.paranoid_value = self.class.delete_now_value
           freeze
         end
@@ -83,10 +102,11 @@ module ActsAsParanoid
     end
 
     def destroy
-      if paranoid_value.nil?
+      if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
-            self.class.delete_all(self.class.primary_key.to_sym => self.id)
+            # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
+            self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
             self.paranoid_value = self.class.delete_now_value
             self
           end
@@ -117,7 +137,7 @@ module ActsAsParanoid
         next unless reflection.klass.paranoid?
 
         scope = reflection.klass.only_deleted
-        
+
         # Merge in the association's scope
         scope = scope.merge(association(reflection.name).association_scope)
 
@@ -132,13 +152,13 @@ module ActsAsParanoid
         end
       end
     end
-    
+
     def destroy_dependent_associations!
       self.class.dependent_associations.each do |reflection|
         next unless reflection.klass.paranoid?
 
         scope = reflection.klass.only_deleted
-       
+
         # Merge in the association's scope
         scope = scope.merge(association(reflection.name).association_scope)
 
@@ -149,8 +169,10 @@ module ActsAsParanoid
     end
 
     def deleted?
-      !paranoid_value.nil?
+      !(paranoid_value.nil? ||
+        (self.class.string_type_with_deleted_value? && paranoid_value != self.class.delete_now_value))
     end
+
     alias_method :destroyed?, :deleted?
 
     private
