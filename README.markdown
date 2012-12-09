@@ -102,11 +102,29 @@ Once you retrieve data using `with_deleted` scope you can check deletion status 
     Paranoiac.create(:name => 'foo').destroy
     Paranoiac.with_deleted.first.deleted? #=> true
 
+### Associations
+Associations are also supported. From the simplest behaviors you'd expect to more nifty things like the ones mentioned previously or the usage of the `:with_deleted` option with `belongs_to`
+
+class ParanoiacParent < ActiveRecord::Base
+	has_many :children, :class_name => "ParanoiacChild"
+end
+
+class ParanoiacChild < ActiveRecord::Base
+	belongs_to :parent, :class_name => "ParanoiacParent"
+	belongs_to :parent_with_deleted, :class_name => "ParanoiacParent", :with_deleted => true
+end
+
+parent = ParanoiacParent.first
+child = parent.children.create
+parent.destroy
+
+child.parent #=> nil
+child.parent_with_deleted #=> ParanoiacParent (it works!)
+
 ## Caveats
 
 Watch out for these caveats:
 
--   You cannot use default\_scope in your model. It is possible to work around this caveat, but it's not pretty. Have a look at [this article](http://joshuaclayton.github.com/code/default_scope/activerecord/is_paranoid/multiple-default-scopes.html) if you really need to have your own default scope.
 -   You cannot use scopes named `with_deleted`, `only_deleted` and `paranoid_deleted_around_time`
 -   `unscoped` will return all records, deleted or not
 

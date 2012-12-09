@@ -149,6 +149,20 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.count
   end
 
+  def test_recursive_recovery_only_recover_associated_records
+    setup_recursive_recovery_tests
+
+    another_time_object = ParanoidTime.last
+
+    another_time_object.paranoid_has_many_dependants.create(:name => "another_has_many")
+    another_time_object.destroy
+    another_time_object.recover(:recursive => true)
+
+    assert_equal 1, ParanoidTime.count
+    assert_equal 1, ParanoidHasManyDependant.count
+    assert_equal 3, ParanoidHasManyDependant.only_deleted.count
+  end
+
   def test_non_recursive_recovery
     setup_recursive_recovery_tests
 
@@ -263,6 +277,78 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal 0, ParanoidDeleteCompany.with_deleted.count
     assert_equal 0, ParanoidProduct.with_deleted.count
   end
+
+def test_belongs_to_with_deleted
+    paranoid_time = ParanoidTime.first
+    paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(:name => 'dependant!')
+
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
+
+    paranoid_time.destroy
+
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted(true)
+  end
+
+  def test_belongs_to_polymorphic_with_deleted
+    paranoid_time = ParanoidTime.first
+    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(:name => 'dependant!', :paranoid_time_polymorphic_with_deleted => paranoid_time)
+
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
+
+    paranoid_time.destroy
+
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
+  end
+
+  def test_belongs_to_nil_polymorphic_with_deleted
+    paranoid_time = ParanoidTime.first
+    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(:name => 'dependant!', :paranoid_time_polymorphic_with_deleted => nil)
+
+    assert_nil paranoid_has_many_dependant.paranoid_time
+    assert_nil paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
+
+    paranoid_time.destroy
+
+    assert_nil paranoid_has_many_dependant.paranoid_time(true)
+    assert_nil paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
+  end
+
+  def test_belongs_to_options
+    paranoid_time = ParanoidHasManyDependant.reflections[:paranoid_time]
+    assert_equal :belongs_to, paranoid_time.macro
+    assert_nil paranoid_time.options[:with_deleted]
+  end
+
+  def test_belongs_to_with_deleted_options
+    paranoid_time_with_deleted = ParanoidHasManyDependant.reflections[:paranoid_time_with_deleted]
+    assert_equal :belongs_to, paranoid_time_with_deleted.macro
+    assert paranoid_time_with_deleted.options[:with_deleted]
+  end
+
+  def test_belongs_to_polymorphic_with_deleted_options
+    paranoid_time_polymorphic_with_deleted = ParanoidHasManyDependant.reflections[:paranoid_time_polymorphic_with_deleted]
+    assert_equal :belongs_to, paranoid_time_polymorphic_with_deleted.macro
+    assert paranoid_time_polymorphic_with_deleted.options[:with_deleted]
+  end
+
+  def test_only_find_associated_records_when_finding_with_paranoid_deleted
+    parent = ParanoidBelongsDependant.create
+    child = ParanoidHasManyDependant.create
+    parent.paranoid_has_many_dependants << child
+
+    unrelated_parent = ParanoidBelongsDependant.create
+    unrelated_child = ParanoidHasManyDependant.create
+    unrelated_parent.paranoid_has_many_dependants << unrelated_child
+
+    child.destroy
+    assert_equal 0, parent.paranoid_has_many_dependants.count
+
+    assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
+  end
 end
 
 class InheritanceTest < ParanoidBaseTest
@@ -291,5 +377,56 @@ class ParanoidObserverTest < ParanoidBaseTest
 
     assert_equal @subject, ParanoidObserver.instance.called_before_recover
     assert_equal @subject, ParanoidObserver.instance.called_after_recover
+  end
+end
+
+class MultipleDefaultScopesTest < ParanoidBaseTest
+  def setup
+    setup_db
+
+    # Naturally, the default scope for humans is male. Sexism++
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'male'
+    ParanoidHuman.create! :gender => 'female'
+
+    assert_equal 3, ParanoidHuman.count
+    assert_equal 4, ParanoidHuman.unscoped.count
+  end
+
+  def test_fake_removal_with_multiple_default_scope
+    ParanoidHuman.first.destroy
+    assert_equal 2, ParanoidHuman.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+    assert_equal 1, ParanoidHuman.only_deleted.count
+    assert_equal 4, ParanoidHuman.unscoped.count
+
+    ParanoidHuman.destroy_all
+    assert_equal 0, ParanoidHuman.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+    assert_equal 3, ParanoidHuman.with_deleted.count
+    assert_equal 4, ParanoidHuman.unscoped.count
+  end
+
+  def test_real_removal_with_multiple_default_scope
+    # two-step
+    ParanoidHuman.first.destroy
+    ParanoidHuman.only_deleted.first.destroy
+    assert_equal 2, ParanoidHuman.count
+    assert_equal 2, ParanoidHuman.with_deleted.count
+    assert_equal 0, ParanoidHuman.only_deleted.count
+    assert_equal 3, ParanoidHuman.unscoped.count
+
+    ParanoidHuman.first.destroy!
+    assert_equal 1, ParanoidHuman.count
+    assert_equal 1, ParanoidHuman.with_deleted.count
+    assert_equal 0, ParanoidHuman.only_deleted.count
+    assert_equal 2, ParanoidHuman.unscoped.count
+
+    ParanoidHuman.delete_all!
+    assert_equal 0, ParanoidHuman.count
+    assert_equal 0, ParanoidHuman.with_deleted.count
+    assert_equal 0, ParanoidHuman.only_deleted.count
+    assert_equal 1, ParanoidHuman.unscoped.count
   end
 end
