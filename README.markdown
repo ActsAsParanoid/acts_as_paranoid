@@ -80,7 +80,7 @@ Recovery is easy. Just invoke `recover` on it, like this:
 ```ruby
 Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover
 ```
-    
+
 All associations marked as `:dependent => :destroy` are also recursively recovered. If you would like to disable this behavior, you can call `recover` with the `recursive` option:
 
 ```ruby
@@ -106,7 +106,7 @@ end
 class Paranoid < ActiveRecord::Base
     belongs_to :paranoic
 
-    # Paranoid objects will be recovered alongside Paranoic objects 
+    # Paranoid objects will be recovered alongside Paranoic objects
     # if they were deleted within 10 minutes of the Paranoic object
     acts_as_paranoid :dependent_recovery_window => 10.minutes
 end
@@ -127,14 +127,14 @@ class Paranoiac < ActiveRecord::Base
   	validates_as_paranoid
   	validates_uniqueness_of_without_deleted :name
 end
-  
+
 p1 = Paranoiac.create(:name => 'foo')
 p1.destroy
-    
-p2 = Paranoiac.new(:name => 'foo') 
+
+p2 = Paranoiac.new(:name => 'foo')
 p2.valid? #=> true
 p2.save
- 
+
 p1.recover #=> fails validation!
 ```
 
@@ -145,7 +145,7 @@ You can check the status of your paranoid objects with the `deleted?` helper
 Paranoiac.create(:name => 'foo').destroy
 Paranoiac.with_deleted.first.deleted? #=> true
 ```
-    
+
 ### Scopes
 
 As you've probably guessed, `with_deleted` and `only_deleted` are scopes. You can, however, chain them freely with other scopes you might have. This
@@ -167,15 +167,15 @@ class Paranoiac < ActiveRecord::Base
 	acts_as_paranoid
 	scope :pretty, where(:pretty => true)
 end
-	
+
 Paranoiac.create(:pretty => true)
-	
+
 Paranoiac.pretty.count #=> 1
 Paranoiac.only_deleted.count #=> 0
 Paranoiac.pretty.only_deleted.count #=> 0
-	
+
 Paranoiac.first.destroy
-	
+
 Paranoiac.pretty.count #=> 0
 Paranoiac.only_deleted.count #=> 1
 Paranoiac.pretty.only_deleted.count #=> 1
@@ -189,16 +189,16 @@ Associations are also supported. From the simplest behaviors you'd expect to mor
 class ParanoiacParent < ActiveRecord::Base
 	has_many :children, :class_name => "ParanoiacChild"
 end
-	
+
 class ParanoiacChild < ActiveRecord::Base
 	belongs_to :parent, :class_name => "ParanoiacParent"
 	belongs_to :parent_with_deleted, :class_name => "ParanoiacParent", :with_deleted => true
 end
-	
-parent = ParanoiacParent.first 	
+
+parent = ParanoiacParent.first
 child = parent.children.create
 parent.destroy
-     
+
 child.parent #=> nil
 child.parent_with_deleted #=> ParanoiacParent (it works!)
 ```
@@ -218,9 +218,9 @@ This gem supports the most recent versions of Rails and Ruby.
 ## Rails
 
 For Rails 3.2 check the README at the [rails3.2](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.2) branch and add this to your Gemfile:
-	
-	gem "rails3_acts_as_paranoid", "~>0.2.0"
-	
+
+	gem "acts_as_paranoid", "~>0.4.0"
+
 For Rails 3.1 check the README at the [rails3.1](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.1) branch and add this to your Gemfile:
 
 	gem "rails3_acts_as_paranoid", "~>0.1.4"
@@ -228,8 +228,8 @@ For Rails 3.1 check the README at the [rails3.1](https://github.com/goncalossilv
 For Rails 3.0 check the README at the [rails3.0](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.0) branch and add this to your Gemfile:
 
 	gem "rails3_acts_as_paranoid", "~>0.0.9"
-	
-	
+
+
 ## Ruby
 
 This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode). It *might* work fine in 1.8, but it's not officially supported.
@@ -240,8 +240,7 @@ This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode). It *might
 * To [Jonathan Vaught](https://github.com/gravelpup) for adding paranoid validations
 * To [Geoffrey Hichborn](https://github.com/phene) for improving the overral code quality and adding support for after_commit
 * To [flah00](https://github.com/flah00) for adding support for STI-based associations (with :dependent)
-* To [vikramdhillon](https://github.com/vikramdhillon) for the idea and
-  initial implementation of support for string column type
+* To [vikramdhillon](https://github.com/vikramdhillon) for the idea and initial implementation of support for string column type
 * To [Craig Walker](https://github.com/softcraft-development) for Rails 3.1 support and fixing various pending issues
 * To [Charles G.](https://github.com/chuckg) for Rails 3.2 support and for making a desperately needed global code refactoring
 
