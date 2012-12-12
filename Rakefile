@@ -13,7 +13,7 @@ gemspec = eval(File.read(Dir["*.gemspec"].first))
 desc 'Default: run unit tests.'
 task :default => :test
 
-desc 'Test the rails3_acts_as_paranoid plugin.'
+desc 'Test the acts_as_paranoid plugin.'
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
   t.libs << 'test'
@@ -25,7 +25,7 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = true
 end
 
-desc 'Generate documentation for the rails3_acts_as_paranoid plugin.'
+desc 'Generate documentation for the acts_as_paranoid plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = 'ActsAsParanoid'
