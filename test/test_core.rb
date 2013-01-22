@@ -68,6 +68,10 @@ class ParanoidTest < ParanoidBaseTest
     assert_empty ParanoidTime.with_deleted.all
   end
 
+  def test_removal_not_persisted
+    assert ParanoidTime.new.destroy
+  end
+
   def test_recovery
     assert_equal 3, ParanoidBoolean.count
     ParanoidBoolean.first.destroy
