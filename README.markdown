@@ -186,29 +186,32 @@ Paranoiac.pretty.only_deleted.count #=> 1
 Associations are also supported. From the simplest behaviors you'd expect to more nifty things like the ones mentioned previously or the usage of the `:with_deleted` option with `belongs_to`
 
 ```ruby
-class ParanoiacParent < ActiveRecord::Base
+class Parent < ActiveRecord::Base
 	has_many :children, :class_name => "ParanoiacChild"
 end
 
 class ParanoiacChild < ActiveRecord::Base
-	belongs_to :parent, :class_name => "ParanoiacParent"
-	belongs_to :parent_with_deleted, :class_name => "ParanoiacParent", :with_deleted => true
+	belongs_to :parent
+  belongs_to :parent_including_deleted, :class_name => "Parent", :with_deleted => true
+  # You cannot name association *_with_deleted
 end
 
-parent = ParanoiacParent.first
+parent = Parent.first
 child = parent.children.create
 parent.destroy
 
 child.parent #=> nil
-child.parent_with_deleted #=> ParanoiacParent (it works!)
+child.parent_including_deleted #=> Parent (it works!)
 ```
 
 ## Caveats
 
 Watch out for these caveats:
 
+
 -   You cannot use scopes named `with_deleted` and `only_deleted`
 -   You cannot use scopes named `deleted_inside_time_window`, `deleted_before_time`, `deleted_after_time` **if** your paranoid column's type is `time`
+-   You cannot name association `*_with_deleted`
 -   `unscoped` will return all records, deleted or not
 
 # Support
