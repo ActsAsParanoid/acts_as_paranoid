@@ -5,7 +5,7 @@ rescue LoadError
   $stderr.puts "You need to have Bundler installed to be able build this gem."
 end
 require "rake/testtask"
-require "rake/rdoctask"
+require "rdoc/task"
 
 gemspec = eval(File.read(Dir["*.gemspec"].first))
 

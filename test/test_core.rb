@@ -4,16 +4,10 @@ class ParanoidTest < ParanoidBaseTest
   def test_paranoid?
     assert !NotParanoid.paranoid?
     assert_raise(NoMethodError) { NotParanoid.delete_all! }
-    assert_raise(NoMethodError) { NotParanoid.first.destroy! }
     assert_raise(NoMethodError) { NotParanoid.with_deleted }
-    assert_raise(NoMethodError) { NotParanoid.only_deleted }    
+    assert_raise(NoMethodError) { NotParanoid.only_deleted }
 
     assert ParanoidTime.paranoid?
-  end
-
-  def test_attr_protected_column
-    pt = ParanoidTime.new(:deleted_at => Time.now)
-    assert_nil pt.deleted_at
   end
 
   def test_scope_inclusion_with_time_column_type
@@ -65,7 +59,7 @@ class ParanoidTest < ParanoidBaseTest
 
     ParanoidTime.delete_all!
     assert_empty ParanoidTime.all
-    assert_empty ParanoidTime.with_deleted.all
+    assert_empty ParanoidTime.with_deleted
   end
 
   def test_recovery

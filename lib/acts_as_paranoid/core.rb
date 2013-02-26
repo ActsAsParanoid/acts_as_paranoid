@@ -34,16 +34,16 @@ module ActsAsParanoid
       end
 
       def delete_all(conditions = nil)
-        update_all ["#{paranoid_configuration[:column]} = ?", delete_now_value], conditions
+        where(conditions).update_all(["#{paranoid_configuration[:column]} = ?", delete_now_value])
       end
 
       def paranoid_default_scope_sql
         if string_type_with_deleted_value?
-          self.scoped.table[paranoid_column].eq(nil).
-            or(self.scoped.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value])).
+          self.all.table[paranoid_column].eq(nil).
+            or(self.all.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value])).
             to_sql
         else
-          self.scoped.table[paranoid_column].eq(nil).to_sql
+          self.all.table[paranoid_column].eq(nil).to_sql
         end
       end
 
@@ -74,7 +74,7 @@ module ActsAsParanoid
     protected
 
       def without_paranoid_default_scope
-        scope = self.scoped.with_default_scope
+        scope = self.all.with_default_scope
         scope.where_values.delete(paranoid_default_scope_sql)
 
         scope
