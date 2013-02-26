@@ -4,7 +4,6 @@ class ParanoidTest < ParanoidBaseTest
   def test_paranoid?
     assert !NotParanoid.paranoid?
     assert_raise(NoMethodError) { NotParanoid.delete_all! }
-    assert_raise(NoMethodError) { NotParanoid.first.destroy! }
     assert_raise(NoMethodError) { NotParanoid.with_deleted }
     assert_raise(NoMethodError) { NotParanoid.only_deleted }
 
@@ -60,7 +59,7 @@ class ParanoidTest < ParanoidBaseTest
 
     ParanoidTime.delete_all!
     assert_empty ParanoidTime.all
-    assert_empty ParanoidTime.with_deleted.all
+    assert_empty ParanoidTime.with_deleted
   end
 
   def test_non_persisted_destroy

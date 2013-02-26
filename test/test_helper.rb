@@ -324,25 +324,6 @@ class InheritedParanoid < SuperParanoid
   acts_as_paranoid
 end
 
-class ParanoidObserver < ActiveRecord::Observer
-  observe :paranoid_with_callback
-
-  attr_accessor :called_before_recover, :called_after_recover
-
-  def before_recover(paranoid_object)
-    self.called_before_recover = paranoid_object
-  end
-
-  def after_recover(paranoid_object)
-    self.called_after_recover = paranoid_object
-  end
-
-  def reset
-    self.called_before_recover = nil
-    self.called_after_recover = nil
-  end
-end
-
 
 class ParanoidManyManyParentLeft < ActiveRecord::Base
   has_many :paranoid_many_many_children
@@ -365,8 +346,6 @@ class ParanoidWithScopedValidation < ActiveRecord::Base
   validates_uniqueness_of :name, :scope => :category
 end
 
-ParanoidWithCallback.add_observer(ParanoidObserver.instance)
-
 class ParanoidBaseTest < ActiveSupport::TestCase
   def setup
     setup_db
@@ -379,8 +358,6 @@ class ParanoidBaseTest < ActiveSupport::TestCase
     ParanoidString.create! :name => "strings can be paranoid"
     NotParanoid.create! :name => "no paranoid goals"
     ParanoidWithCallback.create! :name => "paranoid with callbacks"
-
-    ParanoidObserver.instance.reset
   end
 
   def teardown
@@ -416,7 +393,7 @@ class ParanoidForest < ActiveRecord::Base
   require "active_support/core_ext/logger.rb"
   ActiveRecord::Base.logger = Logger.new(StringIO.new)
 
-  scope :rainforest, where(:rainforest => true)
+  scope :rainforest, lambda{ where(:rainforest => true) }
 
   has_many :paranoid_trees, :dependent => :destroy
 end
@@ -429,7 +406,7 @@ end
 
 class ParanoidHuman < ActiveRecord::Base
   acts_as_paranoid
-  default_scope where('gender = ?', 'male')
+  default_scope { where('gender = ?', 'male') }
 end
 
 class ParanoidAndroid < ActiveRecord::Base
