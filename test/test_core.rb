@@ -68,8 +68,18 @@ class ParanoidTest < ParanoidBaseTest
     assert_empty ParanoidTime.with_deleted.all
   end
 
-  def test_removal_not_persisted
-    assert ParanoidTime.new.destroy
+  def test_non_persisted_destroy
+    pt = ParanoidTime.new
+    assert_nil pt.paranoid_value
+    pt.destroy
+    assert_not_nil pt.paranoid_value
+  end
+
+  def test_non_persisted_destroy!
+    pt = ParanoidTime.new
+    assert_nil pt.paranoid_value
+    pt.destroy!
+    assert_not_nil pt.paranoid_value
   end
 
   def test_recovery
