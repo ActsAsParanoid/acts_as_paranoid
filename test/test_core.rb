@@ -77,6 +77,10 @@ class ParanoidTest < ParanoidBaseTest
     assert_not_nil pt.paranoid_value
   end
 
+  def test_removal_not_persisted
+    assert ParanoidTime.new.destroy
+  end
+
   def test_recovery
     assert_equal 3, ParanoidBoolean.count
     ParanoidBoolean.first.destroy
