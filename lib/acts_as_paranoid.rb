@@ -2,6 +2,7 @@ require 'acts_as_paranoid/core'
 require 'acts_as_paranoid/associations'
 require 'acts_as_paranoid/validations'
 require 'acts_as_paranoid/relation'
+require 'acts_as_paranoid/preloader_association'
 
 module ActsAsParanoid
 
@@ -55,3 +56,6 @@ ActiveRecord::Relation.send :include, ActsAsParanoid::Relation
 
 # Push the recover callback onto the activerecord callback list
 ActiveRecord::Callbacks::CALLBACKS.push(:before_recover, :after_recover)
+
+# Use with_deleted in preloader build_scope
+ActiveRecord::Associations::Preloader::Association.send :include, ActsAsParanoid::PreloaderAssociation
