@@ -166,6 +166,17 @@ def setup_db
 
       t.timestamps
     end
+    
+    create_table :paranoid_androids do |t|
+      t.datetime :deleted_at
+    end
+    
+    create_table :paranoid_sections do |t|
+      t.integer   :paranoid_time_id
+      t.integer   :paranoid_thing_id
+      t.string    :paranoid_thing_type
+      t.datetime :deleted_at
+    end
   end
 end
 
@@ -183,6 +194,7 @@ class ParanoidTime < ActiveRecord::Base
   has_many :paranoid_has_many_dependants, :dependent => :destroy
   has_many :paranoid_booleans, :dependent => :destroy
   has_many :not_paranoids, :dependent => :delete_all
+  has_many :paranoid_sections, :dependent => :destroy
 
   has_one :has_one_not_paranoid, :dependent => :destroy
 
@@ -413,4 +425,14 @@ end
 class ParanoidHuman < ActiveRecord::Base
   acts_as_paranoid
   default_scope where('gender = ?', 'male')
+end
+
+class ParanoidAndroid < ActiveRecord::Base
+  acts_as_paranoid
+end
+
+class ParanoidSection < ActiveRecord::Base
+  acts_as_paranoid
+  belongs_to :paranoid_time
+  belongs_to :paranoid_thing, :polymorphic => true, :dependent => :destroy
 end
