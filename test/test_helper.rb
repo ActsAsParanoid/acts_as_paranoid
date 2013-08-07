@@ -201,6 +201,11 @@ class ParanoidTime < ActiveRecord::Base
   belongs_to :not_paranoid, :dependent => :destroy
 end
 
+class MassAssignableParanoidTime < ActiveRecord::Base
+  self.table_name = 'paranoid_times'
+  acts_as_paranoid :mass_assignable => true
+end
+
 class ParanoidBoolean < ActiveRecord::Base
   acts_as_paranoid :column_type => "boolean", :column => "is_deleted"
   validates_as_paranoid
