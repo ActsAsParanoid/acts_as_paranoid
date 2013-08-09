@@ -16,6 +16,6 @@ end
 
 group :test do
   gem "minitest"
-  gem "ZenTest"
+  gem "ZenTest", "~>4.9.2"
   gem "autotest-growl"
 end

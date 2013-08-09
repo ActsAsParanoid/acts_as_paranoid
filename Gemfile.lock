@@ -1,7 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    ZenTest (4.7.0)
+    ZenTest (4.9.2)
     activemodel (3.2.3)
       activesupport (= 3.2.3)
       builder (~> 3.0.0)
@@ -27,7 +27,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  ZenTest
+  ZenTest (~> 4.9.2)
   activerecord (~> 3.2)
   activerecord-jdbcsqlite3-adapter
   activesupport (~> 3.2)
