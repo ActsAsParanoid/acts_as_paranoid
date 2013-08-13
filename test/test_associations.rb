@@ -212,4 +212,17 @@ class AssociationsTest < ParanoidBaseTest
     assert not_paranoid.save
     assert_not_nil not_paranoid.paranoid_time
   end
+
+  def test_mass_assignment_of_paranoid_column_ignored
+    record = ParanoidTime.create! :name => 'Foo', :deleted_at => Time.now
+    assert_equal 'Foo', record.name
+    assert_equal nil, record.deleted_at
+  end
+
+  def test_mass_assignment_of_paranoid_column_enabled
+    now = Time.now
+    record = MassAssignableParanoidTime.create! :name => 'Foo', :deleted_at => now
+    assert_equal 'Foo', record.name
+    assert_equal now, record.deleted_at
+  end
 end

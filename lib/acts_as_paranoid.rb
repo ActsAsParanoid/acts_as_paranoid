@@ -38,7 +38,7 @@ module ActsAsParanoid
     default_scope { where(paranoid_default_scope_sql) }
 
     # The paranoid column should not be mass-assignable
-    attr_protected paranoid_configuration[:column]
+    attr_protected paranoid_configuration[:column] unless paranoid_configuration[:mass_assignable]
 
     if paranoid_configuration[:column_type] == 'time'
       scope :deleted_inside_time_window, lambda {|time, window|
