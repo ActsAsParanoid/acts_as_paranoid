@@ -1,6 +1,16 @@
 language: ruby
 rvm:
-  - 1.9.2
   - 1.9.3
-  - jruby-19mode
-  - rbx-19mode
+  - 2.0.0
+  - 2.1.0
+  - jruby
+  - rbx
+gemfile:
+  - gemfiles/active_record_40.gemfile
+  - gemfiles/active_record_41.gemfile
+  - gemfiles/active_record_edge.gemfile
+matrix:
+  allow_failures:
+    - rvm: rbx
+    - rvm: jruby
+  fast_finish: true
