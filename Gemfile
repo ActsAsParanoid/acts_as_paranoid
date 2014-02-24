@@ -13,8 +13,3 @@ end
 platforms :jruby do
   gem "activerecord-jdbcsqlite3-adapter"
 end
-
-group :test do
-  gem "minitest"
-  gem "autotest-growl"
-end

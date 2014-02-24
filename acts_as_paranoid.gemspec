@@ -13,5 +13,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency "activerecord", "~> 3.2"
 
+  s.add_development_dependency "minitest"
+  s.add_development_dependency 'rake', ['>= 0']
+
   s.files        = Dir["{lib}/**/*.rb", "LICENSE", "*.markdown"]
 end
