@@ -7,7 +7,7 @@ class ParanoidObserverTest < ParanoidBaseTest
 
     assert_nil ParanoidObserver.instance.called_before_recover
     assert_nil ParanoidObserver.instance.called_after_recover
-    
+
     ParanoidWithCallback.find(@subject.id).recover
 
     assert_equal @subject, ParanoidObserver.instance.called_before_recover

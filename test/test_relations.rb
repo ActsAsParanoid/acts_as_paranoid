@@ -2,7 +2,7 @@ require 'test_helper'
 
 class RelationsTest < ParanoidBaseTest
   def setup
-    setup_db 
+    setup_db
 
     @paranoid_forest_1 = ParanoidForest.create! :name => "ParanoidForest #1"
     @paranoid_forest_2 = ParanoidForest.create! :name => "ParanoidForest #2", :rainforest => true
@@ -72,7 +72,7 @@ class RelationsTest < ParanoidBaseTest
     assert_equal 2, @paranoid_forest_1.paranoid_trees.only_deleted.count
     assert_equal 3, ParanoidTree.only_deleted.count
   end
-  
+
   def test_fake_removal_through_relation
     # destroy: through a relation.
     ParanoidForest.rainforest.destroy(@paranoid_forest_3)
@@ -85,14 +85,14 @@ class RelationsTest < ParanoidBaseTest
     assert_equal 0, @paranoid_forest_2.paranoid_trees(true).count
     assert_equal 2, @paranoid_forest_2.paranoid_trees(true).with_deleted.count
   end
-  
+
   def test_real_removal_through_relation
     # destroy!: aliased to delete
     ParanoidForest.rainforest.destroy!(@paranoid_forest_3)
     assert_equal 1, ParanoidForest.rainforest.count
     assert_equal 1, ParanoidForest.rainforest.with_deleted.count
     assert_equal 0, ParanoidForest.rainforest.only_deleted.count
-    
+
     # destroy: two-step through a relation
     paranoid_tree = @paranoid_forest_1.paranoid_trees.first
     @paranoid_forest_1.paranoid_trees.order(:id).destroy(paranoid_tree)

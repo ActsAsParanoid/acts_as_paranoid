@@ -27,7 +27,7 @@ class MultipleDefaultScopesTest < ParanoidBaseTest
     assert_equal 3, ParanoidHuman.with_deleted.count
     assert_equal 4, ParanoidHuman.unscoped.count
   end
-  
+
   def test_real_removal_with_multiple_default_scope
     # two-step
     ParanoidHuman.first.destroy
