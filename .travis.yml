@@ -6,9 +6,8 @@ rvm:
   - jruby
   - rbx
 gemfile:
-  - gemfiles/active_record_40.gemfile
-  - gemfiles/active_record_41.gemfile
-  - gemfiles/active_record_edge.gemfile
+  - gemfiles/active_record_31.gemfile
+  - gemfiles/active_record_32.gemfile
 matrix:
   allow_failures:
     - rvm: rbx
