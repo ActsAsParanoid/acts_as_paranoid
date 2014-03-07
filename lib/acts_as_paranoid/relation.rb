@@ -5,7 +5,7 @@ module ActsAsParanoid
         def paranoid?
           klass.try(:paranoid?) ? true : false
         end
-        
+
         def paranoid_deletion_attributes
           { klass.paranoid_column => klass.delete_now_value }
         end
@@ -18,7 +18,7 @@ module ActsAsParanoid
             orig_delete_all
           end
         end
-        
+
         def delete_all(conditions = nil)
           if paranoid?
             update_all(paranoid_deletion_attributes, conditions)

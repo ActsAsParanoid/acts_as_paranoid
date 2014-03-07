@@ -131,7 +131,7 @@ module ActsAsParanoid
         end
       end
     end
-    
+
     def recover_dependent_associations(window, options)
       self.class.dependent_associations.each do |reflection|
         next unless (klass = get_reflection_class(reflection)).paranoid?
@@ -176,7 +176,7 @@ module ActsAsParanoid
     alias_method :destroyed?, :deleted?
 
     private
-    
+
     def get_reflection_class(reflection)
       if reflection.macro == :belongs_to && reflection.options.include?(:polymorphic)
         self.send(reflection.foreign_type).constantize

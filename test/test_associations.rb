@@ -33,7 +33,7 @@ class AssociationsTest < ParanoidBaseTest
   end
 
   def test_belongs_to_with_deleted
-    paranoid_time = ParanoidTime.first 
+    paranoid_time = ParanoidTime.first
     paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(:name => 'dependant!')
 
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
@@ -46,7 +46,7 @@ class AssociationsTest < ParanoidBaseTest
   end
 
   def test_belongs_to_polymorphic_with_deleted
-    paranoid_time = ParanoidTime.first 
+    paranoid_time = ParanoidTime.first
     paranoid_has_many_dependant = ParanoidHasManyDependant.create!(:name => 'dependant!', :paranoid_time_polymorphic_with_deleted => paranoid_time)
 
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time

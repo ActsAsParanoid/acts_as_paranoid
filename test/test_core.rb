@@ -6,7 +6,7 @@ class ParanoidTest < ParanoidBaseTest
     assert_raise(NoMethodError) { NotParanoid.delete_all! }
     assert_raise(NoMethodError) { NotParanoid.first.destroy! }
     assert_raise(NoMethodError) { NotParanoid.with_deleted }
-    assert_raise(NoMethodError) { NotParanoid.only_deleted }    
+    assert_raise(NoMethodError) { NotParanoid.only_deleted }
 
     assert ParanoidTime.paranoid?
   end
@@ -32,7 +32,7 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 2, ParanoidTime.count
     assert_equal 1, ParanoidBoolean.count
     assert_equal 0, ParanoidString.count
-    assert_equal 1, ParanoidTime.only_deleted.count 
+    assert_equal 1, ParanoidTime.only_deleted.count
     assert_equal 2, ParanoidBoolean.only_deleted.count
     assert_equal 1, ParanoidString.only_deleted.count
     assert_equal 3, ParanoidTime.with_deleted.count
@@ -93,7 +93,7 @@ class ParanoidTest < ParanoidBaseTest
 
   def setup_recursive_tests
     @paranoid_time_object = ParanoidTime.first
-   
+
     # Create one extra ParanoidHasManyDependant record so that we can validate
     # the correct dependants are recovered.
     ParanoidTime.where('id <> ?', @paranoid_time_object.id).first.paranoid_has_many_dependants.create(:name => "should not be recovered").destroy
@@ -144,7 +144,7 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_recursive_real_removal
-    setup_recursive_tests 
+    setup_recursive_tests
 
     @paranoid_time_object.destroy!
 
@@ -180,8 +180,8 @@ class ParanoidTest < ParanoidBaseTest
     @paranoid_time_object.destroy
     @paranoid_time_object.reload
 
-    # Stop the following from recovering: 
-    #   - ParanoidHasManyDependant and its ParanoidBelongsDependant 
+    # Stop the following from recovering:
+    #   - ParanoidHasManyDependant and its ParanoidBelongsDependant
     #   - A single ParanoidBelongsDependant, but not its parent
     dependants = @paranoid_time_object.paranoid_has_many_dependants.with_deleted
     dependants.first.update_attribute(:deleted_at, 2.days.ago)
@@ -197,38 +197,38 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 1, NotParanoid.count
     assert_equal 0, HasOneNotParanoid.count
   end
-  
+
   def test_recursive_recovery_for_belongs_to_polymorphic
     child_1 = ParanoidAndroid.create
     section_1 = ParanoidSection.create(:paranoid_thing => child_1)
-    
+
     child_2 = ParanoidHuman.create(:gender => 'male')
     section_2 = ParanoidSection.create(:paranoid_thing => child_2)
-    
+
     assert_equal section_1.paranoid_thing, child_1
     assert_equal section_1.paranoid_thing.class, ParanoidAndroid
     assert_equal section_2.paranoid_thing, child_2
     assert_equal section_2.paranoid_thing.class, ParanoidHuman
-    
+
     parent = ParanoidTime.create(:name => "paranoid_parent")
     parent.paranoid_sections << section_1
     parent.paranoid_sections << section_2
-    
+
     assert_equal 4, ParanoidTime.count
     assert_equal 2, ParanoidSection.count
     assert_equal 1, ParanoidAndroid.count
     assert_equal 1, ParanoidHuman.count
-    
+
     parent.destroy
-    
+
     assert_equal 3, ParanoidTime.count
     assert_equal 0, ParanoidSection.count
     assert_equal 0, ParanoidAndroid.count
     assert_equal 0, ParanoidHuman.count
-    
+
     parent.reload
     parent.recover
-    
+
     assert_equal 4, ParanoidTime.count
     assert_equal 2, ParanoidSection.count
     assert_equal 1, ParanoidAndroid.count
@@ -259,25 +259,25 @@ class ParanoidTest < ParanoidBaseTest
     ParanoidString.first.destroy
     assert ParanoidString.with_deleted.first.deleted?
   end
-  
-  def test_paranoid_destroy_callbacks    
+
+  def test_paranoid_destroy_callbacks
     @paranoid_with_callback = ParanoidWithCallback.first
     ParanoidWithCallback.transaction do
       @paranoid_with_callback.destroy
     end
-    
+
     assert @paranoid_with_callback.called_before_destroy
     assert @paranoid_with_callback.called_after_destroy
     assert @paranoid_with_callback.called_after_commit_on_destroy
   end
-  
+
   def test_hard_destroy_callbacks
     @paranoid_with_callback = ParanoidWithCallback.first
-    
+
     ParanoidWithCallback.transaction do
       @paranoid_with_callback.destroy!
     end
-    
+
     assert @paranoid_with_callback.called_before_destroy
     assert @paranoid_with_callback.called_after_destroy
     assert @paranoid_with_callback.called_after_commit_on_destroy
@@ -296,52 +296,52 @@ class ParanoidTest < ParanoidBaseTest
     end
 
       assert @paranoid_with_callback.called_before_recover
-      assert @paranoid_with_callback.called_after_recover    
+      assert @paranoid_with_callback.called_after_recover
   end
 
   def test_delete_by_multiple_id_is_paranoid
     model_a = ParanoidBelongsDependant.create
     model_b = ParanoidBelongsDependant.create
     ParanoidBelongsDependant.delete([model_a.id, model_b.id])
-    
+
     assert_paranoid_deletion(model_a)
     assert_paranoid_deletion(model_b)
   end
-  
+
   def test_destroy_by_multiple_id_is_paranoid
     model_a = ParanoidBelongsDependant.create
     model_b = ParanoidBelongsDependant.create
     ParanoidBelongsDependant.destroy([model_a.id, model_b.id])
-    
+
     assert_paranoid_deletion(model_a)
     assert_paranoid_deletion(model_b)
   end
-  
+
   def test_delete_by_single_id_is_paranoid
     model = ParanoidBelongsDependant.create
     ParanoidBelongsDependant.delete(model.id)
-    
+
     assert_paranoid_deletion(model)
   end
-  
+
   def test_destroy_by_single_id_is_paranoid
     model = ParanoidBelongsDependant.create
     ParanoidBelongsDependant.destroy(model.id)
-    
+
     assert_paranoid_deletion(model)
   end
-  
+
   def test_instance_delete_is_paranoid
     model = ParanoidBelongsDependant.create
     model.delete
-    
+
     assert_paranoid_deletion(model)
   end
-  
+
   def test_instance_destroy_is_paranoid
     model = ParanoidBelongsDependant.create
     model.destroy
-    
+
     assert_paranoid_deletion(model)
   end
 
