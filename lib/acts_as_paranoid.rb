@@ -1,11 +1,7 @@
-require 'active_record/base'
-require 'active_record/relation'
-require 'active_record/callbacks'
 require 'acts_as_paranoid/core'
 require 'acts_as_paranoid/associations'
 require 'acts_as_paranoid/validations'
 require 'acts_as_paranoid/relation'
-
 
 module ActsAsParanoid
 

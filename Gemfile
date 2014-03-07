@@ -1,15 +1,10 @@
-source "http://rubygems.org"
-
-gem "activerecord", "~>3.2"
+source "https://rubygems.org"
 
 # Development dependencies
-gem "rake"
-gem "activesupport", "~>3.2"
+group :development do
+  gem "activerecord", ">= 3.0", "<= 4.0", :require => "active_record"
+  gem "activesupport", ">= 3.0", "<= 4.0", :require => "active_support"
 
-platforms :ruby do
-  gem "sqlite3"
-end
-
-platforms :jruby do
-  gem "activerecord-jdbcsqlite3-adapter"
+  gem "sqlite3", :platforms => [:ruby]
+  gem "activerecord-jdbcsqlite3-adapter", :platforms => [:jruby]
 end

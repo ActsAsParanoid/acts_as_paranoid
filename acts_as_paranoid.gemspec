@@ -1,20 +1,26 @@
-Gem::Specification.new do |s|
-  s.name                  = "acts_as_paranoid"
-  s.version               = "0.5.0"
-  s.platform              = Gem::Platform::RUBY
-  s.authors               = ["Goncalo Silva", "Charles G.", "Rick Olson"]
-  s.email                 = ["goncalossilva@gmail.com"]
-  s.homepage              = "https://github.com/goncalossilva/rails3_acts_as_paranoid"
-  s.summary               = "Active Record plugin which allows you to hide and restore records without actually deleting them."
-  s.description           = "Active Record plugin which allows you to hide and restore records without actually deleting them. Check its GitHub page for more in-depth information."
-  s.rubyforge_project     = s.name
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'acts_as_paranoid/version'
 
-  s.required_rubygems_version = ">= 1.3.6"
+Gem::Specification.new do |spec|
+  spec.name        = "acts_as_paranoid"
+  spec.version     = ActsAsParanoid::VERSION
+  spec.authors     = ["Goncalo Silva", "Charles G.", "Rick Olson"]
+  spec.email       = ["goncalossilva@gmail.com"]
+  spec.summary     = "Active Record plugin which allows you to hide and restore records without actually deleting them."
+  spec.description = "Active Record plugin which allows you to hide and restore records without actually deleting them. Check its GitHub page for more in-depth information."
+  spec.homepage    = "https://github.com/goncalossilva/rails3_acts_as_paranoid"
+  spec.license     = "MIT"
 
-  s.add_dependency "activerecord", ">= 4.0.0"
+  spec.files         = Dir["{lib}/**/*.rb", "LICENSE", "*.md"]
+  spec.test_files    = Dir["test/*.rb"]
+  spec.require_paths = ["lib"]
 
-  s.add_development_dependency "minitest"
-  s.add_development_dependency 'rake', ['>= 0']
+  spec.required_rubygems_version = ">= 1.3.6"
 
-  s.files        = Dir["{lib}/**/*.rb", "LICENSE", "*.markdown"]
+  spec.add_dependency "activerecord", ">= 3.0", "< 4.0"
+
+  spec.add_development_dependency "bundler", "~> 1.5"
+  spec.add_development_dependency "rake"
 end

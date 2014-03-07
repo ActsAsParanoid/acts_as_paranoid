@@ -1,16 +1,17 @@
-require 'rubygems'
-require 'test/unit'
-require 'active_support'
-require 'active_record'
-require 'active_model'
+require 'bundler'
+begin
+  Bundler.require(:default, :development)
+rescue Bundler::BundlerError => e
+  $stderr.puts e.message
+  $stderr.puts "Run `bundle install` to install missing gems"
+  exit e.status_code
+end
 
-$:.unshift "#{File.dirname(__FILE__)}/../"
-$:.unshift "#{File.dirname(__FILE__)}/../lib/"
-$:.unshift "#{File.dirname(__FILE__)}/../lib/validations"
-
-require 'init'
+require 'acts_as_paranoid'
+require 'minitest/autorun'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+ActiveRecord::Schema.verbose = false
 
 def setup_db
   ActiveRecord::Schema.define(:version => 1) do
