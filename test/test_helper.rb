@@ -10,6 +10,9 @@ end
 require 'acts_as_paranoid'
 require 'minitest/autorun'
 
+# Silence deprecation halfway through the test
+I18n.enforce_available_locales = true
+
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 ActiveRecord::Schema.verbose = false
 
