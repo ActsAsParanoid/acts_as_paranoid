@@ -237,7 +237,7 @@ For Rails 3.0 check the README at the [rails3.0](https://github.com/goncalossilv
 
 ## Ruby
 
-This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode). It *might* work fine in 1.8, but it's not officially supported.
+This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode).
 
 # Acknowledgements
 
