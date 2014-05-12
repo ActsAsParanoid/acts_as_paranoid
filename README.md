@@ -6,12 +6,6 @@ A simple plugin which hides records instead of deleting them, being able to reco
 
 **This branch targets Rails 3.2.** If you're working with another version, switch to the corresponding branch.
 
-## Credits
-
-This plugin was inspired by [acts_as_paranoid](http://github.com/technoweenie/acts_as_paranoid) and [acts_as_active](http://github.com/fernandoluizao/acts_as_active).
-
-While porting it to Rails 3, I decided to apply the ideas behind those plugins to an unified solution while removing a **lot** of the complexity found in them. I eventually ended up writing a new plugin from scratch.
-
 ## Usage
 
 You can enable ActsAsParanoid like this:
@@ -239,6 +233,7 @@ For Rails 3.0 check the README at the [rails3.0](https://github.com/goncalossilv
 
 This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode).
 
+
 # Acknowledgements
 
 * To [cheerfulstoic](https://github.com/cheerfulstoic) for adding recursive recovery
@@ -249,4 +244,8 @@ This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode).
 * To [Craig Walker](https://github.com/softcraft-development) for Rails 3.1 support and fixing various pending issues
 * To [Charles G.](https://github.com/chuckg) for Rails 3.2 support and for making a desperately needed global code refactoring
 
-Copyright © 2010 Gonçalo Silva, released under the MIT license
+## Credits
+
+This plugin was inspired by [acts_as_paranoid](http://github.com/technoweenie/acts_as_paranoid) and [acts_as_active](http://github.com/fernandoluizao/acts_as_active).
+
+While porting it to Rails 3, I decided to apply the ideas behind those plugins to an unified solution while removing a **lot** of the complexity found in them. I eventually ended up writing a new plugin from scratch.
