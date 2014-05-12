@@ -249,3 +249,6 @@ This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode).
 This plugin was inspired by [acts_as_paranoid](http://github.com/technoweenie/acts_as_paranoid) and [acts_as_active](http://github.com/fernandoluizao/acts_as_active).
 
 While porting it to Rails 3, I decided to apply the ideas behind those plugins to an unified solution while removing a **lot** of the complexity found in them. I eventually ended up writing a new plugin from scratch.
+
+
+Copyright © 2014 Zachary Scott, Gonçalo Silva, Rick Olson, released under the MIT license
