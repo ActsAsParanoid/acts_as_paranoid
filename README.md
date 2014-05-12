@@ -224,15 +224,15 @@ This gem supports the most recent versions of Rails and Ruby.
 
 For Rails 3.2 check the README at the [rails3.2](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.2) branch and add this to your Gemfile:
 
-	gem "acts_as_paranoid", "~>0.4.0"
+    gem "acts_as_paranoid", "~> 0.4.0"
 
 For Rails 3.1 check the README at the [rails3.1](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.1) branch and add this to your Gemfile:
 
-	gem "rails3_acts_as_paranoid", "~>0.1.4"
+    gem "rails3_acts_as_paranoid", "~>0.1.4"
 
 For Rails 3.0 check the README at the [rails3.0](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.0) branch and add this to your Gemfile:
 
-	gem "rails3_acts_as_paranoid", "~>0.0.9"
+    gem "rails3_acts_as_paranoid", "~>0.0.9"
 
 
 ## Ruby
