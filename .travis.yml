@@ -6,8 +6,6 @@ rvm:
   - 2.1
   - jruby
   - rbx
-gemfile:
-  - gemfiles/active_record_32.gemfile
 matrix:
   allow_failures:
     - rvm: rbx
