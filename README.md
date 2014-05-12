@@ -183,14 +183,13 @@ Associations are also supported. From the simplest behaviors you'd expect to mor
 
 ```ruby
 class Parent < ActiveRecord::Base
-	has_many :children, :class_name => "ParanoiacChild"
+  has_many :children, :class_name => "ParanoiacChild"
 end
 
 class ParanoiacChild < ActiveRecord::Base
-	belongs_to :parent
-  belongs_to :parent_including_deleted, :class_name => "Parent", :with_deleted => true
-  # You cannot name association *_with_deleted
-  
+  acts_as_paranoid
+  belongs_to :parent
+
   # You may need to provide a foreign_key like this
   belongs_to :parent_including_deleted, :class_name => "Parent", foreign_key => 'parent_id', :with_deleted => true
 end
