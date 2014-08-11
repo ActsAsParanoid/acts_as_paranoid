@@ -229,11 +229,4 @@ Watch out for these caveats:
 * To [Charles G.](https://github.com/chuckg) for Rails 3.2 support and for making a desperately needed global code refactoring
 * To [Gonçalo Silva](https://github.com/goncalossilva) for supporting this gem prior to v0.4.3
 
-## Credits
-
-This plugin was inspired by [acts_as_paranoid](http://github.com/technoweenie/acts_as_paranoid) and [acts_as_active](http://github.com/fernandoluizao/acts_as_active).
-
-While porting it to Rails 3, I decided to apply the ideas behind those plugins to an unified solution while removing a **lot** of the complexity found in them. I eventually ended up writing a new plugin from scratch.
-
-
-Copyright © 2014 Zachary Scott, Gonçalo Silva, Rick Olson, released under the MIT license
+See `LICENSE`.
