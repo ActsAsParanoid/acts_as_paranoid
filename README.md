@@ -2,9 +2,15 @@
 
 [![Build Status](https://travis-ci.org/zzak/acts_as_paranoid.png?branch=master)](https://travis-ci.org/zzak/acts_as_paranoid)
 
-A simple plugin which hides records instead of deleting them, being able to recover them.
+A Rails plugin to add soft delte.
 
-**This branch targets Rails 3.2.** If you're working with another version, switch to the corresponding branch.
+This gem can be used to hide records instead of deleting them, making them recoverable later.
+
+## Support
+
+**This branch targets Rails 3.2+.**
+
+If you're working with another version, switch to the corresponding branch, or require an older version of the acts_as_paranoid gem.
 
 ## Usage
 
@@ -212,30 +218,6 @@ Watch out for these caveats:
 -   You cannot name association `*_with_deleted`
 -   `unscoped` will return all records, deleted or not
 
-# Support
-
-This gem supports the most recent versions of Rails and Ruby.
-
-## Rails
-
-For Rails 3.2 check the README at the [rails3.2](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.2) branch and add this to your Gemfile:
-
-    gem "acts_as_paranoid", "~> 0.4.0"
-
-For Rails 3.1 check the README at the [rails3.1](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.1) branch and add this to your Gemfile:
-
-    gem "rails3_acts_as_paranoid", "~>0.1.4"
-
-For Rails 3.0 check the README at the [rails3.0](https://github.com/goncalossilva/rails3_acts_as_paranoid/tree/rails3.0) branch and add this to your Gemfile:
-
-    gem "rails3_acts_as_paranoid", "~>0.0.9"
-
-
-## Ruby
-
-This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode).
-
-
 # Acknowledgements
 
 * To [cheerfulstoic](https://github.com/cheerfulstoic) for adding recursive recovery
@@ -245,6 +227,7 @@ This gem is tested on Ruby 1.9, JRuby and Rubinius (both in 1.9 mode).
 * To [vikramdhillon](https://github.com/vikramdhillon) for the idea and initial implementation of support for string column type
 * To [Craig Walker](https://github.com/softcraft-development) for Rails 3.1 support and fixing various pending issues
 * To [Charles G.](https://github.com/chuckg) for Rails 3.2 support and for making a desperately needed global code refactoring
+* To [Gonçalo Silva](https://github.com/goncalossilva) for supporting this gem prior to v0.4.3
 
 ## Credits
 
