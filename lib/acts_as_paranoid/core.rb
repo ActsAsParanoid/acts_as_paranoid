@@ -82,7 +82,7 @@ module ActsAsParanoid
     end
 
     def persisted?
-      !(new_record? || @destroyed)
+      !(new_record? || destroyed?)
     end
 
     def paranoid_value
