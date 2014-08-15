@@ -11,7 +11,7 @@ module ActsAsParanoid
       def belongs_to_with_deleted(target, scope = nil, options = {})
         with_deleted = (scope.is_a?(Hash) ? scope : options).delete(:with_deleted)
         result = belongs_to_without_deleted(target, scope, options)
-
+        result = result.values.last if Rails.version >= '4.1'
         if with_deleted
           result.options[:with_deleted] = with_deleted
           unless method_defined? "#{target}_with_unscoped"

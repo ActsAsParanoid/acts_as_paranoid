@@ -1,10 +1,10 @@
 source "http://rubygems.org"
 
-gem "activerecord", "~> 4.0.0.beta1"
+gem "activerecord", "~> 4.0"
 
 # Development dependencies
 gem "rake"
-gem "activesupport", "~> 4.0.0.beta1"
+gem "activesupport", "~> 4.0"
 
 platforms :ruby do
   gem "sqlite3"
@@ -16,6 +16,6 @@ end
 
 group :test do
   gem "minitest"
-  gem "ZenTest"
+  gem "ZenTest", "~> 4.9.5"
   gem "autotest-growl"
 end
