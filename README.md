@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/zzak/acts_as_paranoid.png?branch=master)](https://travis-ci.org/zzak/acts_as_paranoid)
 
-A Rails plugin to add soft delte.
+A Rails plugin to add soft delete.
 
 This gem can be used to hide records instead of deleting them, making them recoverable later.
 
