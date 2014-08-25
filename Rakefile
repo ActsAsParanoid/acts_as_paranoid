@@ -6,9 +6,26 @@ require "rdoc/task"
 gemspec = eval(File.read(Dir["*.gemspec"].first))
 
 desc 'Default: run unit tests.'
-task :default => :test
+task :default => "test:all"
 
-desc 'Test the acts_as_paranoid plugin.'
+namespace :test do
+  %w(active_record_edge active_record_40 active_record_41 active_record_42) do |version|
+    desc "Test acts_as_paranoid against #{version}"
+    task version do
+      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle --quiet"
+      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle exec rake -t test"
+    end
+  end
+
+  desc "Run all tests for acts_as_paranoid"
+  task :all do
+    %w(active_record_edge active_record_40 active_record_41 active_record_42) do |version|
+      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle --quiet"
+      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle exec rake -t test"
+    end
+  end
+end
+
 Rake::TestTask.new(:test) do |t|
   t.libs << 'test'
   t.pattern = 'test/test_*.rb'

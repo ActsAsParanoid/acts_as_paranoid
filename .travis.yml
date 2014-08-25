@@ -6,9 +6,15 @@ rvm:
   - ruby-head
   - jruby
   - rbx
+gemfile:
+  - gemfiles/active_record_40.gemfile
+  - gemfiles/active_record_41.gemfile
+  - gemfiles/active_record_42.gemfile
+  - gemfiles/active_record_edge.gemfile
 matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: rbx
     - rvm: jruby
+    - gemfile: gemfiles/active_record_edge.gemfile
   fast_finish: true
