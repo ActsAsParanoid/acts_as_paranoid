@@ -8,7 +8,7 @@ This gem can be used to hide records instead of deleting them, making them recov
 
 ## Support
 
-**This branch targets Rails 3.2+.**
+**This branch targets Rails 4.x.**
 
 If you're working with another version, switch to the corresponding branch, or require an older version of the acts_as_paranoid gem.
 
