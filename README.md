@@ -220,6 +220,7 @@ Watch out for these caveats:
 
 # Acknowledgements
 
+* To [Rick Olson](https://github.com/technoweenie) for creating acts_as_paranoid
 * To [cheerfulstoic](https://github.com/cheerfulstoic) for adding recursive recovery
 * To [Jonathan Vaught](https://github.com/gravelpup) for adding paranoid validations
 * To [Geoffrey Hichborn](https://github.com/phene) for improving the overral code quality and adding support for after_commit
