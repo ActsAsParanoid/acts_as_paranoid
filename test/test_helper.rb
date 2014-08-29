@@ -24,7 +24,7 @@ def setup_db
       t.integer   :paranoid_belongs_dependant_id
       t.integer   :not_paranoid_id
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_booleans do |t|
@@ -32,7 +32,7 @@ def setup_db
       t.boolean   :is_deleted
       t.integer   :paranoid_time_id
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_strings do |t|
@@ -44,14 +44,14 @@ def setup_db
       t.string    :name
       t.integer   :paranoid_time_id
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :has_one_not_paranoids do |t|
       t.string    :name
       t.integer   :paranoid_time_id
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_has_many_dependants do |t|
@@ -61,14 +61,14 @@ def setup_db
       t.string    :paranoid_time_polymorphic_with_deleted_type
       t.integer   :paranoid_belongs_dependant_id
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_belongs_dependants do |t|
       t.string    :name
       t.datetime  :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_has_one_dependants do |t|
@@ -76,28 +76,28 @@ def setup_db
       t.datetime  :deleted_at
       t.integer   :paranoid_boolean_id
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_with_callbacks do |t|
       t.string    :name
       t.datetime  :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_destroy_companies do |t|
       t.string :name
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_delete_companies do |t|
       t.string :name
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_products do |t|
@@ -106,7 +106,7 @@ def setup_db
       t.string :name
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :super_paranoids do |t|
@@ -114,38 +114,38 @@ def setup_db
       t.references :has_many_inherited_super_paranoidz
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :has_many_inherited_super_paranoidzs do |t|
       t.references :super_paranoidz
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_many_many_parent_lefts do |t|
       t.string :name
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_many_many_parent_rights do |t|
       t.string :name
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_many_many_children do |t|
       t.integer :paranoid_many_many_parent_left_id
       t.integer :paranoid_many_many_parent_right_id
       t.datetime :deleted_at
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_with_scoped_validations do |t|
       t.string :name
       t.string :category
       t.datetime :deleted_at
-      t.timestamps
+      timestamps t
     end
 
    create_table :paranoid_forests do |t|
@@ -153,7 +153,7 @@ def setup_db
       t.boolean  :rainforest
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_trees do |t|
@@ -161,14 +161,14 @@ def setup_db
       t.string   :name
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_humen do |t|
       t.string   :gender
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_androids do |t|
@@ -182,6 +182,11 @@ def setup_db
       t.datetime :deleted_at
     end
   end
+end
+
+def timestamps(table)
+  table.column  :created_at , :timestamp, :null => false
+  table.column  :updated_at , :timestamp, :null => false
 end
 
 def teardown_db
