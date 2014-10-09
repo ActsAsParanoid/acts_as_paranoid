@@ -1,5 +1,6 @@
 require 'active_record'
 require 'validations/uniqueness_without_deleted'
+require 'acts_as_paranoid/join_association'
 
 
 module ActiveRecord
@@ -7,11 +8,11 @@ module ActiveRecord
     def paranoid?
       klass.try(:paranoid?) ? true : false
     end
-    
+
     def paranoid_deletion_attributes
       { klass.paranoid_column => klass.delete_now_value }
     end
-    
+
     alias_method :destroy!, :destroy
     def destroy(id)
       if paranoid?
@@ -20,9 +21,9 @@ module ActiveRecord
         destroy!(id)
       end
     end
-    
+
     alias_method :really_delete_all!, :delete_all
-    
+
     def delete_all!(conditions = nil)
       if conditions
         # This idea comes out of Rails 3.1 ActiveRecord::Record.delete_all
@@ -31,7 +32,7 @@ module ActiveRecord
         really_delete_all!
       end
     end
-    
+
     def delete_all(conditions = nil)
       if paranoid?
         update_all(paranoid_deletion_attributes, conditions)
@@ -39,11 +40,11 @@ module ActiveRecord
         delete_all!(conditions)
       end
     end
-    
+
     def arel=(a)
       @arel = a
     end
-    
+
     def with_deleted
       wd = self.clone
       wd.default_scoped = false
@@ -54,20 +55,20 @@ module ActiveRecord
 end
 
 module ActsAsParanoid
-  
+
   def paranoid?
     self.included_modules.include?(InstanceMethods)
   end
-  
+
   def validates_as_paranoid
     extend ParanoidValidations::ClassMethods
   end
-  
+
   def acts_as_paranoid(options = {})
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
-    
+
     class_attribute :paranoid_configuration, :paranoid_column_reference
-    
+
     self.paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 2.minutes }
     self.paranoid_configuration.merge!({ :deleted_value => "deleted" }) if options[:column_type] == "string"
     self.paranoid_configuration.merge!(options) # user options
@@ -75,12 +76,12 @@ module ActsAsParanoid
     raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean', 'string'].include? paranoid_configuration[:column_type]
 
     self.paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
-    
+
     return if paranoid?
-    
+
     # Magic!
     default_scope where("#{paranoid_column_reference} IS ?", nil)
-    
+
     scope :paranoid_deleted_around_time, lambda {|value, window|
       if self.class.respond_to?(:paranoid?) && self.class.paranoid?
         if self.class.paranoid_column_type == 'time' && ![true, false].include?(value)
@@ -90,7 +91,7 @@ module ActsAsParanoid
         end
       end if paranoid_configuration[:column_type] == 'time'
     }
-    
+
     include InstanceMethods
     extend ClassMethods
   end
@@ -115,15 +116,15 @@ module ActsAsParanoid
     def only_deleted
       self.unscoped.where("#{paranoid_column_reference} IS NOT ?", nil)
     end
-    
+
     def deletion_conditions(id_or_array)
       ["id in (?)", [id_or_array].flatten]
     end
-    
+
     def delete!(id_or_array)
       delete_all!(deletion_conditions(id_or_array))
     end
-    
+
     def delete(id_or_array)
       delete_all(deletion_conditions(id_or_array))
     end
@@ -156,13 +157,13 @@ module ActsAsParanoid
       end
     end
   end
-  
+
   module InstanceMethods
-    
+
     def paranoid_value
       self.send(self.class.paranoid_column)
     end
-    
+
     def destroy!
       with_transaction_returning_status do
         run_callbacks :destroy do
@@ -187,7 +188,7 @@ module ActsAsParanoid
         destroy!
       end
     end
-    
+
     def delete!
       with_transaction_returning_status do
         act_on_dependent_destroy_associations
@@ -196,7 +197,7 @@ module ActsAsParanoid
         freeze
       end
     end
-    
+
     def delete
       if paranoid_value.nil?
         with_transaction_returning_status do
@@ -208,7 +209,7 @@ module ActsAsParanoid
         delete!
       end
     end
-    
+
     def recover(options={})
       options = {
                   :recursive => self.class.paranoid_configuration[:recover_dependent_associations],
@@ -247,7 +248,7 @@ module ActsAsParanoid
         end
       end
     end
-    
+
     def act_on_dependent_destroy_associations
       self.class.dependent_associations.each do |association|
         if association.collection? && self.send(association.name).paranoid?
@@ -262,14 +263,14 @@ module ActsAsParanoid
       !paranoid_value.nil?
     end
     alias_method :destroyed?, :deleted?
-    
+
   private
     def paranoid_value=(value)
       self.send("#{self.class.paranoid_column}=", value)
     end
-    
+
   end
-  
+
 end
 
 
@@ -278,3 +279,6 @@ ActiveRecord::Base.send :extend, ActsAsParanoid
 
 # Push the recover callback onto the activerecord callback list
 ActiveRecord::Callbacks::CALLBACKS.push(:before_recover, :after_recover)
+
+# must included after extend ActsAsParanoid
+ActiveRecord::Associations::JoinDependency::JoinAssociation.send :include, ActsAsParanoid::JoinAssociation
