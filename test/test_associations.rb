@@ -108,6 +108,9 @@ class AssociationsTest < ParanoidBaseTest
     child.destroy
     assert_paranoid_deletion(child)
 
+    parent.reload
+
+    assert_equal [], parent.paranoid_has_many_dependants.to_a
     assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
   end
 
