@@ -74,7 +74,7 @@ module ActsAsParanoid
     protected
 
       def without_paranoid_default_scope
-        scope = self.all.unscoped
+        scope = self.all
         scope.where_values.delete(paranoid_default_scope_sql)
 
         scope
