@@ -40,9 +40,9 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_real_removal
-    ParanoidTime.first.destroy!
+    ParanoidTime.first.destroy_fully!
     ParanoidBoolean.delete_all!("name = 'extremely paranoid' OR name = 'really paranoid'")
-    ParanoidString.first.destroy!
+    ParanoidString.first.destroy_fully!
     assert_equal 2, ParanoidTime.count
     assert_equal 1, ParanoidBoolean.count
     assert_equal 0, ParanoidString.count
@@ -155,7 +155,7 @@ class ParanoidTest < ParanoidBaseTest
   def test_recursive_real_removal
     setup_recursive_tests
 
-    @paranoid_time_object.destroy!
+    @paranoid_time_object.destroy_fully!
 
     assert_equal 0, ParanoidTime.only_deleted.count
     assert_equal 1, ParanoidHasManyDependant.only_deleted.count
