@@ -144,6 +144,12 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 0, ParanoidHasOneDependant.count
     assert_equal 1, NotParanoid.count
     assert_equal 0, HasOneNotParanoid.count
+
+    assert_equal 3, ParanoidTime.with_deleted.count
+    assert_equal 4, ParanoidHasManyDependant.with_deleted.count
+    assert_equal 3, ParanoidBelongsDependant.with_deleted.count
+    assert_equal @paranoid_boolean_count + 3, ParanoidBoolean.with_deleted.count
+    assert_equal 3, ParanoidHasOneDependant.with_deleted.count
   end
 
   def test_recursive_real_removal
