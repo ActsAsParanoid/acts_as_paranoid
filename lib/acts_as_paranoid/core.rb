@@ -89,7 +89,7 @@ module ActsAsParanoid
       self.send(self.class.paranoid_column)
     end
 
-    def destroy!
+    def destroy_fully!
       with_transaction_returning_status do
         run_callbacks :destroy do
           destroy_dependent_associations!
@@ -101,7 +101,7 @@ module ActsAsParanoid
       end
     end
 
-    def destroy
+    def destroy!
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
@@ -112,8 +112,12 @@ module ActsAsParanoid
           end
         end
       else
-        destroy!
+        destroy_fully!
       end
+    end
+
+    def destroy
+      destroy!
     end
 
     def recover(options={})
