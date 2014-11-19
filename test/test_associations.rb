@@ -2,8 +2,6 @@ require 'test_helper'
 
 class AssociationsTest < ParanoidBaseTest
   def test_removal_with_associations
-    # This test shows that the current implementation doesn't handle
-    # assciation deletion correctly (when hard deleting via parent-object)
     paranoid_company_1 = ParanoidDestroyCompany.create! :name => "ParanoidDestroyCompany #1"
     paranoid_company_2 = ParanoidDeleteCompany.create! :name => "ParanoidDestroyCompany #1"
     paranoid_company_1.paranoid_products.create! :name => "ParanoidProduct #1"
@@ -19,13 +17,19 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal 1, ParanoidDestroyCompany.with_deleted.count
     assert_equal 2, ParanoidProduct.with_deleted.count
 
-    ParanoidDestroyCompany.with_deleted.first.destroy!
+    ParanoidDestroyCompany.with_deleted.first.destroy
     assert_equal 0, ParanoidDestroyCompany.count
     assert_equal 1, ParanoidProduct.count
     assert_equal 0, ParanoidDestroyCompany.with_deleted.count
     assert_equal 1, ParanoidProduct.with_deleted.count
 
-    ParanoidDeleteCompany.with_deleted.first.destroy!
+    ParanoidDeleteCompany.first.destroy
+    assert_equal 0, ParanoidDeleteCompany.count
+    assert_equal 0, ParanoidProduct.count
+    assert_equal 1, ParanoidDeleteCompany.with_deleted.count
+    assert_equal 1, ParanoidProduct.with_deleted.count
+
+    ParanoidDeleteCompany.with_deleted.first.destroy
     assert_equal 0, ParanoidDeleteCompany.count
     assert_equal 0, ParanoidProduct.count
     assert_equal 0, ParanoidDeleteCompany.with_deleted.count
