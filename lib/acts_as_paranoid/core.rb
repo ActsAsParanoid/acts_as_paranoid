@@ -148,7 +148,7 @@ module ActsAsParanoid
         # We can only recover by window if both parent and dependant have a
         # paranoid column type of :time.
         if self.class.paranoid_column_type == :time && klass.paranoid_column_type == :time
-          scope = scope.merge(klass.deleted_inside_time_window(paranoid_value, window))
+          scope = scope.deleted_inside_time_window(paranoid_value, window)
         end
 
         scope.each do |object|
