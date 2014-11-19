@@ -83,19 +83,19 @@ class AssociationsTest < ParanoidBaseTest
   end
 
   def test_belongs_to_options
-    paranoid_time = ParanoidHasManyDependant.reflections[:paranoid_time]
+    paranoid_time = ParanoidHasManyDependant.reflections.with_indifferent_access[:paranoid_time]
     assert_equal :belongs_to, paranoid_time.macro
     assert_nil paranoid_time.options[:with_deleted]
   end
 
   def test_belongs_to_with_deleted_options
-    paranoid_time_with_deleted = ParanoidHasManyDependant.reflections[:paranoid_time_with_deleted]
+    paranoid_time_with_deleted = ParanoidHasManyDependant.reflections.with_indifferent_access[:paranoid_time_with_deleted]
     assert_equal :belongs_to, paranoid_time_with_deleted.macro
     assert paranoid_time_with_deleted.options[:with_deleted]
   end
 
   def test_belongs_to_polymorphic_with_deleted_options
-    paranoid_time_polymorphic_with_deleted = ParanoidHasManyDependant.reflections[:paranoid_time_polymorphic_with_deleted]
+    paranoid_time_polymorphic_with_deleted = ParanoidHasManyDependant.reflections.with_indifferent_access[:paranoid_time_polymorphic_with_deleted]
     assert_equal :belongs_to, paranoid_time_polymorphic_with_deleted.macro
     assert paranoid_time_polymorphic_with_deleted.options[:with_deleted]
   end
