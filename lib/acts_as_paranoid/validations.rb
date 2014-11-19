@@ -15,7 +15,11 @@ module ActsAsParanoid
         coder = record.class.column_types[attribute.to_s]
 
         if value && coder
-          value = coder.type_cast_for_write value
+          value = if coder.respond_to? :type_cast_for_database
+                    coder.type_cast_for_database value
+                  else
+                    coder.type_cast_for_write value
+                  end
         end
 
         relation = build_relation(finder_class, table, attribute, value)
