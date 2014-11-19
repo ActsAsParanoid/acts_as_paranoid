@@ -13,7 +13,12 @@ module ActsAsParanoid
         result = belongs_to_without_deleted(target, scope, options)
 
         if with_deleted
-          result.values.last.options[:with_deleted] = with_deleted
+          if result.is_a? Hash
+            result.values.last.options[:with_deleted] = with_deleted
+          else
+            result.options[:with_deleted] = with_deleted
+          end
+
           unless method_defined? "#{target}_with_unscoped"
             class_eval <<-RUBY, __FILE__, __LINE__
               def #{target}_with_unscoped(*args)
