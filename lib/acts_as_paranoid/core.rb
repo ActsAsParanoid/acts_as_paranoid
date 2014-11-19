@@ -75,7 +75,13 @@ module ActsAsParanoid
 
       def without_paranoid_default_scope
         scope = self.all
-        scope.where_values.delete(paranoid_default_scope_sql)
+        if scope.where_values.include? paranoid_default_scope_sql
+          # ActiveRecord 4.1
+          scope.where_values.delete(paranoid_default_scope_sql)
+        else
+          scope = scope.with_default_scope
+          scope.where_values.delete(paranoid_default_scope_sql)
+        end
 
         scope
       end
