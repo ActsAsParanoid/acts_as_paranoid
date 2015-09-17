@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'activerecord', '~> 4.2.0.beta1', :require => 'active_record'
-gem 'activesupport', '~> 4.2.0.beta1', :require => 'active_support'
+gem 'activerecord', '~> 4.2.4', :require => 'active_record'
+gem 'activesupport', '~> 4.2.4', :require => 'active_support'
 
 platforms :ruby do
   if RUBY_VERSION > "2.1.0"
