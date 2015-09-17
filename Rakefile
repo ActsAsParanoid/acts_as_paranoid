@@ -9,18 +9,18 @@ desc 'Default: run unit tests.'
 task :default => "test:all"
 
 namespace :test do
-  %w(active_record_edge active_record_40 active_record_41 active_record_42).each do |version|
+  %w(active_record_40 active_record_41 active_record_42).each do |version|
     desc "Test acts_as_paranoid against #{version}"
     task version do
-      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle --quiet"
+      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle install --quiet"
       sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle exec rake -t test"
     end
   end
 
   desc "Run all tests for acts_as_paranoid"
   task :all do
-    %w(active_record_edge active_record_40 active_record_41 active_record_42).each do |version|
-      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle --quiet"
+    %w(active_record_40 active_record_41 active_record_42).each do |version|
+      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle install --quiet"
       sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle exec rake -t test"
     end
   end
