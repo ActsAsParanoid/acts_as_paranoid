@@ -230,5 +230,6 @@ Watch out for these caveats:
 * To [Charles G.](https://github.com/chuckg) for Rails 3.2 support and for making a desperately needed global code refactoring
 * To [Gonçalo Silva](https://github.com/goncalossilva) for supporting this gem prior to v0.4.3
 * To [Jean Boussier](https://github.com/byroot) for initial Rails 4.0.0 support
+* To [Matijs van Zuijlen](https://github.com/mvz) for Rails 4.1 and 4.2 support
 
 See `LICENSE`.
