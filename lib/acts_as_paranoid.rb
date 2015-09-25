@@ -2,6 +2,7 @@ require 'acts_as_paranoid/core'
 require 'acts_as_paranoid/associations'
 require 'acts_as_paranoid/validations'
 require 'acts_as_paranoid/relation'
+require 'acts_as_paranoid/join_association'
 
 module ActsAsParanoid
 
@@ -55,3 +56,6 @@ ActiveRecord::Relation.send :include, ActsAsParanoid::Relation
 
 # Push the recover callback onto the activerecord callback list
 ActiveRecord::Callbacks::CALLBACKS.push(:before_recover, :after_recover)
+
+# must included after extend ActsAsParanoid
+ActiveRecord::Associations::JoinDependency::JoinAssociation.send :include, ActsAsParanoid::JoinAssociation
