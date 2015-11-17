@@ -388,8 +388,6 @@ class ParanoidHasManyAsParent < ActiveRecord::Base
   has_many :paranoid_belongs_to_polymorphics, :as => :parent, :dependent => :destroy
 end
 
-ParanoidWithCallback.add_observer(ParanoidObserver.instance)
-
 class ParanoidBaseTest < ActiveSupport::TestCase
   def setup
     setup_db
