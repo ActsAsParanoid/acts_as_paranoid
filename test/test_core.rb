@@ -393,4 +393,24 @@ class ParanoidTest < ParanoidBaseTest
     2.times { ps.destroy }
     assert_equal 0, ParanoidString.with_deleted.where(:id => ps).count
   end
+
+  def test_decrement_counters
+    paranoid_boolean = ParanoidBoolean.create(:name => "boolean")
+    paranoid_with_counter_cache = paranoid_boolean.create_paranoid_with_counter_cache(:name => "with_counter")
+
+    assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
+
+    paranoid_with_counter_cache.destroy
+    assert_equal 0, paranoid_boolean.reload.paranoid_with_counter_caches_count
+  end
+
+  def test_hard_destroy_decrement_counters
+    paranoid_boolean = ParanoidBoolean.create(:name => "boolean")
+    paranoid_with_counter_cache = paranoid_boolean.create_paranoid_with_counter_cache(:name => "with_counter")
+
+    assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
+
+    paranoid_with_counter_cache.destroy_fully!
+    assert_equal 0, paranoid_boolean.reload.paranoid_with_counter_caches_count
+  end
 end
