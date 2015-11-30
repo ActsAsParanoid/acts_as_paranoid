@@ -190,6 +190,11 @@ def setup_db
       t.string    :paranoid_thing_type
       t.datetime :deleted_at
     end
+
+    create_table :paranoid_boolean_not_nullables do |t|
+      t.string :name
+      t.boolean :deleted, :boolean, :null => false, :default => false
+    end
   end
 end
 
@@ -437,3 +442,8 @@ class ParanoidSection < ActiveRecord::Base
   belongs_to :paranoid_time
   belongs_to :paranoid_thing, :polymorphic => true, :dependent => :destroy
 end
+
+class ParanoidBooleanNotNullable < ActiveRecord::Base
+  acts_as_paranoid column: 'deleted', column_type: 'boolean', allow_nulls: false
+end
+

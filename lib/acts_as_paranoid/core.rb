@@ -24,6 +24,8 @@ module ActsAsParanoid
       def only_deleted
         if string_type_with_deleted_value?
           without_paranoid_default_scope.where("#{paranoid_column_reference} IS ?", paranoid_configuration[:deleted_value])
+        elsif boolean_type_not_nullable?
+          without_paranoid_default_scope.where("#{paranoid_column_reference} = ?", true)
         else
           without_paranoid_default_scope.where("#{paranoid_column_reference} IS NOT ?", nil)
         end
@@ -42,6 +44,8 @@ module ActsAsParanoid
           self.all.table[paranoid_column].eq(nil).
             or(self.all.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value])).
             to_sql
+        elsif boolean_type_not_nullable?
+          self.all.table[paranoid_column].eq(false).to_sql
         else
           self.all.table[paranoid_column].eq(nil).to_sql
         end
@@ -49,6 +53,10 @@ module ActsAsParanoid
 
       def string_type_with_deleted_value?
         paranoid_column_type == :string && !paranoid_configuration[:deleted_value].nil?
+      end
+
+      def boolean_type_not_nullable?
+        paranoid_column_type == :boolean && !paranoid_configuration[:allow_nulls]
       end
 
       def paranoid_column
@@ -189,8 +197,13 @@ module ActsAsParanoid
     end
 
     def deleted?
-      !(paranoid_value.nil? ||
-        (self.class.string_type_with_deleted_value? && paranoid_value != self.class.delete_now_value))
+      !if self.class.string_type_with_deleted_value?
+        paranoid_value != self.class.delete_now_value || paranoid_value.nil?
+      elsif self.class.boolean_type_not_nullable?
+        paranoid_value == false
+      else
+        paranoid_value.nil?
+      end
     end
 
     alias_method :destroyed?, :deleted?
