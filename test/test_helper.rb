@@ -190,7 +190,14 @@ def timestamps(table)
 end
 
 def teardown_db
-  ActiveRecord::Base.connection.tables.each do |table|
+  connection = ActiveRecord::Base.connection
+  if connection.respond_to?(:data_sources)
+    # rails 5
+    tables = connection.data_sources
+  else
+    tables = connection.tables
+  end
+  tables.each do |table|
     ActiveRecord::Base.connection.drop_table(table)
   end
 end
