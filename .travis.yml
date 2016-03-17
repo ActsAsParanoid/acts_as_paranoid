@@ -25,5 +25,5 @@ matrix:
       gemfile: gemfiles/active_record_50.gemfile
     - rvm: 2.0.0
       gemfile: gemfiles/active_record_50.gemfile
-    - rvm: 2.1.4
+    - rvm: 2.1.8
       gemfile: gemfiles/active_record_50.gemfile
