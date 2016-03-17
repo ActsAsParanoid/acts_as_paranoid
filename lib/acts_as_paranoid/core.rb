@@ -23,9 +23,9 @@ module ActsAsParanoid
 
       def only_deleted
         if string_type_with_deleted_value?
-          without_paranoid_default_scope.where("#{paranoid_column_reference} IS ?", paranoid_configuration[:deleted_value])
+          without_paranoid_default_scope.where(paranoid_column_reference => paranoid_configuration[:deleted_value])
         else
-          without_paranoid_default_scope.where("#{paranoid_column_reference} IS NOT ?", nil)
+          without_paranoid_default_scope.where.not(paranoid_column_reference => nil)
         end
       end
 
@@ -37,13 +37,12 @@ module ActsAsParanoid
         where(conditions).update_all(["#{paranoid_configuration[:column]} = ?", delete_now_value])
       end
 
-      def paranoid_default_scope_sql
+      def paranoid_default_scope
         if string_type_with_deleted_value?
           self.all.table[paranoid_column].eq(nil).
-            or(self.all.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value])).
-            to_sql
+            or(self.all.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value]))
         else
-          self.all.table[paranoid_column].eq(nil).to_sql
+          self.all.table[paranoid_column].eq(nil)
         end
       end
 
@@ -75,12 +74,15 @@ module ActsAsParanoid
 
       def without_paranoid_default_scope
         scope = self.all
-        if scope.where_values.include? paranoid_default_scope_sql
-          # ActiveRecord 4.1
-          scope.where_values.delete(paranoid_default_scope_sql)
+
+        if ActiveRecord::VERSION::MAJOR < 5
+          # ActiveRecord 4.0.*
+          scope = scope.with_default_scope if ActiveRecord::VERSION::MINOR < 1
+          scope.where_values.delete(paranoid_default_scope)
         else
-          scope = scope.with_default_scope
-          scope.where_values.delete(paranoid_default_scope_sql)
+          scope = scope.unscope(where: paranoid_default_scope)
+          # Fix problems with unscope group chain
+          scope = scope.unscoped if scope.to_sql.include? paranoid_default_scope.to_sql
         end
 
         scope

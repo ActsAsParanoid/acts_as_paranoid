@@ -31,7 +31,7 @@ module ActsAsParanoid
     include ActsAsParanoid::Core
 
     # Magic!
-    default_scope { where(paranoid_default_scope_sql) }
+    default_scope { where(paranoid_default_scope) }
 
     if paranoid_configuration[:column_type] == 'time'
       scope :deleted_inside_time_window, lambda {|time, window|
