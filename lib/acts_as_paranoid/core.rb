@@ -41,9 +41,9 @@ module ActsAsParanoid
         if string_type_with_deleted_value?
           self.all.table[paranoid_column].eq(nil).
             or(self.all.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value])).
-            to_sql
+            to_sql(self)
         else
-          self.all.table[paranoid_column].eq(nil).to_sql
+          self.all.table[paranoid_column].eq(nil).to_sql(self)
         end
       end
 
