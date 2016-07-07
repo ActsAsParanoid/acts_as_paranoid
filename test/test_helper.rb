@@ -120,14 +120,14 @@ def setup_db
 
     create_table :super_paranoids do |t|
       t.string :type
-      t.references :has_many_inherited_super_paranoidz
+      t.references :has_many_inherited_super_paranoidz, index: {name: 'index_sp_on_hmisp_id'}
       t.datetime :deleted_at
 
       timestamps t
     end
 
     create_table :has_many_inherited_super_paranoidzs do |t|
-      t.references :super_paranoidz
+      t.references :super_paranoidz, index: {name: 'index_hmisp_on_sp_id'}
       t.datetime :deleted_at
 
       timestamps t
@@ -199,7 +199,14 @@ def timestamps(table)
 end
 
 def teardown_db
-  ActiveRecord::Base.connection.tables.each do |table|
+  connection = ActiveRecord::Base.connection
+  if connection.respond_to?(:data_sources)
+    # rails 5
+    tables = connection.data_sources
+  else
+    tables = connection.tables
+  end
+  tables.each do |table|
     ActiveRecord::Base.connection.drop_table(table)
   end
 end
