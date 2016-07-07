@@ -197,7 +197,7 @@ class ParanoiacChild < ActiveRecord::Base
   belongs_to :parent
 
   # You may need to provide a foreign_key like this
-  belongs_to :parent_including_deleted, :class_name => "Parent", foreign_key => 'parent_id', :with_deleted => true
+  belongs_to :parent_including_deleted, :class_name => "Parent", :foreign_key => 'parent_id', :with_deleted => true
 end
 
 parent = Parent.first
