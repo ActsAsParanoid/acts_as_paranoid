@@ -38,8 +38,8 @@ module ActsAsParanoid
         deleted_after_time((time - window)).deleted_before_time((time + window))
       }
 
-      scope :deleted_after_time, lambda  { |time| where("#{paranoid_column} > ?", time) }
-      scope :deleted_before_time, lambda { |time| where("#{paranoid_column} < ?", time) }
+      scope :deleted_after_time, lambda  { |time| where("#{self.table_name}.#{paranoid_column} > ?", time) }
+      scope :deleted_before_time, lambda { |time| where("#{self.table_name}.#{paranoid_column} < ?", time) }
     end
   end
 end
