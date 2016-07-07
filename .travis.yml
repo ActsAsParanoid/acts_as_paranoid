@@ -1,12 +1,19 @@
 language: ruby
+
+before_install:
+  - rvm get head
+  - gem install bundler
+
 script: "bundle exec rake test"
 rvm:
   - 1.9.3
   - 2.0.0
   - 2.1
   - 2.2
+  - 2.3
   - ruby-head
   - jruby
+  - jruby-9.1.0.0
   - rbx
 gemfile:
   - gemfiles/active_record_40.gemfile
@@ -17,4 +24,5 @@ matrix:
     - rvm: ruby-head
     - rvm: rbx
     - rvm: jruby
+    - rvm: jruby-9.1.0.0
   fast_finish: true
