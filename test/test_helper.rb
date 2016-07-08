@@ -120,14 +120,14 @@ def setup_db
 
     create_table :super_paranoids do |t|
       t.string :type
-      t.references :has_many_inherited_super_paranoidz
+      t.references :has_many_inherited_super_paranoidz, index: { name: 'index__sp_id_on_has_many_isp' }
       t.datetime :deleted_at
 
       timestamps t
     end
 
     create_table :has_many_inherited_super_paranoidzs do |t|
-      t.references :super_paranoidz
+      t.references :super_paranoidz, index: { name: 'index_has_many_isp_on_sp_id' }
       t.datetime :deleted_at
 
       timestamps t
@@ -226,9 +226,12 @@ def timestamps(table)
 end
 
 def teardown_db
-  ActiveRecord::Base.connection.tables.each do |table|
-    ActiveRecord::Base.connection.drop_table(table)
+  tables = if ActiveRecord::VERSION::MAJOR < 5
+    ActiveRecord::Base.connection.tables
+  else
+    ActiveRecord::Base.connection.data_sources
   end
+  tables.each { |table| ActiveRecord::Base.connection.drop_table(table) }
 end
 
 class ParanoidTime < ActiveRecord::Base

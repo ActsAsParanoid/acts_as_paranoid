@@ -19,6 +19,7 @@ gemfile:
   - gemfiles/active_record_40.gemfile
   - gemfiles/active_record_41.gemfile
   - gemfiles/active_record_42.gemfile
+  - gemfiles/active_record_50.gemfile
 matrix:
   allow_failures:
     - rvm: ruby-head
@@ -26,3 +27,10 @@ matrix:
     - rvm: jruby
     - rvm: jruby-9.1.0.0
   fast_finish: true
+  exclude:
+    - rvm: 1.9.3
+      gemfile: gemfiles/active_record_50.gemfile
+    - rvm: 2.0.0
+      gemfile: gemfiles/active_record_50.gemfile
+    - rvm: 2.1.9
+      gemfile: gemfiles/active_record_50.gemfile
