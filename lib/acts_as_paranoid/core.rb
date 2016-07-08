@@ -139,10 +139,8 @@ module ActsAsParanoid
         destroy_fully!
       end
     end
-
-    def destroy
-      destroy!
-    end
+    
+    alias_method :destroy, :destroy!
 
     def recover(options={})
       options = {
