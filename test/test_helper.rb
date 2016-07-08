@@ -193,20 +193,20 @@ def setup_db
       t.integer :parent_id
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :not_paranoid_has_many_as_parents do |t|
       t.string :name
 
-      t.timestamps
+      timestamps t
     end
 
     create_table :paranoid_has_many_as_parents do |t|
       t.string :name
       t.datetime :deleted_at
 
-      t.timestamps
+      timestamps t
     end
   end
 end
