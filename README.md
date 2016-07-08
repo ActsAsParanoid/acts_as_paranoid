@@ -37,6 +37,8 @@ The values shown are the defaults. While *column* can be anything (as long as it
 
 If your column type is a `string`, you can also specify which value to use when marking an object as deleted by passing `:deleted_value` (default is "deleted"). Any records with a non-matching value in this column will be treated normally (ie: not deleted).
 
+If your column type is a `boolean`, it is possible to specify `allow_nulls` option which is `true` by default. When set to `false`, entities that have `false` value in this column will be considered not deleted, and those which have `true` will be considered deleted. When `true` everything that has a not-null value will be considered deleted.
+
 ### Filtering
 
 If a record is deleted by ActsAsParanoid, it won't be retrieved when accessing the database. So, `Paranoiac.all` will **not** include the deleted_records. if you want to access them, you have 2 choices:

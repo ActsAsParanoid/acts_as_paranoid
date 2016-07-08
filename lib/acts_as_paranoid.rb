@@ -20,6 +20,7 @@ module ActsAsParanoid
 
     self.paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 2.minutes }
     self.paranoid_configuration.merge!({ :deleted_value => "deleted" }) if options[:column_type] == "string"
+    self.paranoid_configuration.merge!({ :allow_nulls => true }) if options[:column_type] == "boolean"
     self.paranoid_configuration.merge!(options) # user options
 
     raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean', 'string'].include? paranoid_configuration[:column_type]
