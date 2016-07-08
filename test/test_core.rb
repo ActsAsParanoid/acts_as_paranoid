@@ -124,6 +124,13 @@ class ParanoidTest < ParanoidBaseTest
     end
   end
 
+  def test_scope_chaining
+    assert_equal 3, ParanoidBoolean.unscoped.with_deleted.count
+    assert_equal 0, ParanoidBoolean.unscoped.only_deleted.count
+    assert_equal 0, ParanoidBoolean.with_deleted.only_deleted.count
+    assert_equal 3, ParanoidBoolean.with_deleted.with_deleted.count
+  end
+
   def setup_recursive_tests
     @paranoid_time_object = ParanoidTime.first
 
