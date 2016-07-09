@@ -110,12 +110,7 @@ module ActsAsParanoid
         run_callbacks :destroy do
           destroy_dependent_associations!
           # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-           if persisted?
-            affected_rows = self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
-            if ActiveRecord::VERSION::MAJOR >= 4 && ActiveRecord::VERSION::MINOR >= 2
-              association_decrement_counters affected_rows
-            end
-          end
+          self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose]) if persisted?
           self.paranoid_value = self.class.delete_now_value
           freeze
         end
@@ -127,12 +122,7 @@ module ActsAsParanoid
         with_transaction_returning_status do
           run_callbacks :destroy do
             # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-            if persisted?
-              affected_rows = self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
-              if ActiveRecord::VERSION::MAJOR >= 4 && ActiveRecord::VERSION::MINOR >= 2
-                association_decrement_counters affected_rows
-              end
-            end
+            self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose]) if persisted?
             self.paranoid_value = self.class.delete_now_value
             self
           end
@@ -220,25 +210,6 @@ module ActsAsParanoid
 
     def paranoid_value=(value)
       self.send("#{self.class.paranoid_column}=", value)
-    end
-
-    def association_decrement_counters(affected_rows)
-      if affected_rows > 0
-        each_counter_cached_associations do |association|
-          foreign_key = association.reflection.foreign_key.to_sym
-          unless destroyed_by_association && destroyed_by_association.foreign_key.to_sym == foreign_key
-            if send(association.reflection.name)
-              association.send(:decrement_counters)
-            end
-          end
-        end
-      end
-    end
-
-    def each_counter_cached_associations
-      _reflections.each do |name, reflection|
-        yield association(name.to_sym) if reflection.belongs_to? && reflection.counter_cache_column
-      end
     end
   end
 end

@@ -31,7 +31,6 @@ def setup_db
       t.string    :name
       t.boolean   :is_deleted
       t.integer   :paranoid_time_id
-      t.integer   :paranoid_with_counter_caches_count
 
       timestamps t
     end
@@ -73,14 +72,6 @@ def setup_db
     end
 
     create_table :paranoid_has_one_dependants do |t|
-      t.string    :name
-      t.datetime  :deleted_at
-      t.integer   :paranoid_boolean_id
-
-      timestamps t
-    end
-
-    create_table :paranoid_with_counter_caches do |t|
       t.string    :name
       t.datetime  :deleted_at
       t.integer   :paranoid_boolean_id
@@ -256,7 +247,6 @@ class ParanoidBoolean < ActiveRecord::Base
 
   belongs_to :paranoid_time
   has_one :paranoid_has_one_dependant, :dependent => :destroy
-  has_one :paranoid_with_counter_cache, :dependent => :destroy
 end
 
 class ParanoidString < ActiveRecord::Base
@@ -295,12 +285,6 @@ class ParanoidHasOneDependant < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :paranoid_boolean
-end
-
-class ParanoidWithCounterCache < ActiveRecord::Base
-  acts_as_paranoid
-
-  belongs_to :paranoid_boolean, :counter_cache => true
 end
 
 class ParanoidWithCallback < ActiveRecord::Base
