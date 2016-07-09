@@ -73,7 +73,9 @@ paranoiac.destroy!
 Paranoiac.delete_all!(conditions)
 ```
 
-You can also permanently delete a record by calling `destroy_fully!` or by calling `destroy` or `delete_all` on the object **twice**.
+You can also permanently delete a record by calling `destroy_fully!` on the object.
+
+Alternatively you can permanently delete a record by calling `destroy` or `delete_all` on the object **twice**.
 
 If a record was already deleted (hidden by `ActsAsParanoid`) and you delete it again, it will be removed from the database.
 
