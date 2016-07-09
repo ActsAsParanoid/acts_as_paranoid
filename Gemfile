@@ -10,6 +10,7 @@ group :development do
 
   if RUBY_VERSION < "1.9"
     gem "i18n", "~> 0.6.11"
+    gem "rake", "10.0.0"
   end
 end
 
