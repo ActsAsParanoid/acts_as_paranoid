@@ -6,13 +6,11 @@ before_install:
 
 script: "bundle exec rake test"
 rvm:
-  - 1.9.3
   - 2.0.0
-  - 2.1.9
+  - 2.1.10
   - 2.2.5
   - 2.3.1
   - ruby-head
-  - jruby
   - jruby-9.1.0.0
   - rbx
 gemfile:
@@ -24,11 +22,10 @@ matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: rbx
-    - rvm: jruby
     - rvm: jruby-9.1.0.0
   fast_finish: true
   exclude:
-    - rvm: 1.9.3
+    - rvm: 2.1.10
       gemfile: gemfiles/active_record_50.gemfile
     - rvm: 2.0.0
       gemfile: gemfiles/active_record_50.gemfile
