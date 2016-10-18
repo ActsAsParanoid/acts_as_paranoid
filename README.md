@@ -69,7 +69,7 @@ Paranoiac.deleted_inside_time_window(time, 2.minutes)
 In order to really delete a record, just use:
 
 ```ruby
-paranoiac.destroy!
+paranoiac.really_destroy!
 Paranoiac.delete_all!(conditions)
 ```
 
