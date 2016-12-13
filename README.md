@@ -14,7 +14,22 @@ If you're working with another version, switch to the corresponding branch, or r
 
 ## Usage
 
-You can enable ActsAsParanoid like this:
+#### Install gem:
+
+``` ruby
+gem 'acts_as_paranoid', '~> 0.5.0'
+```
+``` shell
+bundle install
+```
+
+#### Create migration
+
+``` shell
+bin/rails generate migration AddDeletedAtToParanoiac deleted_at:datetime:index
+```
+
+#### Enable ActsAsParanoid:
 
 ```ruby
 class Paranoiac < ActiveRecord::Base
