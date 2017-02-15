@@ -84,7 +84,7 @@ Take this example:
 ```ruby
 p = Paranoiac.first
 p.destroy # does NOT delete the first record, just hides it
-Paranoiac.only_deleted.where(:id => p.id).destroy # deletes the first record from the database
+Paranoiac.only_deleted.where(:id => p.id).first.destroy # deletes the first record from the database
 ```
 
 ### Recovery
