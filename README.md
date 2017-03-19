@@ -37,14 +37,19 @@ class Paranoiac < ActiveRecord::Base
 end
 ```
 
-### Options
-
-You can also specify the name of the column to store it's *deletion* and the type of data it holds:
+The default column name and type are as follows:
 
 - `:column      => 'deleted_at'`
 - `:column_type => 'time'`
 
-The values shown are the defaults. While *column* can be anything (as long as it exists in your database), *type* is restricted to:
+### Options
+
+If you are using a different column name and type to store a record's *deletion*, you can specify them as follows:
+
+- `:column      => 'deleted'`
+- `:column_type => 'boolean'`
+
+While *column* can be anything (as long as it exists in your database), *type* is restricted to:
 
 - `boolean`
 - `time` or
