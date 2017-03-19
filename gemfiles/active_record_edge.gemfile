@@ -1,7 +1,9 @@
 source 'https://rubygems.org'
 
-gem 'activerecord', '~> 4.2.4', :require => 'active_record'
-gem 'activesupport', '~> 4.2.4', :require => 'active_support'
+github 'rails/rails' do
+  gem 'activerecord', require: 'active_record'
+  gem 'activesupport', require: 'active_support'
+end
 
 gem 'sqlite3'
 
