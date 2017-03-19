@@ -69,11 +69,10 @@ Paranoiac.deleted_inside_time_window(time, 2.minutes)
 In order to really delete a record, just use:
 
 ```ruby
-paranoiac.destroy!
+paranoiac.destroy_fully!
 Paranoiac.delete_all!(conditions)
 ```
-
-You can also permanently delete a record by calling `destroy_fully!` on the object.
+**NOTE:** The `.destroy!` method is still usable, but equivalent to `.destroy`. It just hides the object.
 
 Alternatively you can permanently delete a record by calling `destroy` or `delete_all` on the object **twice**.
 
