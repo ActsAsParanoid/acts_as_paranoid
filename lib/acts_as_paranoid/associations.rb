@@ -3,7 +3,8 @@ module ActsAsParanoid
     def self.included(base)
       base.extend ClassMethods
       class << base
-        alias_method_chain :belongs_to, :deleted
+        alias_method :belongs_to_without_deleted, :belongs_to
+        alias_method :belongs_to, :belongs_to_with_deleted
       end
     end
 
