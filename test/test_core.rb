@@ -94,6 +94,15 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 1, ParanoidString.count
   end
 
+  def test_recovery!
+    ParanoidBoolean.first.destroy
+    ParanoidBoolean.create(:name => 'paranoid')
+
+    assert_raise do
+      ParanoidBoolean.only_deleted.first.recover!
+    end
+  end
+
   def setup_recursive_tests
     @paranoid_time_object = ParanoidTime.first
 
