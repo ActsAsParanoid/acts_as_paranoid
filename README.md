@@ -171,6 +171,22 @@ or in the recover statement
 Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover(:recovery_window => 30.seconds)
 ```
 
+### recover!
+
+You can invoke `recover!` if you wish to raise an error if the recovery fails. The error generally stems from ActiveRecord.
+
+```
+Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover!
+
+### => ActiveRecord::RecordInvalid: Validation failed: Name already exists
+```
+
+Optionally, you may also raise the error by passing `:raise_error => true` to the `recover` method. This behaves the same as `recover!`.
+
+```
+Paranoiac.only_deleted.where("name = ?", "not dead yet").first.recover(:raise_error => true)
+```
+
 ### Validation
 ActiveRecord's built-in uniqueness validation does not account for records deleted by ActsAsParanoid. If you want to check for uniqueness among non-deleted records only, use the macro `validates_as_paranoid` in your model. Then, instead of using `validates_uniqueness_of`, use `validates_uniqueness_of_without_deleted`. This will keep deleted records from counting against the uniqueness check.
 
@@ -261,6 +277,22 @@ parent.destroy
 
 child.parent #=> nil
 child.parent_including_deleted #=> Parent (it works!)
+```
+
+### Callbacks
+
+There are couple of callbacks that you may use when dealing with deletion and recovery of objects. There is `before_recover` and `after_recover` which will be
+triggered before and after the recovery of an object respectively.
+
+Default ActiveRecord callbaks such as `before_destroy` and `after_destroy` will be triggered around `.destroy!` and `.destroy_fully!`.
+
+```
+class Paranoiac < ActiveRecord::Base
+  acts_as_paranoid
+
+  before_recover :set_counts
+  after_recover :update_logs
+end
 ```
 
 ## Caveats
