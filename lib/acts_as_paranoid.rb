@@ -13,11 +13,15 @@ module ActsAsParanoid
   def validates_as_paranoid
     include ActsAsParanoid::Validations
   end
+  
+  def paranoid_column_reference
+    "#{table_name}.#{paranoid_configuration[:column]}"
+  end
 
   def acts_as_paranoid(options = {})
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
 
-    class_attribute :paranoid_configuration, :paranoid_column_reference
+    class_attribute :paranoid_configuration
 
     self.paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 2.minutes, :recovery_value => nil }
     self.paranoid_configuration.merge!({ :deleted_value => "deleted" }) if options[:column_type] == "string"
@@ -25,8 +29,6 @@ module ActsAsParanoid
     self.paranoid_configuration.merge!(options) # user options
 
     raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean', 'string'].include? paranoid_configuration[:column_type]
-
-    self.paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
 
     return if paranoid?
 
