@@ -52,8 +52,8 @@ class AssociationsTest < ParanoidBaseTest
 
     paranoid_time.destroy
 
-    assert_nil paranoid_has_many_dependant.paranoid_time(true)
-    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted(true)
+    assert_nil paranoid_has_many_dependant.reload.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.reload.paranoid_time_with_deleted
   end
 
   def test_belongs_to_polymorphic_with_deleted
@@ -65,8 +65,8 @@ class AssociationsTest < ParanoidBaseTest
 
     paranoid_time.destroy
 
-    assert_nil paranoid_has_many_dependant.paranoid_time(true)
-    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
+    assert_nil paranoid_has_many_dependant.reload.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.reload.paranoid_time_polymorphic_with_deleted
   end
 
   def test_belongs_to_nil_polymorphic_with_deleted
@@ -78,8 +78,8 @@ class AssociationsTest < ParanoidBaseTest
 
     paranoid_time.destroy
 
-    assert_nil paranoid_has_many_dependant.paranoid_time(true)
-    assert_nil paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted(true)
+    assert_nil paranoid_has_many_dependant.reload.paranoid_time
+    assert_nil paranoid_has_many_dependant.reload.paranoid_time_polymorphic_with_deleted
   end
 
   def test_belongs_to_options
