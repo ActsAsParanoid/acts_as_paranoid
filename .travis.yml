@@ -15,10 +15,13 @@ rvm:
 gemfile:
   - gemfiles/active_record_42.gemfile
   - gemfiles/active_record_50.gemfile
+  - gemfiles/active_record_51.gemfile
   - gemfiles/active_record_edge.gemfile
 matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby
     - rvm: jruby-9.1.8.0
+    - gemfile: gemfiles/active_record_51.gemfile
+    - gemfile: gemfiles/active_record_edge.gemfile
   fast_finish: true
