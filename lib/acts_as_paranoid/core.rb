@@ -122,7 +122,12 @@ module ActsAsParanoid
         with_transaction_returning_status do
           run_callbacks :destroy do
             # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-            self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose]) if persisted?
+            @_trigger_destroy_callback = if persisted?
+                                           self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
+                                         else
+                                           true
+                                         end
+
             self.paranoid_value = self.class.delete_now_value
             self
           end
