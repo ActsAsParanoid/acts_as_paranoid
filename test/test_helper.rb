@@ -165,7 +165,7 @@ def setup_db
     end
 
     create_table :paranoid_humen do |t|
-      t.string   :gender
+      t.integer  :legs
       t.datetime :deleted_at
 
       timestamps t
@@ -453,7 +453,7 @@ end
 
 class ParanoidHuman < ActiveRecord::Base
   acts_as_paranoid
-  default_scope { where('gender = ?', 'male') }
+  default_scope { where('legs = ?', 2) }
 end
 
 class ParanoidAndroid < ActiveRecord::Base

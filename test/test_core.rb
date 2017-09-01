@@ -211,7 +211,7 @@ class ParanoidTest < ParanoidBaseTest
     child_1 = ParanoidAndroid.create
     section_1 = ParanoidSection.create(:paranoid_thing => child_1)
 
-    child_2 = ParanoidHuman.create(:gender => 'male')
+    child_2 = ParanoidHuman.create(:legs => 2)
     section_2 = ParanoidSection.create(:paranoid_thing => child_2)
 
     assert_equal section_1.paranoid_thing, child_1
