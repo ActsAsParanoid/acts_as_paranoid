@@ -211,13 +211,13 @@ class ParanoidTest < ParanoidBaseTest
     child_1 = ParanoidAndroid.create
     section_1 = ParanoidSection.create(:paranoid_thing => child_1)
 
-    child_2 = ParanoidHuman.create(:gender => 'male')
+    child_2 = ParanoidPolygon.create(:sides => 3)
     section_2 = ParanoidSection.create(:paranoid_thing => child_2)
 
     assert_equal section_1.paranoid_thing, child_1
     assert_equal section_1.paranoid_thing.class, ParanoidAndroid
     assert_equal section_2.paranoid_thing, child_2
-    assert_equal section_2.paranoid_thing.class, ParanoidHuman
+    assert_equal section_2.paranoid_thing.class, ParanoidPolygon
 
     parent = ParanoidTime.create(:name => "paranoid_parent")
     parent.paranoid_sections << section_1
@@ -226,14 +226,14 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 4, ParanoidTime.count
     assert_equal 2, ParanoidSection.count
     assert_equal 1, ParanoidAndroid.count
-    assert_equal 1, ParanoidHuman.count
+    assert_equal 1, ParanoidPolygon.count
 
     parent.destroy
 
     assert_equal 3, ParanoidTime.count
     assert_equal 0, ParanoidSection.count
     assert_equal 0, ParanoidAndroid.count
-    assert_equal 0, ParanoidHuman.count
+    assert_equal 0, ParanoidPolygon.count
 
     parent.reload
     parent.recover
@@ -241,7 +241,7 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 4, ParanoidTime.count
     assert_equal 2, ParanoidSection.count
     assert_equal 1, ParanoidAndroid.count
-    assert_equal 1, ParanoidHuman.count
+    assert_equal 1, ParanoidPolygon.count
   end
 
   def test_non_recursive_recovery

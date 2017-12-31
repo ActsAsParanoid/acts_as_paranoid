@@ -5,48 +5,48 @@ class MultipleDefaultScopesTest < ParanoidBaseTest
     setup_db
 
     # Naturally, the default scope for humans is male. Sexism++
-    ParanoidHuman.create! :gender => 'male'
-    ParanoidHuman.create! :gender => 'male'
-    ParanoidHuman.create! :gender => 'male'
-    ParanoidHuman.create! :gender => 'female'
+    ParanoidPolygon.create! :sides => 3
+    ParanoidPolygon.create! :sides => 3
+    ParanoidPolygon.create! :sides => 3
+    ParanoidPolygon.create! :sides => 8
 
-    assert_equal 3, ParanoidHuman.count
-    assert_equal 4, ParanoidHuman.unscoped.count
+    assert_equal 3, ParanoidPolygon.count
+    assert_equal 4, ParanoidPolygon.unscoped.count
   end
 
   def test_fake_removal_with_multiple_default_scope
-    ParanoidHuman.first.destroy
-    assert_equal 2, ParanoidHuman.count
-    assert_equal 3, ParanoidHuman.with_deleted.count
-    assert_equal 1, ParanoidHuman.only_deleted.count
-    assert_equal 4, ParanoidHuman.unscoped.count
+    ParanoidPolygon.first.destroy
+    assert_equal 2, ParanoidPolygon.count
+    assert_equal 3, ParanoidPolygon.with_deleted.count
+    assert_equal 1, ParanoidPolygon.only_deleted.count
+    assert_equal 4, ParanoidPolygon.unscoped.count
 
-    ParanoidHuman.destroy_all
-    assert_equal 0, ParanoidHuman.count
-    assert_equal 3, ParanoidHuman.with_deleted.count
-    assert_equal 3, ParanoidHuman.with_deleted.count
-    assert_equal 4, ParanoidHuman.unscoped.count
+    ParanoidPolygon.destroy_all
+    assert_equal 0, ParanoidPolygon.count
+    assert_equal 3, ParanoidPolygon.with_deleted.count
+    assert_equal 3, ParanoidPolygon.with_deleted.count
+    assert_equal 4, ParanoidPolygon.unscoped.count
   end
 
   def test_real_removal_with_multiple_default_scope
     # two-step
-    ParanoidHuman.first.destroy
-    ParanoidHuman.only_deleted.first.destroy
-    assert_equal 2, ParanoidHuman.count
-    assert_equal 2, ParanoidHuman.with_deleted.count
-    assert_equal 0, ParanoidHuman.only_deleted.count
-    assert_equal 3, ParanoidHuman.unscoped.count
+    ParanoidPolygon.first.destroy
+    ParanoidPolygon.only_deleted.first.destroy
+    assert_equal 2, ParanoidPolygon.count
+    assert_equal 2, ParanoidPolygon.with_deleted.count
+    assert_equal 0, ParanoidPolygon.only_deleted.count
+    assert_equal 3, ParanoidPolygon.unscoped.count
 
-    ParanoidHuman.first.destroy_fully!
-    assert_equal 1, ParanoidHuman.count
-    assert_equal 1, ParanoidHuman.with_deleted.count
-    assert_equal 0, ParanoidHuman.only_deleted.count
-    assert_equal 2, ParanoidHuman.unscoped.count
+    ParanoidPolygon.first.destroy_fully!
+    assert_equal 1, ParanoidPolygon.count
+    assert_equal 1, ParanoidPolygon.with_deleted.count
+    assert_equal 0, ParanoidPolygon.only_deleted.count
+    assert_equal 2, ParanoidPolygon.unscoped.count
 
-    ParanoidHuman.delete_all!
-    assert_equal 0, ParanoidHuman.count
-    assert_equal 0, ParanoidHuman.with_deleted.count
-    assert_equal 0, ParanoidHuman.only_deleted.count
-    assert_equal 1, ParanoidHuman.unscoped.count
+    ParanoidPolygon.delete_all!
+    assert_equal 0, ParanoidPolygon.count
+    assert_equal 0, ParanoidPolygon.with_deleted.count
+    assert_equal 0, ParanoidPolygon.only_deleted.count
+    assert_equal 1, ParanoidPolygon.unscoped.count
   end
 end

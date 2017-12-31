@@ -164,8 +164,8 @@ def setup_db
       timestamps t
     end
 
-    create_table :paranoid_humen do |t|
-      t.string   :gender
+    create_table :paranoid_polygons do |t|
+      t.integer   :sides
       t.datetime :deleted_at
 
       timestamps t
@@ -451,9 +451,9 @@ class ParanoidTree < ActiveRecord::Base
   validates_presence_of :name
 end
 
-class ParanoidHuman < ActiveRecord::Base
+class ParanoidPolygon < ActiveRecord::Base
   acts_as_paranoid
-  default_scope { where('gender = ?', 'male') }
+  default_scope { where('sides = ?', 3) }
 end
 
 class ParanoidAndroid < ActiveRecord::Base
