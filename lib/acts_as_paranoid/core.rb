@@ -133,6 +133,7 @@ module ActsAsParanoid
           end
         end
       else
+        warn('WARN: acts_as_paranoid FULLY DESTROY on deleted record!')
         destroy_fully!
       end
     end
