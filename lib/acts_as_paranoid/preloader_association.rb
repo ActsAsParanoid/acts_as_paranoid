@@ -4,7 +4,7 @@ module ActsAsParanoid
       base.class_eval do
         def build_scope_with_deleted
           scope = build_scope_without_deleted
-          scope = scope.with_deleted if options[:with_deleted] && klass.respond_to?(:with_deleted)
+          scope = scope.with_deleted if reflection.options[:with_deleted] && klass.respond_to?(:with_deleted)
           scope
         end
 
