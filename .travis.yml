@@ -6,9 +6,10 @@ before_install:
 
 script: "bundle exec rake test"
 rvm:
-  - 2.2.6
-  - 2.3.3
-  - 2.4.0
+  - 2.2.10
+  - 2.3.7
+  - 2.4.4
+  - 2.5.1
   - ruby-head
   - jruby
   - jruby-9.1.8.0
