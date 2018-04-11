@@ -18,7 +18,6 @@ gemfile:
   - gemfiles/active_record_50.gemfile
   - gemfiles/active_record_51.gemfile
   - gemfiles/active_record_52.gemfile
-  - gemfiles/active_record_edge.gemfile
 matrix:
   allow_failures:
     - rvm: ruby-head
@@ -26,4 +25,7 @@ matrix:
     - rvm: jruby-9.1.8.0
     - gemfile: gemfiles/active_record_52.gemfile
     - gemfile: gemfiles/active_record_edge.gemfile
+      rvm: 2.4.4
+    - gemfile: gemfiles/active_record_edge.gemfile
+      rvm: 2.5.1
   fast_finish: true
