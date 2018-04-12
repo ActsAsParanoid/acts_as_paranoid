@@ -6,9 +6,10 @@ before_install:
 
 script: "bundle exec rake test"
 rvm:
-  - 2.2.6
-  - 2.3.3
-  - 2.4.0
+  - 2.2.10
+  - 2.3.7
+  - 2.4.4
+  - 2.5.1
   - ruby-head
   - jruby
   - jruby-9.1.8.0
@@ -16,11 +17,15 @@ gemfile:
   - gemfiles/active_record_42.gemfile
   - gemfiles/active_record_50.gemfile
   - gemfiles/active_record_51.gemfile
-  - gemfiles/active_record_edge.gemfile
+  - gemfiles/active_record_52.gemfile
 matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby
     - rvm: jruby-9.1.8.0
+    - gemfile: gemfiles/active_record_52.gemfile
     - gemfile: gemfiles/active_record_edge.gemfile
+      rvm: 2.4.4
+    - gemfile: gemfiles/active_record_edge.gemfile
+      rvm: 2.5.1
   fast_finish: true

@@ -9,7 +9,9 @@ desc 'Default: run unit tests.'
 task :default => "test:all"
 
 namespace :test do
-  %w(active_record_42 active_record_50 active_record_51 active_record_edge).each do |version|
+  versions = %w(active_record_42 active_record_50 active_record_51 active_record_52 active_record_edge)
+
+  versions.each do |version|
     desc "Test acts_as_paranoid against #{version}"
     task version do
       sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle install --quiet"
@@ -18,12 +20,7 @@ namespace :test do
   end
 
   desc "Run all tests for acts_as_paranoid"
-  task :all do
-    %w(active_record_42 active_record_50 active_record_51 active_record_edge).each do |version|
-      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle install --quiet"
-      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle exec rake -t test"
-    end
-  end
+  task :all => versions
 end
 
 Rake::TestTask.new(:test) do |t|

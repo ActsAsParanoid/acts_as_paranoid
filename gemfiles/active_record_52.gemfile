@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-github 'rails/rails' do
+github 'rails/rails', branch: '5-2-stable' do
   gem 'activerecord', require: 'active_record'
   gem 'activesupport', require: 'active_support'
 end
@@ -12,5 +12,3 @@ group :development do
 end
 
 gemspec :path => '../'
-
-gem "arel", github: "rails/arel"
