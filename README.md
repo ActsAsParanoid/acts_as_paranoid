@@ -4,20 +4,28 @@
 
 A Rails plugin to add soft delete.
 
-This gem can be used to hide records instead of deleting them, making them recoverable later.
+This gem can be used to hide records instead of deleting them, making them
+recoverable later.
 
 ## Support
 
-**This branch targets Rails 4.x. and 5.x**
+**This branch targets Rails 4.2, 5.0 and 5.1, with experimental support for 5.2**
 
-If you're working with another version, switch to the corresponding branch, or require an older version of the `acts_as_paranoid` gem.
+If you're working with another version, switch to the corresponding branch, or
+require an older version of the `acts_as_paranoid` gem.
+
+### Known issues with Rails 5.2
+
+* Using acts_as_paranoid and ActiveStorage on the same model
+  [leads to a SystemStackError](https://github.com/ActsAsParanoid/acts_as_paranoid/issues/103).
+* You cannot directly create a model in a deleted state.
 
 ## Usage
 
 #### Install gem:
 
 ``` ruby
-gem 'acts_as_paranoid', '~> 0.5.0'
+gem 'acts_as_paranoid', '~> 0.6.0'
 ```
 ``` shell
 bundle install
