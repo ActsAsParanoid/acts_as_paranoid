@@ -228,6 +228,9 @@ class AssociationsTest < ParanoidBaseTest
   end
 
   def test_mass_assignment_of_paranoid_column_enabled
+    if ActiveRecord::VERSION::MAJOR > 4 && ActiveRecord::VERSION::MINOR > 1
+      skip 'Creation as deleted is not supported with Rails >= 5.2'
+    end
     now = Time.now
     record = ParanoidTime.create! :name => 'Foo', :deleted_at => now
     assert_equal 'Foo', record.name

@@ -105,6 +105,13 @@ module ActsAsParanoid
       self.send(self.class.paranoid_column)
     end
 
+    # Straight from ActiveRecord 5.1!
+    def delete
+      self.class.delete(id) if persisted?
+      @destroyed = true
+      freeze
+    end
+
     def destroy_fully!
       with_transaction_returning_status do
         run_callbacks :destroy do

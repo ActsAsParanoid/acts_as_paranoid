@@ -186,15 +186,19 @@ class ParanoidTest < ParanoidBaseTest
   def test_recursive_recovery_dependant_window
     setup_recursive_tests
 
-    @paranoid_time_object.destroy
-    @paranoid_time_object.reload
-
     # Stop the following from recovering:
     #   - ParanoidHasManyDependant and its ParanoidBelongsDependant
     #   - A single ParanoidBelongsDependant, but not its parent
-    dependants = @paranoid_time_object.paranoid_has_many_dependants.with_deleted
-    dependants.first.update_attribute(:deleted_at, 2.days.ago)
-    ParanoidBelongsDependant.with_deleted.where(:id => dependants.last.paranoid_belongs_dependant_id).first.update_attribute(:deleted_at, 1.hour.ago)
+    Time.stub :now, 2.days.ago do
+      @paranoid_time_object.paranoid_has_many_dependants.first.destroy
+    end
+    Time.stub :now, 1.hour.ago do
+      @paranoid_time_object.paranoid_has_many_dependants.
+        last.paranoid_belongs_dependant.
+        destroy
+    end
+    @paranoid_time_object.destroy
+    @paranoid_time_object.reload
 
     @paranoid_time_object.recover(:recursive => true)
 
