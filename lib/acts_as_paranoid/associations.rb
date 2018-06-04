@@ -10,7 +10,12 @@ module ActsAsParanoid
 
     module ClassMethods
       def belongs_to_with_deleted(target, scope = nil, options = {})
-        with_deleted = (scope.is_a?(Hash) ? scope : options).delete(:with_deleted)
+        if scope.is_a?(Hash)
+          options = scope
+          scope = nil
+        end
+
+        with_deleted = options.delete(:with_deleted)
         result = belongs_to_without_deleted(target, scope, options)
 
         if with_deleted
