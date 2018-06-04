@@ -126,7 +126,7 @@ If you would like to change this default behavior for one model, you can use the
 
 ```ruby
 class Paranoiac < ActiveRecord::Base
-    acts_as_paranoid :recover_dependent_associations => false
+  acts_as_paranoid :recover_dependent_associations => false
 end
 ```
 
@@ -140,16 +140,16 @@ This window can be changed with the `dependent_recovery_window` option:
 
 ```ruby
 class Paranoiac < ActiveRecord::Base
-    acts_as_paranoid
-    has_many :paranoids, :dependent => :destroy
+  acts_as_paranoid
+  has_many :paranoids, :dependent => :destroy
 end
 
 class Paranoid < ActiveRecord::Base
-    belongs_to :paranoic
+  belongs_to :paranoic
 
-    # Paranoid objects will be recovered alongside Paranoic objects
-    # if they were deleted within 10 minutes of the Paranoic object
-    acts_as_paranoid :dependent_recovery_window => 10.minutes
+  # Paranoid objects will be recovered alongside Paranoic objects
+  # if they were deleted within 10 minutes of the Paranoic object
+  acts_as_paranoid :dependent_recovery_window => 10.minutes
 end
 ```
 
