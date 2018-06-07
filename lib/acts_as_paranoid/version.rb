@@ -1,3 +1,3 @@
 module ActsAsParanoid
-  VERSION = "1.0.0.beta"
+  VERSION = "0.6.0"
 end
