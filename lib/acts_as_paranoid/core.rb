@@ -157,7 +157,6 @@ module ActsAsParanoid
             decrement_counters_on_associations
           end
 
-          stale_paranoid_value
           @destroyed = true
           freeze
         end
