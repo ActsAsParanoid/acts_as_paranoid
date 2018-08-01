@@ -158,6 +158,8 @@ module ActsAsParanoid
             decrement_counters_on_associations
           end
 
+          @_trigger_destroy_callback = true
+
           @destroyed = true
           freeze
         end
