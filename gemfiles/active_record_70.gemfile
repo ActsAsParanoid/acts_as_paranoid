@@ -4,7 +4,9 @@
 
 source "https://rubygems.org"
 
+gem "activejob", "~> 7.0.0", require: "active_job"
 gem "activerecord", "~> 7.0.0", require: "active_record"
+gem "activestorage", "~> 7.0.0"
 gem "activesupport", "~> 7.0.0", require: "active_support"
 
 group :development do
