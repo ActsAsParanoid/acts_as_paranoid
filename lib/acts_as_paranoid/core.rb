@@ -108,6 +108,7 @@ module ActsAsParanoid
     # Straight from ActiveRecord 5.1!
     def delete
       self.class.delete(id) if persisted?
+      stale_paranoid_value
       @destroyed = true
       freeze
     end
@@ -124,7 +125,7 @@ module ActsAsParanoid
             decrement_counters_on_associations
           end
 
-          self.paranoid_value = self.class.delete_now_value
+          stale_paranoid_value
           freeze
         end
       end
@@ -144,7 +145,7 @@ module ActsAsParanoid
 
             @_trigger_destroy_callback = true
 
-            self.paranoid_value = self.class.delete_now_value
+            stale_paranoid_value
             self
           end
         end
@@ -268,6 +269,11 @@ module ActsAsParanoid
 
     def decrement_counters_on_associations
         update_counters_on_associations :decrement_counter
+    end
+
+    def stale_paranoid_value
+      self.paranoid_value = self.class.delete_now_value
+      clear_attribute_changes([self.class.paranoid_column])
     end
   end
 end
