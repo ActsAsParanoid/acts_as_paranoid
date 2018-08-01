@@ -109,7 +109,6 @@ module ActsAsParanoid
     def delete
       self.class.delete(id) if persisted?
       stale_paranoid_value
-      @destroyed = true
       freeze
     end
 
@@ -126,6 +125,7 @@ module ActsAsParanoid
           end
 
           stale_paranoid_value
+          @destroyed = true
           freeze
         end
       end
@@ -231,7 +231,7 @@ module ActsAsParanoid
     end
 
     def deleted?
-      !if self.class.string_type_with_deleted_value?
+      @destroyed || !if self.class.string_type_with_deleted_value?
         paranoid_value != self.class.delete_now_value || paranoid_value.nil?
       elsif self.class.boolean_type_not_nullable?
         paranoid_value == false
@@ -241,6 +241,12 @@ module ActsAsParanoid
     end
 
     alias_method :destroyed?, :deleted?
+
+    def deleted_fully?
+      @destroyed
+    end
+
+    alias_method :destroyed_fully?, :deleted_fully?
 
     private
 
