@@ -1,18 +1,16 @@
 language: ruby
 
-before_install:
-  - rvm get head
-  - gem install bundler
-
 script: "bundle exec rake test"
 rvm:
   - 2.2.10
-  - 2.3.7
-  - 2.4.4
-  - 2.5.1
+  - 2.3.8
+  - 2.4.5
+  - 2.5.3
+  - 2.6.0
   - ruby-head
   - jruby
   - jruby-9.1.8.0
+  - jruby-9.2.5.0
 gemfile:
   - gemfiles/active_record_42.gemfile
   - gemfiles/active_record_50.gemfile
@@ -23,8 +21,11 @@ matrix:
     - rvm: ruby-head
     - rvm: jruby
     - rvm: jruby-9.1.8.0
+    - rvm: jruby-9.2.5.0
     - gemfile: gemfiles/active_record_edge.gemfile
       rvm: 2.4.4
     - gemfile: gemfiles/active_record_edge.gemfile
       rvm: 2.5.1
+    - gemfile: gemfiles/active_record_edge.gemfile
+      rvm: 2.6.0
   fast_finish: true
