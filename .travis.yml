@@ -1,9 +1,5 @@
 language: ruby
 
-before_install:
-  - rvm get head
-  - gem install bundler
-
 script: "bundle exec rake test"
 rvm:
   - 2.2.10
