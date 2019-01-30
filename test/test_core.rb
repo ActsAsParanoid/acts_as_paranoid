@@ -437,4 +437,10 @@ class ParanoidTest < ParanoidBaseTest
     2.times { ps.destroy }
     assert_equal 0, ParanoidBooleanNotNullable.with_deleted.where(:id => ps).count
   end
+
+  def test_no_double_tap_destroys_fully
+    ps = ParanoidNoDoubleTapDestroysFully.create!()
+    2.times { ps.destroy }
+    assert_equal 1, ParanoidNoDoubleTapDestroysFully.with_deleted.where(:id => ps).count
+  end
 end

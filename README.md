@@ -114,6 +114,10 @@ p.destroy # does NOT delete the first record, just hides it
 Paranoiac.only_deleted.where(:id => p.id).first.destroy # deletes the first record from the database
 ```
 
+This behaviour can be disabled by setting the configuration option
+
+- `:double_tap_destroys_fully => false`
+
 ### Recovery
 
 Recovery is easy. Just invoke `recover` on it, like this:
