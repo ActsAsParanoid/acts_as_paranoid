@@ -452,7 +452,7 @@ class ParanoidTest < ParanoidBaseTest
 
     paranoid_with_counter_cache.destroy
 
-    assert_equal 0, paranoid_boolean.paranoid_with_counter_caches_count
+    assert_equal 0, paranoid_boolean.reload.paranoid_with_counter_caches_count
   end
 
   def test_hard_destroy_decrement_counters
@@ -463,7 +463,7 @@ class ParanoidTest < ParanoidBaseTest
 
     paranoid_with_counter_cache.destroy_fully!
 
-    assert_equal 0, paranoid_boolean.paranoid_with_counter_caches_count
+    assert_equal 0, paranoid_boolean.reload.paranoid_with_counter_caches_count
   end
 
   def test_increment_counters
@@ -474,10 +474,10 @@ class ParanoidTest < ParanoidBaseTest
 
     paranoid_with_counter_cache.destroy
 
-    assert_equal 0, paranoid_boolean.paranoid_with_counter_caches_count
+    assert_equal 0, paranoid_boolean.reload.paranoid_with_counter_caches_count
 
     paranoid_with_counter_cache.recover
 
-    assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
+    assert_equal 1, paranoid_boolean.reload.paranoid_with_counter_caches_count
   end
 end
