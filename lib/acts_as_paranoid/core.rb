@@ -116,17 +116,16 @@ module ActsAsParanoid
       with_transaction_returning_status do
         run_callbacks :destroy do
           destroy_dependent_associations!
-          # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
+
           if persisted?
-            affected_row_count = self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
+            # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
+            self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
 
             if ActiveRecord::VERSION::MAJOR >= 5
-              decrement_counters_on_associations affected_row_count
+              decrement_counters_on_associations
             end
-            affected_row_count
-          else
-            true
           end
+
           self.paranoid_value = self.class.delete_now_value
           freeze
         end
@@ -137,19 +136,17 @@ module ActsAsParanoid
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
-            # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-            @_trigger_destroy_callback =
-              if persisted?
-                affected_row_count = self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
 
-                if ActiveRecord::VERSION::MAJOR >= 5
-                  decrement_counters_on_associations affected_row_count
-                end
+            if persisted?
+              # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
+              self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
 
-                affected_row_count
-              else
-                true
+              if ActiveRecord::VERSION::MAJOR >= 5
+                decrement_counters_on_associations
               end
+            end
+
+            @_trigger_destroy_callback = true
 
             self.paranoid_value = self.class.delete_now_value
             self
@@ -242,25 +239,14 @@ module ActsAsParanoid
       self.send("#{self.class.paranoid_column}=", value)
     end
 
-    def decrement_counters_on_associations affected_row_count
-      if affected_row_count > 0
-        each_counter_cached_association_reflection do |assoc_reflection|
-          foreign_key = assoc_reflection.foreign_key.to_sym
-          unless destroyed_by_association && destroyed_by_association.foreign_key.to_sym == foreign_key
-            associated_object = send(assoc_reflection.name)
-            counter_cache_column = assoc_reflection.counter_cache_column
-            associated_object.class.send(:decrement_counter, counter_cache_column, associated_object.id)
-          end
-        end
-      end
-    end
+    def update_counters_on_associations method_sym
 
-    def increment_counters_on_associations
+      return unless [:decrement_counter, :increment_counter].include? method_sym
+
       each_counter_cached_association_reflection do |assoc_reflection|
-        foreign_key = assoc_reflection.foreign_key.to_sym
         associated_object = send(assoc_reflection.name)
         counter_cache_column = assoc_reflection.counter_cache_column
-        associated_object.class.send(:increment_counter, counter_cache_column, associated_object.id)
+        associated_object.class.send(method_sym, counter_cache_column, associated_object.id)
       end
     end
 
@@ -268,6 +254,14 @@ module ActsAsParanoid
       _reflections.each do |name, reflection|
         yield reflection if reflection.belongs_to? && reflection.counter_cache_column == "#{self.class.name.underscore.pluralize}_count"
       end
+    end
+
+    def increment_counters_on_associations
+        update_counters_on_associations :increment_counter
+    end
+
+    def decrement_counters_on_associations
+        update_counters_on_associations :decrement_counter
     end
   end
 end
