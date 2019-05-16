@@ -4,7 +4,6 @@ class MultipleDefaultScopesTest < ParanoidBaseTest
   def setup
     setup_db
 
-    # Naturally, the default scope for humans is male. Sexism++
     ParanoidPolygon.create! :sides => 3
     ParanoidPolygon.create! :sides => 3
     ParanoidPolygon.create! :sides => 3
