@@ -23,9 +23,9 @@ matrix:
     - rvm: jruby-9.1.8.0
     - rvm: jruby-9.2.5.0
     - gemfile: gemfiles/active_record_edge.gemfile
-      rvm: 2.4.4
+      rvm: 2.4.5
     - gemfile: gemfiles/active_record_edge.gemfile
-      rvm: 2.5.1
+      rvm: 2.5.3
     - gemfile: gemfiles/active_record_edge.gemfile
       rvm: 2.6.0
   fast_finish: true
