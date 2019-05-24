@@ -208,6 +208,10 @@ def setup_db
 
       timestamps t
     end
+
+    create_table :paranoid_no_double_tap_destroys_fullies do |t|
+      t.datetime :deleted_at
+    end
   end
 end
 
@@ -254,6 +258,10 @@ class ParanoidString < ActiveRecord::Base
 end
 
 class NotParanoid < ActiveRecord::Base
+end
+
+class ParanoidNoDoubleTapDestroysFully < ActiveRecord::Base
+  acts_as_paranoid :double_tap_destroys_fully => false
 end
 
 class HasOneNotParanoid < ActiveRecord::Base

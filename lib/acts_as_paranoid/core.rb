@@ -140,7 +140,9 @@ module ActsAsParanoid
           end
         end
       else
-        destroy_fully!
+        if paranoid_configuration[:double_tap_destroys_fully]
+          destroy_fully!
+        end
       end
     end
 
