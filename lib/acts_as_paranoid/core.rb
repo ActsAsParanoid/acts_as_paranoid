@@ -121,7 +121,7 @@ module ActsAsParanoid
             # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
             self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
 
-            if ActiveRecord::VERSION::MAJOR >= 5
+            if ActiveRecord::VERSION::MAJOR >= 4
               decrement_counters_on_associations
             end
           end
@@ -141,7 +141,7 @@ module ActsAsParanoid
               # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
               self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
 
-              if ActiveRecord::VERSION::MAJOR >= 5
+              if ActiveRecord::VERSION::MAJOR >= 4
                 decrement_counters_on_associations
               end
             end
