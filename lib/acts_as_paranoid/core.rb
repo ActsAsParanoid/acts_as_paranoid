@@ -116,8 +116,16 @@ module ActsAsParanoid
       with_transaction_returning_status do
         run_callbacks :destroy do
           destroy_dependent_associations!
-          # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-          self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose]) if persisted?
+
+          if persisted?
+            # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
+            self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
+
+            if ActiveRecord::VERSION::MAJOR >= 4
+              decrement_counters_on_associations
+            end
+          end
+
           self.paranoid_value = self.class.delete_now_value
           freeze
         end
@@ -128,12 +136,17 @@ module ActsAsParanoid
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
-            # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-            @_trigger_destroy_callback = if persisted?
-                                           self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
-                                         else
-                                           true
-                                         end
+
+            if persisted?
+              # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
+              self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
+
+              if ActiveRecord::VERSION::MAJOR >= 4
+                decrement_counters_on_associations
+              end
+            end
+
+            @_trigger_destroy_callback = true
 
             self.paranoid_value = self.class.delete_now_value
             self
@@ -157,7 +170,7 @@ module ActsAsParanoid
       self.class.transaction do
         run_callbacks :recover do
           recover_dependent_associations(options[:recovery_window], options) if options[:recursive]
-
+          increment_counters_on_associations
           self.paranoid_value = self.class.paranoid_configuration[:recovery_value]
           self.save
         end
@@ -224,6 +237,31 @@ module ActsAsParanoid
 
     def paranoid_value=(value)
       self.send("#{self.class.paranoid_column}=", value)
+    end
+
+    def update_counters_on_associations method_sym
+
+      return unless [:decrement_counter, :increment_counter].include? method_sym
+
+      each_counter_cached_association_reflection do |assoc_reflection|
+        associated_object = send(assoc_reflection.name)
+        counter_cache_column = assoc_reflection.counter_cache_column
+        associated_object.class.send(method_sym, counter_cache_column, associated_object.id)
+      end
+    end
+
+    def each_counter_cached_association_reflection
+      _reflections.each do |name, reflection|
+        yield reflection if reflection.belongs_to? && reflection.counter_cache_column == "#{self.class.name.underscore.pluralize}_count"
+      end
+    end
+
+    def increment_counters_on_associations
+        update_counters_on_associations :increment_counter
+    end
+
+    def decrement_counters_on_associations
+        update_counters_on_associations :decrement_counter
     end
   end
 end
