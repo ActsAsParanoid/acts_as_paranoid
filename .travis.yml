@@ -16,6 +16,7 @@ gemfile:
   - gemfiles/active_record_50.gemfile
   - gemfiles/active_record_51.gemfile
   - gemfiles/active_record_52.gemfile
+  - gemfiles/active_record_60.gemfile
 matrix:
   allow_failures:
     - rvm: ruby-head
