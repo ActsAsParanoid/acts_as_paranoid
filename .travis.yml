@@ -17,6 +17,9 @@ gemfile:
   - gemfiles/active_record_51.gemfile
   - gemfiles/active_record_52.gemfile
   - gemfiles/active_record_60.gemfile
+before_install:
+  - gem install bundler --version 1.11.2
+  - export BUNDLE_PATH="${TRAVIS_BUILD_DIR}/vendor/bundle"
 matrix:
   allow_failures:
     - rvm: ruby-head
