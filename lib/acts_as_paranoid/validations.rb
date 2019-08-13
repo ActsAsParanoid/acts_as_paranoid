@@ -11,7 +11,7 @@ module ActsAsParanoid
         version = version.to_s
         name = "V#{version.tr('.', '_')}"
         unless constants.include? name.to_sym
-          raise "Unknown validator version #{version.inspect}; expected one of #{constants.sort.join(', ')}"
+          raise "Unknown validator version #{name.inspect}; expected one of #{constants.sort.join(', ')}"
         end
         const_get name
       end
@@ -38,8 +38,11 @@ module ActsAsParanoid
         protected
 
         def build_relation(klass, attribute, value)
-          return super(klass, klass.arel_table, attribute, value) if ActiveRecord::VERSION::MINOR == 0
-          super
+          if ActiveRecord::VERSION::MINOR == 0 && ActiveRecord::VERSION::MINOR == 5
+            return super(klass, klass.arel_table, attribute, value)
+          else
+            super
+          end
         end
       end
 
@@ -75,11 +78,18 @@ module ActsAsParanoid
           end
         end
       end
+
+      class V6 < V5
+      end
     end
 
     module ClassMethods
       def validates_uniqueness_of_without_deleted(*attr_names)
-        validates_with UniquenessWithoutDeletedValidator[ActiveRecord::VERSION::MAJOR], _merge_attributes(attr_names)
+        if ActiveRecord::VERSION::MAJOR == '6'
+
+        else
+          validates_with UniquenessWithoutDeletedValidator[ActiveRecord::VERSION::MAJOR], _merge_attributes(attr_names)
+        end
       end
     end
   end
