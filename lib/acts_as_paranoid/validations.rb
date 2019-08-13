@@ -38,7 +38,7 @@ module ActsAsParanoid
         protected
 
         def build_relation(klass, attribute, value)
-          if ActiveRecord::VERSION::MINOR == 0 && ActiveRecord::VERSION::MINOR == 5
+          if ActiveRecord::VERSION::MINOR == 0 && ActiveRecord::VERSION::MAJOR == 5
             return super(klass, klass.arel_table, attribute, value)
           else
             super
