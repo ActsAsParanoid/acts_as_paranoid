@@ -9,7 +9,7 @@ desc 'Default: run unit tests.'
 task :default => "test:all"
 
 namespace :test do
-  versions = %w(active_record_42 active_record_50 active_record_51 active_record_52 active_record_edge)
+  versions = %w(active_record_42 active_record_50 active_record_51 active_record_52 active_record_60 active_record_edge)
 
   versions.each do |version|
     desc "Test acts_as_paranoid against #{version}"
