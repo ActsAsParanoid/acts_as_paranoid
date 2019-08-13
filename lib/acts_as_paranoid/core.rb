@@ -184,7 +184,11 @@ module ActsAsParanoid
         scope = klass.only_deleted
 
         # Merge in the association's scope
-        scope = scope.merge(ActiveRecord::Associations::AssociationScope.scope(association(reflection.name)))
+        scope = if ActiveRecord::VERSION::MAJOR >= 6
+          scope.merge(ActiveRecord::Associations::AssociationScope.scope(association(reflection.name)))
+        else
+          scope.merge(association(reflection.name).association_scope)
+        end
 
         # We can only recover by window if both parent and dependant have a
         # paranoid column type of :time.
@@ -205,7 +209,11 @@ module ActsAsParanoid
         scope = klass.only_deleted
 
         # Merge in the association's scope
-        scope = scope.merge(ActiveRecord::Associations::AssociationScope.scope(association(reflection.name)))
+        scope = if ActiveRecord::VERSION::MAJOR >= 6
+          scope.merge(ActiveRecord::Associations::AssociationScope.scope(association(reflection.name)))
+        else
+          scope.merge(association(reflection.name).association_scope)
+        end
 
         scope.each do |object|
           object.destroy!
