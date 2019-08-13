@@ -1,9 +1,7 @@
 source 'https://rubygems.org'
 
-github 'rails/rails', branch: '5-0-stable' do
-  gem 'activerecord', require: 'active_record'
-  gem 'activesupport', require: 'active_support'
-end
+gem 'activerecord', '~> 5.0.0', require: 'active_record'
+gem 'activesupport', '~> 5.0.0', require: 'active_support'
 
 # Development dependencies
 group :development do
