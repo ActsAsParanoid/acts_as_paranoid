@@ -455,6 +455,23 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 0, paranoid_boolean.reload.paranoid_with_counter_caches_count
   end
 
+  def test_decrement_custom_counters
+    paranoid_boolean = ParanoidBoolean.create!()
+    paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache.create!(paranoid_boolean: paranoid_boolean)
+
+    assert_equal 1, paranoid_boolean.custom_counter_cache
+
+    paranoid_with_custom_counter_cache.destroy
+
+    assert_equal 0, paranoid_boolean.reload.custom_counter_cache
+  end
+
+  def test_destroy_with_optional_belongs_to_and_counter_cache
+    ps = ParanoidWithCounterCacheOnOptionalBelognsTo.create!()
+    ps.destroy
+    assert_equal 1, ParanoidWithCounterCacheOnOptionalBelognsTo.only_deleted.where(:id => ps).count
+  end
+
   def test_hard_destroy_decrement_counters
     paranoid_boolean = ParanoidBoolean.create!()
     paranoid_with_counter_cache = ParanoidWithCounterCache.create!(paranoid_boolean: paranoid_boolean)
@@ -464,6 +481,17 @@ class ParanoidTest < ParanoidBaseTest
     paranoid_with_counter_cache.destroy_fully!
 
     assert_equal 0, paranoid_boolean.reload.paranoid_with_counter_caches_count
+  end
+
+  def test_hard_destroy_decrement_custom_counters
+    paranoid_boolean = ParanoidBoolean.create!()
+    paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache.create!(paranoid_boolean: paranoid_boolean)
+
+    assert_equal 1, paranoid_boolean.custom_counter_cache
+
+    paranoid_with_custom_counter_cache.destroy_fully!
+
+    assert_equal 0, paranoid_boolean.reload.custom_counter_cache
   end
 
   def test_increment_counters
@@ -479,5 +507,20 @@ class ParanoidTest < ParanoidBaseTest
     paranoid_with_counter_cache.recover
 
     assert_equal 1, paranoid_boolean.reload.paranoid_with_counter_caches_count
+  end
+
+  def test_increment_custom_counters
+    paranoid_boolean = ParanoidBoolean.create!()
+    paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache.create!(paranoid_boolean: paranoid_boolean)
+
+    assert_equal 1, paranoid_boolean.custom_counter_cache
+
+    paranoid_with_custom_counter_cache.destroy
+
+    assert_equal 0, paranoid_boolean.reload.custom_counter_cache
+
+    paranoid_with_custom_counter_cache.recover
+
+    assert_equal 1, paranoid_boolean.reload.custom_counter_cache
   end
 end

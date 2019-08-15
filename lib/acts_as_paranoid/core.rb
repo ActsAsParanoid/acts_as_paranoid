@@ -244,15 +244,16 @@ module ActsAsParanoid
       return unless [:decrement_counter, :increment_counter].include? method_sym
 
       each_counter_cached_association_reflection do |assoc_reflection|
-        associated_object = send(assoc_reflection.name)
-        counter_cache_column = assoc_reflection.counter_cache_column
-        associated_object.class.send(method_sym, counter_cache_column, associated_object.id)
+        if associated_object = send(assoc_reflection.name)
+          counter_cache_column = assoc_reflection.counter_cache_column
+          associated_object.class.send(method_sym, counter_cache_column, associated_object.id)
+        end
       end
     end
 
     def each_counter_cached_association_reflection
       _reflections.each do |name, reflection|
-        yield reflection if reflection.belongs_to? && reflection.counter_cache_column == "#{self.class.name.underscore.pluralize}_count"
+        yield reflection if reflection.belongs_to? && reflection.counter_cache_column
       end
     end
 
