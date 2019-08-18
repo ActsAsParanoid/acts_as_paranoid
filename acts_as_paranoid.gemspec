@@ -17,8 +17,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = Dir["test/*.rb"]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activerecord", ">= 4.2", "< 6.0"
-  spec.add_dependency "activesupport", ">= 4.2", "< 6.0"
+  spec.add_dependency "activerecord", ">= 4.2", "< 6.1"
+  spec.add_dependency "activesupport", ">= 4.2", "< 6.1"
 
   spec.add_development_dependency "bundler", ">= 1.5", "< 3.0"
   spec.add_development_dependency "rake"
