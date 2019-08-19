@@ -228,7 +228,7 @@ class AssociationsTest < ParanoidBaseTest
   end
 
   def test_mass_assignment_of_paranoid_column_enabled
-    if ActiveRecord::VERSION::MAJOR > 4 && ActiveRecord::VERSION::MINOR > 1
+    if Gem.loaded_specs['activerecord'].version >= Gem::Version.new('5.2.0')
       skip 'Creation as deleted is not supported with Rails >= 5.2'
     end
     now = Time.now
