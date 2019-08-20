@@ -85,11 +85,7 @@ module ActsAsParanoid
 
     module ClassMethods
       def validates_uniqueness_of_without_deleted(*attr_names)
-        if ActiveRecord::VERSION::MAJOR == '6'
-
-        else
-          validates_with UniquenessWithoutDeletedValidator[ActiveRecord::VERSION::MAJOR], _merge_attributes(attr_names)
-        end
+        validates_with UniquenessWithoutDeletedValidator[ActiveRecord::VERSION::MAJOR], _merge_attributes(attr_names)
       end
     end
   end
