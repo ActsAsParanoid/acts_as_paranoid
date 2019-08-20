@@ -8,8 +8,7 @@ module ActsAsParanoid
 
     class UniquenessWithoutDeletedValidator
       def self.[](version)
-        version = version.to_s
-        name = "V#{version.tr('.', '_')}"
+        name = "V#{version.to_s.tr('.', '_')}"
         unless constants.include? name.to_sym
           raise "Unknown validator version #{name.inspect}; expected one of #{constants.sort.join(', ')}"
         end
