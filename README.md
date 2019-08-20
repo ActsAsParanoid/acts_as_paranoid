@@ -287,5 +287,6 @@ Watch out for these caveats:
 * To [Jean Boussier](https://github.com/byroot) for initial Rails 4.0.0 support
 * To [Matijs van Zuijlen](https://github.com/mvz) for Rails 4.1 and 4.2 support
 * To [Andrey Ponomarenko](https://github.com/sjke) for Rails 5 support
+* To [Daniel Rice](https://github.com/danielricecodes), [Josh Bryant](https://github.com/jbryant92), and [Romain Alexandre](https://github.com/RomainAlexandre) for Rails 6.0 support.
 
 See `LICENSE`.
