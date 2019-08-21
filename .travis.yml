@@ -4,7 +4,6 @@ cache:
   - bundler
   - directories:
     - vendor/bundle
-language: ruby
 rvm:
   - 2.2.10
   - 2.3.8
