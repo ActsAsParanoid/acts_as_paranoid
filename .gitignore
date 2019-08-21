@@ -4,5 +4,4 @@ pkg
 Gemfile.lock
 gemfiles/*.lock
 .idea/
-
-\.ruby-version
+.ruby-version
