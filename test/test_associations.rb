@@ -59,9 +59,10 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
 
     paranoid_time.destroy
+    paranoid_has_many_dependant.reload
 
-    assert_nil paranoid_has_many_dependant.reload.paranoid_time
-    assert_equal paranoid_time, paranoid_has_many_dependant.reload.paranoid_time_with_deleted
+    assert_nil paranoid_has_many_dependant.paranoid_time
+    assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
   end
 
   def test_belongs_to_polymorphic_with_deleted
