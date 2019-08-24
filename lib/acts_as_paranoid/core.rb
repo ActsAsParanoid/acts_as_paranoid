@@ -182,14 +182,7 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |reflection|
         next unless (klass = get_reflection_class(reflection)).paranoid?
 
-        scope = klass.only_deleted
-
-        # Merge in the association's scope
-        scope = if ActiveRecord::VERSION::MAJOR >= 6
-          scope.merge(ActiveRecord::Associations::AssociationScope.scope(association(reflection.name)))
-        else
-          scope.merge(association(reflection.name).association_scope)
-        end
+        scope = klass.only_deleted.merge(get_association_scope(reflection: reflection))
 
         # We can only recover by window if both parent and dependant have a
         # paranoid column type of :time.
@@ -207,16 +200,7 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |reflection|
         next unless (klass = get_reflection_class(reflection)).paranoid?
 
-        scope = klass.only_deleted
-
-        # Merge in the association's scope
-        scope = if ActiveRecord::VERSION::MAJOR >= 6
-          scope.merge(ActiveRecord::Associations::AssociationScope.scope(association(reflection.name)))
-        else
-          scope.merge(association(reflection.name).association_scope)
-        end
-
-        scope.each do |object|
+        klass.only_deleted.merge(get_association_scope(reflection: reflection)).each do |object|
           object.destroy!
         end
       end
@@ -241,6 +225,10 @@ module ActsAsParanoid
     alias_method :destroyed_fully?, :deleted_fully?
 
     private
+
+    def get_association_scope(reflection:)
+      ActiveRecord::Associations::AssociationScope.scope(association(reflection.name))
+    end
 
     def get_reflection_class(reflection)
       if reflection.macro == :belongs_to && reflection.options.include?(:polymorphic)
