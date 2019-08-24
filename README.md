@@ -9,10 +9,9 @@ recoverable later.
 
 ## Support
 
-**This branch targets Rails 4.2, 5.0 and 5.1, with experimental support for 5.2+**
+**This branch targets Rails 5.2+ only**
 
-If you're working with Rails 4.1-, switch to the corresponding branch, or
-require an older version of the `acts_as_paranoid` gem.
+If you're working with Rails 5.1 and earlier, please switch to the corresponding branch or require an older version of the `acts_as_paranoid` gem.
 
 ### Known issues with Rails 5.2+
 
@@ -25,7 +24,7 @@ require an older version of the `acts_as_paranoid` gem.
 #### Install gem:
 
 ``` ruby
-gem 'acts_as_paranoid', '~> 0.6.0'
+gem 'acts_as_paranoid', '~> 0.7.0'
 ```
 ``` shell
 bundle install
