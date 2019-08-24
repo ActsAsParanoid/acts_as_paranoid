@@ -8,10 +8,9 @@ module ActsAsParanoid
 
     class UniquenessWithoutDeletedValidator
       def self.[](version)
-        version = version.to_s
-        name = "V#{version.tr('.', '_')}"
+        name = "V#{version.to_s.tr('.', '_')}"
         unless constants.include? name.to_sym
-          raise "Unknown validator version #{version.inspect}; expected one of #{constants.sort.join(', ')}"
+          raise "Unknown validator version #{name.inspect}; expected one of #{constants.sort.join(', ')}"
         end
         const_get name
       end
@@ -38,8 +37,11 @@ module ActsAsParanoid
         protected
 
         def build_relation(klass, attribute, value)
-          return super(klass, klass.arel_table, attribute, value) if ActiveRecord::VERSION::MINOR == 0
-          super
+          if ActiveRecord::VERSION::MINOR == 0 && ActiveRecord::VERSION::MAJOR == 5
+            return super(klass, klass.arel_table, attribute, value)
+          else
+            super
+          end
         end
       end
 
@@ -74,6 +76,9 @@ module ActsAsParanoid
             record.errors.add(attribute, :taken, options.except(:case_sensitive, :scope).merge(:value => value))
           end
         end
+      end
+
+      class V6 < V5
       end
     end
 

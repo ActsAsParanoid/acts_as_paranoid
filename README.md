@@ -9,12 +9,12 @@ recoverable later.
 
 ## Support
 
-**This branch targets Rails 4.2, 5.0 and 5.1, with experimental support for 5.2**
+**This branch targets Rails 4.2, 5.0 and 5.1, with experimental support for 5.2+**
 
-If you're working with another version, switch to the corresponding branch, or
+If you're working with Rails 4.1-, switch to the corresponding branch, or
 require an older version of the `acts_as_paranoid` gem.
 
-### Known issues with Rails 5.2
+### Known issues with Rails 5.2+
 
 * Using acts_as_paranoid and ActiveStorage on the same model
   [leads to a SystemStackError](https://github.com/ActsAsParanoid/acts_as_paranoid/issues/103).
@@ -287,5 +287,6 @@ Watch out for these caveats:
 * To [Jean Boussier](https://github.com/byroot) for initial Rails 4.0.0 support
 * To [Matijs van Zuijlen](https://github.com/mvz) for Rails 4.1 and 4.2 support
 * To [Andrey Ponomarenko](https://github.com/sjke) for Rails 5 support
+* To [Daniel Rice](https://github.com/danielricecodes), [Josh Bryant](https://github.com/jbryant92), and [Romain Alexandre](https://github.com/RomainAlexandre) for Rails 6.0 support.
 
 See `LICENSE`.
