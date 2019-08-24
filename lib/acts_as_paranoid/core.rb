@@ -83,15 +83,9 @@ module ActsAsParanoid
       def without_paranoid_default_scope
         scope = self.all
 
-        if ActiveRecord::VERSION::MAJOR < 5
-          # ActiveRecord 4.0.*
-          scope = scope.with_default_scope if ActiveRecord::VERSION::MINOR < 1
-          scope.where_values.delete(paranoid_default_scope)
-        else
-          scope = scope.unscope(where: paranoid_default_scope)
-          # Fix problems with unscope group chain
-          scope = scope.unscoped if scope.to_sql.include? paranoid_default_scope.to_sql
-        end
+        scope = scope.unscope(where: paranoid_default_scope)
+        # Fix problems with unscope group chain
+        scope = scope.unscoped if scope.to_sql.include? paranoid_default_scope.to_sql
 
         scope
       end
@@ -120,7 +114,6 @@ module ActsAsParanoid
           if persisted?
             # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
             self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
-
             decrement_counters_on_associations
           end
 
@@ -139,7 +132,6 @@ module ActsAsParanoid
             if persisted?
               # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
               self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
-
               decrement_counters_on_associations
             end
 
