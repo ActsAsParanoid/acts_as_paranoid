@@ -43,6 +43,14 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal includes_values, paranoid_has_many_dependant.association(:paranoid_time_with_scope).scope.includes_values
   end
 
+  def test_belongs_to_with_scope_and_deleted_option
+    paranoid_has_many_dependant = ParanoidHasManyDependant.new
+    includes_values = ParanoidTime.includes(:not_paranoid).includes_values
+
+    assert_equal includes_values, paranoid_has_many_dependant
+      .association(:paranoid_time_with_scope_with_deleted).scope.includes_values
+  end
+
   def test_belongs_to_with_deleted
     paranoid_time = ParanoidTime.first
     paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(:name => 'dependant!')
