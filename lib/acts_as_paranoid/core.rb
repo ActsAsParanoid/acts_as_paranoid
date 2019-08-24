@@ -239,7 +239,7 @@ module ActsAsParanoid
     end
 
     def paranoid_value=(value)
-      self.send("#{self.class.paranoid_column}=", value)
+      self.write_attribute(self.class.paranoid_column, value)
     end
 
     def update_counters_on_associations method_sym
