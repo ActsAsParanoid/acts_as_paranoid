@@ -114,7 +114,7 @@ p.destroy # does NOT delete the first record, just hides it
 Paranoiac.only_deleted.where(:id => p.id).first.destroy # deletes the first record from the database
 ```
 
-This behaviour can be disabled by setting the configuration option
+This behaviour can be disabled by setting the configuration option. In a future version, `false` will be the default setting.
 
 - `:double_tap_destroys_fully => false`
 
@@ -266,7 +266,6 @@ child.parent_including_deleted #=> Parent (it works!)
 ## Caveats
 
 Watch out for these caveats:
-
 
 -   You cannot use scopes named `with_deleted` and `only_deleted`
 -   You cannot use scopes named `deleted_inside_time_window`, `deleted_before_time`, `deleted_after_time` **if** your paranoid column's type is `time`
