@@ -2,10 +2,15 @@
 
 Notable changes to this project will be documented in this file.
 
+## Unreleased
+
+* Make counter cache work with a custom column name and with optional
+  associations ([#123], by [Ned Campion][nedcampion]).
+
 ## 0.6.1
 
-* Add support for Rails 6 ([#124], by [Daniel Rice](danielricecodes),
-  [Josh Bryant](jbryant92), and [Romain Alexandre](RomainAlexandre))
+* Add support for Rails 6 ([#124], by [Daniel Rice][danielricecodes],
+  [Josh Bryant][jbryant92], and [Romain Alexandre][RomainAlexandre])
 * Add support for incrementing and decrementing counter cache columns on
   associated objects ([#119], by [Dimitar Lukanov][shadydealer])
 * Add `:double_tap_destroys_fully` option, with default `true` ([#116],
@@ -23,10 +28,13 @@ Notable changes to this project will be documented in this file.
 [shadydealer]: https://github.com/shadydealer
 [danielricecodes]: https://github.com/danielricecodes
 [jbryant92]: https://github.com/jbryant92
+[nedcampion]: https://github.com/nedcampion
 [RomainAlexandre]: https://github.com/RomainAlexandre
 
 <!-- issues & pull requests -->
 
+[#124]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/124
+[#123]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/123
 [#119]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/119
 [#116]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/116
 [#114]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/114
