@@ -158,6 +158,7 @@ module ActsAsParanoid
     alias_method :destroy, :destroy!
 
     def recover(options={})
+      return if !self.deleted?
       options = {
         :recursive => self.class.paranoid_configuration[:recover_dependent_associations],
         :recovery_window => self.class.paranoid_configuration[:dependent_recovery_window]

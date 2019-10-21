@@ -312,6 +312,14 @@ class ParanoidTest < ParanoidBaseTest
     assert @paranoid_with_callback.called_after_recover
   end
 
+  def test_recovery_callbacks_without_destroy
+    @paranoid_with_callback = ParanoidWithCallback.first
+    @paranoid_with_callback.recover
+
+    assert_nil @paranoid_with_callback.called_before_recover
+    assert_nil @paranoid_with_callback.called_after_recover
+  end
+
   def test_delete_by_multiple_id_is_paranoid
     model_a = ParanoidBelongsDependant.create
     model_b = ParanoidBelongsDependant.create
