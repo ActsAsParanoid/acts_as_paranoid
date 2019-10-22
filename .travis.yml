@@ -2,48 +2,45 @@ language: ruby
 script: "bundle exec rake test"
 cache:
   - bundler
-  - directories:
-    - vendor/bundle
 rvm:
   - 2.2.10
   - 2.3.8
-  - 2.4.5
-  - 2.5.3
-  - 2.6.3
+  - 2.4.9
+  - 2.5.5
+  - 2.6.5
   - ruby-head
-  - jruby
-  - jruby-9.1.8.0
-  - jruby-9.2.5.0
+  - jruby-9.1.17.0
+  - jruby-9.2.8.0
 gemfile:
   - gemfiles/active_record_42.gemfile
   - gemfiles/active_record_50.gemfile
   - gemfiles/active_record_51.gemfile
   - gemfiles/active_record_52.gemfile
   - gemfiles/active_record_60.gemfile
-before_install:
-  - gem install bundler --version 1.11.2
-  - export BUNDLE_PATH="${TRAVIS_BUILD_DIR}/vendor/bundle"
+  - gemfiles/active_record_edge.gemfile
 before_cache:
   - rm -f ${BUNDLE_PATH}/**/extensions/**/{gem_make.out,mkmf.log}
 matrix:
   allow_failures:
     - rvm: ruby-head
-    - rvm: jruby
-    - rvm: jruby-9.1.8.0
-    - rvm: jruby-9.2.5.0
     - gemfile: gemfiles/active_record_edge.gemfile
-      rvm: 2.4.5
-    - gemfile: gemfiles/active_record_edge.gemfile
-      rvm: 2.5.3
-    - gemfile: gemfiles/active_record_edge.gemfile
-      rvm: 2.6.3
   exclude:
     - rvm: 2.2.10
       gemfile: gemfiles/active_record_60.gemfile
     - rvm: 2.3.8
       gemfile: gemfiles/active_record_60.gemfile
-    - rvm: 2.4.5
+    - rvm: 2.4.9
       gemfile: gemfiles/active_record_60.gemfile
+    - rvm: jruby-9.1.17.0
+      gemfile: gemfiles/active_record_60.gemfile
+    - rvm: 2.2.10
+      gemfile: gemfiles/active_record_edge.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/active_record_edge.gemfile
+    - rvm: 2.4.9
+      gemfile: gemfiles/active_record_edge.gemfile
+    - rvm: jruby-9.1.17.0
+      gemfile: gemfiles/active_record_edge.gemfile
   fast_finish: true
 branches:
   only:
