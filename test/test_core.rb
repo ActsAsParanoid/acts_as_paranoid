@@ -523,4 +523,8 @@ class ParanoidTest < ParanoidBaseTest
 
     assert_equal 1, paranoid_boolean.reload.custom_counter_cache
   end
+
+  def test_explicitly_setting_table_name_after_acts_as_paranoid_macro
+    assert_equal "explicit_table.deleted_at", ParanoidWithExplicitTableNameAfterMacro.paranoid_column_reference
+  end
 end

@@ -513,3 +513,7 @@ class ParanoidBooleanNotNullable < ActiveRecord::Base
   acts_as_paranoid column: 'deleted', column_type: 'boolean', allow_nulls: false
 end
 
+class ParanoidWithExplicitTableNameAfterMacro < ActiveRecord::Base
+  acts_as_paranoid
+  self.table_name = "explicit_table"
+end
