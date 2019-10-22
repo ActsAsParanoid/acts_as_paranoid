@@ -307,6 +307,43 @@ class ParanoidTest < ParanoidBaseTest
     assert ParanoidString.with_deleted.first.deleted?
   end
 
+  def test_delete_deleted?
+    ParanoidTime.first.delete
+    assert ParanoidTime.with_deleted.first.deleted?
+
+    ParanoidString.first.delete
+    assert ParanoidString.with_deleted.first.deleted?
+  end
+
+  def test_destroy_fully_deleted?
+    object = ParanoidTime.first
+    object.destroy_fully!
+    assert object.deleted?
+
+    object = ParanoidString.first
+    object.destroy_fully!
+    assert object.deleted?
+  end
+
+  def test_deleted_fully?
+    ParanoidTime.first.destroy
+    assert_not ParanoidTime.with_deleted.first.deleted_fully?
+
+    ParanoidString.first.destroy
+    assert ParanoidString.with_deleted.first.deleted?
+  end
+
+  def test_delete_deleted_fully?
+    ParanoidTime.first.delete
+    assert_not ParanoidTime.with_deleted.first.deleted_fully?
+  end
+
+  def test_destroy_fully_deleted_fully?
+    object = ParanoidTime.first
+    object.destroy_fully!
+    assert object.deleted_fully?
+  end
+
   def test_paranoid_destroy_callbacks
     @paranoid_with_callback = ParanoidWithCallback.first
     ParanoidWithCallback.transaction do
