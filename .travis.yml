@@ -24,7 +24,6 @@ matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-9.1.17.0
-    - rvm: jruby-9.2.8.0
     - gemfile: gemfiles/active_record_edge.gemfile
   exclude:
     - rvm: 2.2.10
