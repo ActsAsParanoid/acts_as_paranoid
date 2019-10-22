@@ -2,8 +2,6 @@ language: ruby
 script: "bundle exec rake test"
 cache:
   - bundler
-  - directories:
-    - vendor/bundle
 rvm:
   - 2.2.10
   - 2.3.8
@@ -21,9 +19,6 @@ gemfile:
   - gemfiles/active_record_52.gemfile
   - gemfiles/active_record_60.gemfile
   - gemfiles/active_record_edge.gemfile
-before_install:
-  - gem install bundler --version 1.11.2
-  - export BUNDLE_PATH="${TRAVIS_BUILD_DIR}/vendor/bundle"
 before_cache:
   - rm -f ${BUNDLE_PATH}/**/extensions/**/{gem_make.out,mkmf.log}
 matrix:
