@@ -4,6 +4,10 @@ Notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+* Prevent recovery of non-deleted records
+  ([#133], by [Mary Beliveau][marycodes2] and Valerie Woolard)
+* Allow model to set `table_name` after `acts_as_paranoid` macro
+  ([#131], by [Alex Wheeler][AlexWheeler]).
 * Make counter cache work with a custom column name and with optional
   associations ([#123], by [Ned Campion][nedcampion]).
 
@@ -30,9 +34,13 @@ Notable changes to this project will be documented in this file.
 [jbryant92]: https://github.com/jbryant92
 [nedcampion]: https://github.com/nedcampion
 [RomainAlexandre]: https://github.com/RomainAlexandre
+[AlexWheeler]: https://github.com/AlexWheeler
+[marycodes2]: https://github.com/marycodes2
 
 <!-- issues & pull requests -->
 
+[#133]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/133
+[#131]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/131
 [#124]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/124
 [#123]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/123
 [#119]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/119
