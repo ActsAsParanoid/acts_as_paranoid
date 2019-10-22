@@ -162,7 +162,8 @@ module ActsAsParanoid
       return if !self.deleted?
       options = {
         :recursive => self.class.paranoid_configuration[:recover_dependent_associations],
-        :recovery_window => self.class.paranoid_configuration[:dependent_recovery_window]
+        :recovery_window => self.class.paranoid_configuration[:dependent_recovery_window],
+        :raise_error => false
       }.merge(options)
 
       self.class.transaction do
@@ -170,9 +171,19 @@ module ActsAsParanoid
           recover_dependent_associations(options[:recovery_window], options) if options[:recursive]
           increment_counters_on_associations
           self.paranoid_value = self.class.paranoid_configuration[:recovery_value]
-          self.save
+          if options[:raise_error]
+            self.save!
+          else
+            self.save
+          end
         end
       end
+    end
+
+    def recover!(options={})
+      options[:raise_error] = true
+
+      recover(options)
     end
 
     def recover_dependent_associations(window, options)
