@@ -20,6 +20,7 @@ gemfile:
   - gemfiles/active_record_51.gemfile
   - gemfiles/active_record_52.gemfile
   - gemfiles/active_record_60.gemfile
+  - gemfiles/active_record_edge.gemfile
 before_install:
   - gem install bundler --version 1.11.2
   - export BUNDLE_PATH="${TRAVIS_BUILD_DIR}/vendor/bundle"
@@ -32,11 +33,6 @@ matrix:
     - rvm: jruby-9.1.8.0
     - rvm: jruby-9.2.5.0
     - gemfile: gemfiles/active_record_edge.gemfile
-      rvm: 2.4.5
-    - gemfile: gemfiles/active_record_edge.gemfile
-      rvm: 2.5.3
-    - gemfile: gemfiles/active_record_edge.gemfile
-      rvm: 2.6.3
   exclude:
     - rvm: 2.2.10
       gemfile: gemfiles/active_record_60.gemfile
@@ -44,6 +40,12 @@ matrix:
       gemfile: gemfiles/active_record_60.gemfile
     - rvm: 2.4.5
       gemfile: gemfiles/active_record_60.gemfile
+    - rvm: 2.2.10
+      gemfile: gemfiles/active_record_edge.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/active_record_edge.gemfile
+    - rvm: 2.4.5
+      gemfile: gemfiles/active_record_edge.gemfile
   fast_finish: true
 branches:
   only:
