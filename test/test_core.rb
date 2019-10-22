@@ -69,6 +69,13 @@ class ParanoidTest < ParanoidBaseTest
     assert_not_nil pt.paranoid_value
   end
 
+  def test_non_persisted_delete
+    pt = ParanoidTime.new
+    assert_nil pt.paranoid_value
+    pt.delete
+    assert_not_nil pt.paranoid_value
+  end
+
   def test_non_persisted_destroy!
     pt = ParanoidTime.new
     assert_nil pt.paranoid_value
@@ -263,6 +270,24 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 0, ParanoidHasOneDependant.count
     assert_equal 1, NotParanoid.count
     assert_equal 0, HasOneNotParanoid.count
+  end
+
+  def test_dirty
+    pt = ParanoidTime.create
+    pt.destroy
+    assert_not pt.changed?
+  end
+
+  def test_delete_dirty
+    pt = ParanoidTime.create
+    pt.delete
+    assert_not pt.changed?
+  end
+
+  def test_destroy_fully_dirty
+    pt = ParanoidTime.create
+    pt.destroy_fully!
+    assert_not pt.changed?
   end
 
   def test_deleted?
