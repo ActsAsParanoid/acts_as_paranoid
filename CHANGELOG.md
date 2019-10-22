@@ -2,7 +2,7 @@
 
 Notable changes to this project will be documented in this file.
 
-## Unreleased
+## 0.6.2
 
 * Prevent recovery of non-deleted records
   ([#133], by [Mary Beliveau][marycodes2] and [Valerie Woolard][valeriecodes])
