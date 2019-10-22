@@ -9,7 +9,6 @@ rvm:
   - 2.5.5
   - 2.6.5
   - ruby-head
-  - jruby
   - jruby-9.1.8.0
   - jruby-9.2.8.0
 gemfile:
@@ -24,7 +23,6 @@ before_cache:
 matrix:
   allow_failures:
     - rvm: ruby-head
-    - rvm: jruby
     - rvm: jruby-9.1.8.0
     - rvm: jruby-9.2.8.0
     - gemfile: gemfiles/active_record_edge.gemfile
