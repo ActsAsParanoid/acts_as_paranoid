@@ -5,7 +5,7 @@ Notable changes to this project will be documented in this file.
 ## Unreleased
 
 * Prevent recovery of non-deleted records
-  ([#133], by [Mary Beliveau][marycodes2] and Valerie Woolard)
+  ([#133], by [Mary Beliveau][marycodes2] and [Valerie Woolard][valeriecodes])
 * Allow model to set `table_name` after `acts_as_paranoid` macro
   ([#131], by [Alex Wheeler][AlexWheeler]).
 * Make counter cache work with a custom column name and with optional
@@ -36,6 +36,7 @@ Notable changes to this project will be documented in this file.
 [RomainAlexandre]: https://github.com/RomainAlexandre
 [AlexWheeler]: https://github.com/AlexWheeler
 [marycodes2]: https://github.com/marycodes2
+[valeriecodes]: https://github.com/valeriecodes
 
 <!-- issues & pull requests -->
 
