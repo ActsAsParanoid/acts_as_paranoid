@@ -2,6 +2,15 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.6.3
+
+* Update Travis CI configuration ([#137], by [Matijs van Zuijlen][mvz]).
+* Add predicate to check if record was soft deleted or hard deleted ([#136],
+  by [Aymeric Le Dorze][aymeric-ledorze]).
+* Add support for recover! method ([#75], by [vinoth][avinoth]).
+* Fix a record being dirty after destroying it ([#135], by
+  [Aymeric Le Dorze][aymeric-ledorze]).
+
 ## 0.6.2
 
 * Prevent recovery of non-deleted records
@@ -37,9 +46,14 @@ Notable changes to this project will be documented in this file.
 [AlexWheeler]: https://github.com/AlexWheeler
 [marycodes2]: https://github.com/marycodes2
 [valeriecodes]: https://github.com/valeriecodes
+[aymeric-ledorze]: https://github.com/aymeric-ledorze
+[avinoth]: https://github.com/avinoth
 
 <!-- issues & pull requests -->
 
+[#137]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/137
+[#136]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/136
+[#135]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/135
 [#133]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/133
 [#131]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/131
 [#124]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/124
@@ -47,3 +61,4 @@ Notable changes to this project will be documented in this file.
 [#119]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/119
 [#116]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/116
 [#114]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/114
+[#75]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/75
