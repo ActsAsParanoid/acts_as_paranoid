@@ -6,15 +6,12 @@ rvm:
   - 2.2.10
   - 2.3.8
   - 2.4.9
-  - 2.5.5
+  - 2.5.7
   - 2.6.5
   - ruby-head
   - jruby-9.1.17.0
   - jruby-9.2.8.0
 gemfile:
-  - gemfiles/active_record_42.gemfile
-  - gemfiles/active_record_50.gemfile
-  - gemfiles/active_record_51.gemfile
   - gemfiles/active_record_52.gemfile
   - gemfiles/active_record_60.gemfile
   - gemfiles/active_record_edge.gemfile
@@ -22,9 +19,15 @@ before_cache:
   - rm -f ${BUNDLE_PATH}/**/extensions/**/{gem_make.out,mkmf.log}
 matrix:
   allow_failures:
-    - rvm: ruby-head
     - gemfile: gemfiles/active_record_edge.gemfile
+    - rvm: ruby-head
   exclude:
+    - rvm: 2.2.10
+      gemfile: gemfiles/active_record_edge.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/active_record_edge.gemfile
+    - rvm: 2.4.9
+      gemfile: gemfiles/active_record_edge.gemfile
     - rvm: 2.2.10
       gemfile: gemfiles/active_record_60.gemfile
     - rvm: 2.3.8
@@ -33,12 +36,6 @@ matrix:
       gemfile: gemfiles/active_record_60.gemfile
     - rvm: jruby-9.1.17.0
       gemfile: gemfiles/active_record_60.gemfile
-    - rvm: 2.2.10
-      gemfile: gemfiles/active_record_edge.gemfile
-    - rvm: 2.3.8
-      gemfile: gemfiles/active_record_edge.gemfile
-    - rvm: 2.4.9
-      gemfile: gemfiles/active_record_edge.gemfile
     - rvm: jruby-9.1.17.0
       gemfile: gemfiles/active_record_edge.gemfile
   fast_finish: true
