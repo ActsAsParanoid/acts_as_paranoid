@@ -3,13 +3,11 @@ script: "bundle exec rake test"
 cache:
   - bundler
 rvm:
-  - 2.2.10
-  - 2.3.8
   - 2.4.9
   - 2.5.7
   - 2.6.5
+  - 2.7.0
   - ruby-head
-  - jruby-9.1.17.0
   - jruby-9.2.8.0
 gemfile:
   - gemfiles/active_record_52.gemfile
@@ -22,22 +20,10 @@ matrix:
     - gemfile: gemfiles/active_record_edge.gemfile
     - rvm: ruby-head
   exclude:
-    - rvm: 2.2.10
-      gemfile: gemfiles/active_record_edge.gemfile
-    - rvm: 2.3.8
-      gemfile: gemfiles/active_record_edge.gemfile
     - rvm: 2.4.9
       gemfile: gemfiles/active_record_edge.gemfile
-    - rvm: 2.2.10
-      gemfile: gemfiles/active_record_60.gemfile
-    - rvm: 2.3.8
-      gemfile: gemfiles/active_record_60.gemfile
     - rvm: 2.4.9
       gemfile: gemfiles/active_record_60.gemfile
-    - rvm: jruby-9.1.17.0
-      gemfile: gemfiles/active_record_60.gemfile
-    - rvm: jruby-9.1.17.0
-      gemfile: gemfiles/active_record_edge.gemfile
   fast_finish: true
 branches:
   only:
