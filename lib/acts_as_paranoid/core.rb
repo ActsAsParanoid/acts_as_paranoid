@@ -83,15 +83,9 @@ module ActsAsParanoid
       def without_paranoid_default_scope
         scope = self.all
 
-        if ActiveRecord::VERSION::MAJOR < 5
-          # ActiveRecord 4.0.*
-          scope = scope.with_default_scope if ActiveRecord::VERSION::MINOR < 1
-          scope.where_values.delete(paranoid_default_scope)
-        else
-          scope = scope.unscope(where: paranoid_default_scope)
-          # Fix problems with unscope group chain
-          scope = scope.unscoped if scope.to_sql.include? paranoid_default_scope.to_sql
-        end
+        scope = scope.unscope(where: paranoid_default_scope)
+        # Fix problems with unscope group chain
+        scope = scope.unscoped if scope.to_sql.include? paranoid_default_scope.to_sql
 
         scope
       end
@@ -120,7 +114,6 @@ module ActsAsParanoid
           if persisted?
             # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
             self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
-
             decrement_counters_on_associations
           end
 
@@ -139,7 +132,6 @@ module ActsAsParanoid
             if persisted?
               # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
               self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
-
               decrement_counters_on_associations
             end
 
@@ -190,14 +182,7 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |reflection|
         next unless (klass = get_reflection_class(reflection)).paranoid?
 
-        scope = klass.only_deleted
-
-        # Merge in the association's scope
-        scope = if ActiveRecord::VERSION::MAJOR >= 6
-          scope.merge(ActiveRecord::Associations::AssociationScope.scope(association(reflection.name)))
-        else
-          scope.merge(association(reflection.name).association_scope)
-        end
+        scope = klass.only_deleted.merge(get_association_scope(reflection: reflection))
 
         # We can only recover by window if both parent and dependant have a
         # paranoid column type of :time.
@@ -215,16 +200,7 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |reflection|
         next unless (klass = get_reflection_class(reflection)).paranoid?
 
-        scope = klass.only_deleted
-
-        # Merge in the association's scope
-        scope = if ActiveRecord::VERSION::MAJOR >= 6
-          scope.merge(ActiveRecord::Associations::AssociationScope.scope(association(reflection.name)))
-        else
-          scope.merge(association(reflection.name).association_scope)
-        end
-
-        scope.each do |object|
+        klass.only_deleted.merge(get_association_scope(reflection: reflection)).each do |object|
           object.destroy!
         end
       end
@@ -250,6 +226,10 @@ module ActsAsParanoid
 
     private
 
+    def get_association_scope(reflection:)
+      ActiveRecord::Associations::AssociationScope.scope(association(reflection.name))
+    end
+
     def get_reflection_class(reflection)
       if reflection.macro == :belongs_to && reflection.options.include?(:polymorphic)
         self.send(reflection.foreign_type).constantize
@@ -259,7 +239,7 @@ module ActsAsParanoid
     end
 
     def paranoid_value=(value)
-      self.send("#{self.class.paranoid_column}=", value)
+      self.write_attribute(self.class.paranoid_column, value)
     end
 
     def update_counters_on_associations method_sym

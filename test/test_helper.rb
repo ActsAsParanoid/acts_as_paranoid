@@ -230,12 +230,9 @@ def timestamps(table)
 end
 
 def teardown_db
-  tables = if ActiveRecord::VERSION::MAJOR < 5
-    ActiveRecord::Base.connection.tables
-  else
-    ActiveRecord::Base.connection.data_sources
+  ActiveRecord::Base.connection.data_sources.each do |table|
+    ActiveRecord::Base.connection.drop_table(table)
   end
-  tables.each { |table| ActiveRecord::Base.connection.drop_table(table) }
 end
 
 class ParanoidTime < ActiveRecord::Base
