@@ -8,7 +8,7 @@ require "rdoc/task"
 gemspec = eval(File.read(Dir["*.gemspec"].first))
 
 desc 'Default: run unit tests.'
-task :default => "test:all"
+task default: "test:all"
 
 namespace :test do
   versions = Dir["gemfiles/*.gemfile"].map {|gemfile_path| gemfile_path.split(/\/|\./)[1]}
@@ -22,7 +22,7 @@ namespace :test do
   end
 
   desc "Run all tests for acts_as_paranoid"
-  task :all => versions
+  task all: versions
 end
 
 Rake::TestTask.new(:test) do |t|
@@ -41,7 +41,7 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
 end
 
 desc "Install gem locally"
-task :install => :build do
+task install: :build do
   system "gem install pkg/#{gemspec.name}-#{gemspec.version}"
 end
 

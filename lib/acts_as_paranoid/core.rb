@@ -155,9 +155,9 @@ module ActsAsParanoid
     def recover(options={})
       return if !self.deleted?
       options = {
-        :recursive => self.class.paranoid_configuration[:recover_dependent_associations],
-        :recovery_window => self.class.paranoid_configuration[:dependent_recovery_window],
-        :raise_error => false
+        recursive: self.class.paranoid_configuration[:recover_dependent_associations],
+        recovery_window: self.class.paranoid_configuration[:dependent_recovery_window],
+        raise_error: false
       }.merge(options)
 
       self.class.transaction do

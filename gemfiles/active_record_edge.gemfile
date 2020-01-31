@@ -9,10 +9,10 @@ end
 
 # Development dependencies
 group :development do
-  gem "sqlite3", :platforms => [:ruby]
-  gem "activerecord-jdbcsqlite3-adapter", :platforms => [:jruby]
+  gem "sqlite3", platforms: [:ruby]
+  gem "activerecord-jdbcsqlite3-adapter", platforms: [:jruby]
 end
 
-gemspec :path => '../'
+gemspec path: '../'
 
 gem "arel", github: "rails/arel"

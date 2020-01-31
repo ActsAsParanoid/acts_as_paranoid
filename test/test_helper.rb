@@ -15,11 +15,11 @@ require 'minitest/autorun'
 # Silence deprecation halfway through the test
 I18n.enforce_available_locales = true
 
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
 ActiveRecord::Schema.verbose = false
 
 def setup_db
-  ActiveRecord::Schema.define(:version => 1) do
+  ActiveRecord::Schema.define(version: 1) do
     create_table :paranoid_times do |t|
       t.string    :name
       t.datetime  :deleted_at
@@ -187,7 +187,7 @@ def setup_db
 
     create_table :paranoid_boolean_not_nullables do |t|
       t.string :name
-      t.boolean :deleted, :boolean, :null => false, :default => false
+      t.boolean :deleted, :boolean, null: false, default: false
     end
 
     create_table :paranoid_belongs_to_polymorphics do |t|
@@ -227,8 +227,8 @@ def setup_db
 end
 
 def timestamps(table)
-  table.column  :created_at , :timestamp, :null => false
-  table.column  :updated_at , :timestamp, :null => false
+  table.column  :created_at , :timestamp, null: false
+  table.column  :updated_at , :timestamp, null: false
 end
 
 def teardown_db
@@ -242,50 +242,50 @@ class ParanoidTime < ActiveRecord::Base
 
   validates_uniqueness_of :name
 
-  has_many :paranoid_has_many_dependants, :dependent => :destroy
-  has_many :paranoid_booleans, :dependent => :destroy
-  has_many :not_paranoids, :dependent => :delete_all
-  has_many :paranoid_sections, :dependent => :destroy
+  has_many :paranoid_has_many_dependants, dependent: :destroy
+  has_many :paranoid_booleans, dependent: :destroy
+  has_many :not_paranoids, dependent: :delete_all
+  has_many :paranoid_sections, dependent: :destroy
 
-  has_one :has_one_not_paranoid, :dependent => :destroy
+  has_one :has_one_not_paranoid, dependent: :destroy
 
-  belongs_to :not_paranoid, :dependent => :destroy
+  belongs_to :not_paranoid, dependent: :destroy
 end
 
 class ParanoidBoolean < ActiveRecord::Base
-  acts_as_paranoid :column_type => "boolean", :column => "is_deleted"
+  acts_as_paranoid column_type: "boolean", column: "is_deleted"
   validates_as_paranoid
   validates_uniqueness_of_without_deleted :name
 
   belongs_to :paranoid_time
-  has_one :paranoid_has_one_dependant, :dependent => :destroy
-  has_many :paranoid_with_counter_cache, :dependent => :destroy
-  has_many :paranoid_with_custom_counter_cache, :dependent => :destroy
+  has_one :paranoid_has_one_dependant, dependent: :destroy
+  has_many :paranoid_with_counter_cache, dependent: :destroy
+  has_many :paranoid_with_custom_counter_cache, dependent: :destroy
 end
 
 class ParanoidString < ActiveRecord::Base
-  acts_as_paranoid :column_type => "string", :column => "deleted", :deleted_value => "dead"
+  acts_as_paranoid column_type: "string", column: "deleted", deleted_value: "dead"
 end
 
 class NotParanoid < ActiveRecord::Base
 end
 
 class ParanoidNoDoubleTapDestroysFully < ActiveRecord::Base
-  acts_as_paranoid :double_tap_destroys_fully => false
+  acts_as_paranoid double_tap_destroys_fully: false
 end
 
 class HasOneNotParanoid < ActiveRecord::Base
-  belongs_to :paranoid_time, :with_deleted => true
+  belongs_to :paranoid_time, with_deleted: true
 end
 
 class DoubleHasOneNotParanoid < HasOneNotParanoid
-  belongs_to :paranoid_time, :with_deleted => true
-  belongs_to :paranoid_time, :with_deleted => true
+  belongs_to :paranoid_time, with_deleted: true
+  belongs_to :paranoid_time, with_deleted: true
 end
 
 class ParanoidWithCounterCache < ActiveRecord::Base
   acts_as_paranoid
-  belongs_to :paranoid_boolean, :counter_cache => true
+  belongs_to :paranoid_boolean, counter_cache: true
 end
 
 class ParanoidWithCustomCounterCache < ActiveRecord::Base
@@ -309,12 +309,12 @@ end
 class ParanoidHasManyDependant < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :paranoid_time
-  belongs_to :paranoid_time_with_scope, -> { where(name: 'hello').includes(:not_paranoid) }, :class_name => 'ParanoidTime', :foreign_key => :paranoid_time_id
-  belongs_to :paranoid_time_with_deleted, :class_name => 'ParanoidTime', :foreign_key => :paranoid_time_id, :with_deleted => true
-  belongs_to :paranoid_time_with_scope_with_deleted, -> { where(name: 'hello').includes(:not_paranoid) }, :class_name => 'ParanoidTime', :foreign_key => :paranoid_time_id, :with_deleted => true
-  belongs_to :paranoid_time_polymorphic_with_deleted, :class_name => 'ParanoidTime', :foreign_key => :paranoid_time_id, :polymorphic => true, :with_deleted => true
+  belongs_to :paranoid_time_with_scope, -> { where(name: 'hello').includes(:not_paranoid) }, class_name: 'ParanoidTime', foreign_key: :paranoid_time_id
+  belongs_to :paranoid_time_with_deleted, class_name: 'ParanoidTime', foreign_key: :paranoid_time_id, with_deleted: true
+  belongs_to :paranoid_time_with_scope_with_deleted, -> { where(name: 'hello').includes(:not_paranoid) }, class_name: 'ParanoidTime', foreign_key: :paranoid_time_id, with_deleted: true
+  belongs_to :paranoid_time_polymorphic_with_deleted, class_name: 'ParanoidTime', foreign_key: :paranoid_time_id, polymorphic: true, with_deleted: true
 
-  belongs_to :paranoid_belongs_dependant, :dependent => :destroy
+  belongs_to :paranoid_belongs_dependant, dependent: :destroy
 end
 
 class ParanoidBelongsDependant < ActiveRecord::Base
@@ -338,7 +338,7 @@ class ParanoidWithCallback < ActiveRecord::Base
   before_destroy :call_me_before_destroy
   after_destroy :call_me_after_destroy
 
-  after_commit :call_me_after_commit_on_destroy, :on => :destroy
+  after_commit :call_me_after_commit_on_destroy, on: :destroy
 
   before_recover :call_me_before_recover
   after_recover :call_me_after_recover
@@ -371,14 +371,14 @@ end
 
 class ParanoidDestroyCompany < ActiveRecord::Base
   acts_as_paranoid
-  validates :name, :presence => true
-  has_many :paranoid_products, :dependent => :destroy
+  validates :name, presence: true
+  has_many :paranoid_products, dependent: :destroy
 end
 
 class ParanoidDeleteCompany < ActiveRecord::Base
   acts_as_paranoid
-  validates :name, :presence => true
-  has_many :paranoid_products, :dependent => :delete_all
+  validates :name, presence: true
+  has_many :paranoid_products, dependent: :delete_all
 end
 
 class ParanoidProduct < ActiveRecord::Base
@@ -394,7 +394,7 @@ class SuperParanoid < ActiveRecord::Base
 end
 
 class HasManyInheritedSuperParanoidz < ActiveRecord::Base
-  has_many :super_paranoidz, :class_name => "InheritedParanoid", :dependent => :destroy
+  has_many :super_paranoidz, class_name: "InheritedParanoid", dependent: :destroy
 end
 
 class InheritedParanoid < SuperParanoid
@@ -404,12 +404,12 @@ end
 
 class ParanoidManyManyParentLeft < ActiveRecord::Base
   has_many :paranoid_many_many_children
-  has_many :paranoid_many_many_parent_rights, :through => :paranoid_many_many_children
+  has_many :paranoid_many_many_parent_rights, through: :paranoid_many_many_children
 end
 
 class ParanoidManyManyParentRight < ActiveRecord::Base
   has_many :paranoid_many_many_children
-  has_many :paranoid_many_many_parent_lefts, :through => :paranoid_many_many_children
+  has_many :paranoid_many_many_parent_lefts, through: :paranoid_many_many_children
 end
 
 class ParanoidManyManyChild < ActiveRecord::Base
@@ -420,21 +420,21 @@ end
 
 class ParanoidWithScopedValidation < ActiveRecord::Base
   acts_as_paranoid
-  validates_uniqueness_of :name, :scope => :category
+  validates_uniqueness_of :name, scope: :category
 end
 
 class ParanoidBelongsToPolymorphic < ActiveRecord::Base
   acts_as_paranoid
-  belongs_to :parent, :polymorphic => true, :with_deleted => true
+  belongs_to :parent, polymorphic: true, with_deleted: true
 end
 
 class NotParanoidHasManyAsParent < ActiveRecord::Base
-  has_many :paranoid_belongs_to_polymorphics, :as => :parent, :dependent => :destroy
+  has_many :paranoid_belongs_to_polymorphics, as: :parent, dependent: :destroy
 end
 
 class ParanoidHasManyAsParent < ActiveRecord::Base
   acts_as_paranoid
-  has_many :paranoid_belongs_to_polymorphics, :as => :parent, :dependent => :destroy
+  has_many :paranoid_belongs_to_polymorphics, as: :parent, dependent: :destroy
 end
 
 class ParanoidBaseTest < ActiveSupport::TestCase
@@ -442,13 +442,13 @@ class ParanoidBaseTest < ActiveSupport::TestCase
     setup_db
 
     ["paranoid", "really paranoid", "extremely paranoid"].each do |name|
-      ParanoidTime.create! :name => name
-      ParanoidBoolean.create! :name => name
+      ParanoidTime.create! name: name
+      ParanoidBoolean.create! name: name
     end
 
-    ParanoidString.create! :name => "strings can be paranoid"
-    NotParanoid.create! :name => "no paranoid goals"
-    ParanoidWithCallback.create! :name => "paranoid with callbacks"
+    ParanoidString.create! name: "strings can be paranoid"
+    NotParanoid.create! name: "no paranoid goals"
+    ParanoidWithCallback.create! name: "paranoid with callbacks"
   end
 
   def teardown
@@ -482,9 +482,9 @@ class ParanoidForest < ActiveRecord::Base
 
   ActiveRecord::Base.logger = Logger.new(StringIO.new)
 
-  scope :rainforest, lambda{ where(:rainforest => true) }
+  scope :rainforest, lambda{ where(rainforest: true) }
 
-  has_many :paranoid_trees, :dependent => :destroy
+  has_many :paranoid_trees, dependent: :destroy
 end
 
 class ParanoidTree < ActiveRecord::Base
@@ -505,7 +505,7 @@ end
 class ParanoidSection < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :paranoid_time
-  belongs_to :paranoid_thing, :polymorphic => true, :dependent => :destroy
+  belongs_to :paranoid_thing, polymorphic: true, dependent: :destroy
 end
 
 class ParanoidBooleanNotNullable < ActiveRecord::Base

@@ -105,7 +105,7 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_recovery!
     ParanoidBoolean.first.destroy
-    ParanoidBoolean.create(:name => 'paranoid')
+    ParanoidBoolean.create(name: 'paranoid')
 
     assert_raise do
       ParanoidBoolean.only_deleted.first.recover!
@@ -129,7 +129,7 @@ class ParanoidTest < ParanoidBaseTest
 
     # Create one extra ParanoidHasManyDependant record so that we can validate
     # the correct dependants are recovered.
-    ParanoidTime.where('id <> ?', @paranoid_time_object.id).first.paranoid_has_many_dependants.create(:name => "should not be recovered").destroy
+    ParanoidTime.where('id <> ?', @paranoid_time_object.id).first.paranoid_has_many_dependants.create(name: "should not be recovered").destroy
 
     @paranoid_boolean_count = ParanoidBoolean.count
 
@@ -138,20 +138,20 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 1, NotParanoid.count
 
     (1..3).each do |i|
-      has_many_object = @paranoid_time_object.paranoid_has_many_dependants.create(:name => "has_many_#{i}")
-      has_many_object.create_paranoid_belongs_dependant(:name => "belongs_to_#{i}")
+      has_many_object = @paranoid_time_object.paranoid_has_many_dependants.create(name: "has_many_#{i}")
+      has_many_object.create_paranoid_belongs_dependant(name: "belongs_to_#{i}")
       has_many_object.save
 
-      paranoid_boolean = @paranoid_time_object.paranoid_booleans.create(:name => "boolean_#{i}")
-      paranoid_boolean.create_paranoid_has_one_dependant(:name => "has_one_#{i}")
+      paranoid_boolean = @paranoid_time_object.paranoid_booleans.create(name: "boolean_#{i}")
+      paranoid_boolean.create_paranoid_has_one_dependant(name: "has_one_#{i}")
       paranoid_boolean.save
 
-      @paranoid_time_object.not_paranoids.create(:name => "not_paranoid_a#{i}")
+      @paranoid_time_object.not_paranoids.create(name: "not_paranoid_a#{i}")
 
     end
 
-    @paranoid_time_object.create_not_paranoid(:name => "not_paranoid_belongs_to")
-    @paranoid_time_object.create_has_one_not_paranoid(:name => "has_one_not_paranoid")
+    @paranoid_time_object.create_not_paranoid(name: "not_paranoid_belongs_to")
+    @paranoid_time_object.create_has_one_not_paranoid(name: "has_one_not_paranoid")
 
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidHasManyDependant.count
@@ -202,7 +202,7 @@ class ParanoidTest < ParanoidBaseTest
     @paranoid_time_object.destroy
     @paranoid_time_object.reload
 
-    @paranoid_time_object.recover(:recursive => true)
+    @paranoid_time_object.recover(recursive: true)
 
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidHasManyDependant.count
@@ -230,7 +230,7 @@ class ParanoidTest < ParanoidBaseTest
     @paranoid_time_object.destroy
     @paranoid_time_object.reload
 
-    @paranoid_time_object.recover(:recursive => true)
+    @paranoid_time_object.recover(recursive: true)
 
     assert_equal 3, ParanoidTime.count
     assert_equal 2, ParanoidHasManyDependant.count
@@ -243,17 +243,17 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_recursive_recovery_for_belongs_to_polymorphic
     child_1 = ParanoidAndroid.create
-    section_1 = ParanoidSection.create(:paranoid_thing => child_1)
+    section_1 = ParanoidSection.create(paranoid_thing: child_1)
 
-    child_2 = ParanoidPolygon.create(:sides => 3)
-    section_2 = ParanoidSection.create(:paranoid_thing => child_2)
+    child_2 = ParanoidPolygon.create(sides: 3)
+    section_2 = ParanoidSection.create(paranoid_thing: child_2)
 
     assert_equal section_1.paranoid_thing, child_1
     assert_equal section_1.paranoid_thing.class, ParanoidAndroid
     assert_equal section_2.paranoid_thing, child_2
     assert_equal section_2.paranoid_thing.class, ParanoidPolygon
 
-    parent = ParanoidTime.create(:name => "paranoid_parent")
+    parent = ParanoidTime.create(name: "paranoid_parent")
     parent.paranoid_sections << section_1
     parent.paranoid_sections << section_2
 
@@ -284,7 +284,7 @@ class ParanoidTest < ParanoidBaseTest
     @paranoid_time_object.destroy
     @paranoid_time_object.reload
 
-    @paranoid_time_object.recover(:recursive => false)
+    @paranoid_time_object.recover(recursive: false)
 
     assert_equal 3, ParanoidTime.count
     assert_equal 0, ParanoidHasManyDependant.count
@@ -453,88 +453,88 @@ class ParanoidTest < ParanoidBaseTest
 
   # Test string type columns that don't have a nil value when not deleted (Y/N for example)
   def test_string_type_with_no_nil_value_before_destroy
-    ps = ParanoidString.create!(:deleted => 'not dead')
-    assert_equal 1, ParanoidString.where(:id => ps).count
+    ps = ParanoidString.create!(deleted: 'not dead')
+    assert_equal 1, ParanoidString.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_after_destroy
-    ps = ParanoidString.create!(:deleted => 'not dead')
+    ps = ParanoidString.create!(deleted: 'not dead')
     ps.destroy
-    assert_equal 0, ParanoidString.where(:id => ps).count
+    assert_equal 0, ParanoidString.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_before_destroy_with_deleted
-    ps = ParanoidString.create!(:deleted => 'not dead')
-    assert_equal 1, ParanoidString.with_deleted.where(:id => ps).count
+    ps = ParanoidString.create!(deleted: 'not dead')
+    assert_equal 1, ParanoidString.with_deleted.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_after_destroy_with_deleted
-    ps = ParanoidString.create!(:deleted => 'not dead')
+    ps = ParanoidString.create!(deleted: 'not dead')
     ps.destroy
-    assert_equal 1, ParanoidString.with_deleted.where(:id => ps).count
+    assert_equal 1, ParanoidString.with_deleted.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_before_destroy_only_deleted
-    ps = ParanoidString.create!(:deleted => 'not dead')
-    assert_equal 0, ParanoidString.only_deleted.where(:id => ps).count
+    ps = ParanoidString.create!(deleted: 'not dead')
+    assert_equal 0, ParanoidString.only_deleted.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_after_destroy_only_deleted
-    ps = ParanoidString.create!(:deleted => 'not dead')
+    ps = ParanoidString.create!(deleted: 'not dead')
     ps.destroy
-    assert_equal 1, ParanoidString.only_deleted.where(:id => ps).count
+    assert_equal 1, ParanoidString.only_deleted.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_after_destroyed_twice
-    ps = ParanoidString.create!(:deleted => 'not dead')
+    ps = ParanoidString.create!(deleted: 'not dead')
     2.times { ps.destroy }
-    assert_equal 0, ParanoidString.with_deleted.where(:id => ps).count
+    assert_equal 0, ParanoidString.with_deleted.where(id: ps).count
   end
 
   # Test boolean type columns, that are not nullable
   def test_boolean_type_with_no_nil_value_before_destroy
     ps = ParanoidBooleanNotNullable.create!()
-    assert_equal 1, ParanoidBooleanNotNullable.where(:id => ps).count
+    assert_equal 1, ParanoidBooleanNotNullable.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_after_destroy
     ps = ParanoidBooleanNotNullable.create!()
     ps.destroy
-    assert_equal 0, ParanoidBooleanNotNullable.where(:id => ps).count
+    assert_equal 0, ParanoidBooleanNotNullable.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_before_destroy_with_deleted
     ps = ParanoidBooleanNotNullable.create!()
-    assert_equal 1, ParanoidBooleanNotNullable.with_deleted.where(:id => ps).count
+    assert_equal 1, ParanoidBooleanNotNullable.with_deleted.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_after_destroy_with_deleted
     ps = ParanoidBooleanNotNullable.create!()
     ps.destroy
-    assert_equal 1, ParanoidBooleanNotNullable.with_deleted.where(:id => ps).count
+    assert_equal 1, ParanoidBooleanNotNullable.with_deleted.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_before_destroy_only_deleted
     ps = ParanoidBooleanNotNullable.create!()
-    assert_equal 0, ParanoidBooleanNotNullable.only_deleted.where(:id => ps).count
+    assert_equal 0, ParanoidBooleanNotNullable.only_deleted.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_after_destroy_only_deleted
     ps = ParanoidBooleanNotNullable.create!()
     ps.destroy
-    assert_equal 1, ParanoidBooleanNotNullable.only_deleted.where(:id => ps).count
+    assert_equal 1, ParanoidBooleanNotNullable.only_deleted.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_after_destroyed_twice
     ps = ParanoidBooleanNotNullable.create!()
     2.times { ps.destroy }
-    assert_equal 0, ParanoidBooleanNotNullable.with_deleted.where(:id => ps).count
+    assert_equal 0, ParanoidBooleanNotNullable.with_deleted.where(id: ps).count
   end
 
   def test_no_double_tap_destroys_fully
     ps = ParanoidNoDoubleTapDestroysFully.create!()
     2.times { ps.destroy }
-    assert_equal 1, ParanoidNoDoubleTapDestroysFully.with_deleted.where(:id => ps).count
+    assert_equal 1, ParanoidNoDoubleTapDestroysFully.with_deleted.where(id: ps).count
   end
 
   def test_decrement_counters
@@ -562,7 +562,7 @@ class ParanoidTest < ParanoidBaseTest
   def test_destroy_with_optional_belongs_to_and_counter_cache
     ps = ParanoidWithCounterCacheOnOptionalBelognsTo.create!()
     ps.destroy
-    assert_equal 1, ParanoidWithCounterCacheOnOptionalBelognsTo.only_deleted.where(:id => ps).count
+    assert_equal 1, ParanoidWithCounterCacheOnOptionalBelognsTo.only_deleted.where(id: ps).count
   end
 
   def test_hard_destroy_decrement_counters

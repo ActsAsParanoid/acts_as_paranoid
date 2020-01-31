@@ -6,10 +6,10 @@ class MultipleDefaultScopesTest < ParanoidBaseTest
   def setup
     setup_db
 
-    ParanoidPolygon.create! :sides => 3
-    ParanoidPolygon.create! :sides => 3
-    ParanoidPolygon.create! :sides => 3
-    ParanoidPolygon.create! :sides => 8
+    ParanoidPolygon.create! sides: 3
+    ParanoidPolygon.create! sides: 3
+    ParanoidPolygon.create! sides: 3
+    ParanoidPolygon.create! sides: 8
 
     assert_equal 3, ParanoidPolygon.count
     assert_equal 4, ParanoidPolygon.unscoped.count
