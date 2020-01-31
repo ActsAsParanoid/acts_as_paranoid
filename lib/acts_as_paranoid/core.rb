@@ -223,7 +223,7 @@ module ActsAsParanoid
                        paranoid_value == false
                      else
                        paranoid_value.nil?
-      end
+                     end
     end
 
     alias destroyed? deleted?
