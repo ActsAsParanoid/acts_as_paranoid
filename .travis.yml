@@ -1,9 +1,12 @@
 language: ruby
 script: "bundle exec rake test"
+
 cache:
   - bundler
+before_cache:
+  - rm -f ${BUNDLE_PATH}/**/extensions/**/{gem_make.out,mkmf.log}
+
 rvm:
-  - 2.4.9
   - 2.5.7
   - 2.6.5
   - 2.7.0
@@ -13,18 +16,19 @@ gemfile:
   - gemfiles/active_record_52.gemfile
   - gemfiles/active_record_60.gemfile
   - gemfiles/active_record_edge.gemfile
-before_cache:
-  - rm -f ${BUNDLE_PATH}/**/extensions/**/{gem_make.out,mkmf.log}
-matrix:
+
+jobs:
   allow_failures:
     - gemfile: gemfiles/active_record_edge.gemfile
     - rvm: ruby-head
-  exclude:
+  include:
     - rvm: 2.4.9
-      gemfile: gemfiles/active_record_edge.gemfile
-    - rvm: 2.4.9
-      gemfile: gemfiles/active_record_60.gemfile
+      gemfile: gemfiles/active_record_52.gemfile
+    - stage: rubocop
+      script: bundle exec rake rubocop
+      rvm: 2.6.5
   fast_finish: true
+
 branches:
   only:
     - master
