@@ -2,6 +2,10 @@
 Layout/LineLength:
   Max: 92
 
+# In guard clauses, if ! is often more immediately clear
+Style/NegatedIf:
+  Enabled: false
+
 # Do not commit to use of interpolation
 Style/StringLiterals:
   EnforcedStyle: double_quotes
