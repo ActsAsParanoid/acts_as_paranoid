@@ -44,7 +44,7 @@ module ActsAsParanoid
       def paranoid_default_scope
         if string_type_with_deleted_value?
           all.table[paranoid_column].eq(nil)
-             .or(all.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value]))
+            .or(all.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value]))
         elsif boolean_type_not_nullable?
           all.table[paranoid_column].eq(false)
         else

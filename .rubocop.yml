@@ -4,6 +4,16 @@ inherit_from: .rubocop_todo.yml
 Layout/LineLength:
   Max: 92
 
+# Multi-line method calls should be simply indented. Aligning them makes it
+# even harder to keep a sane line length.
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+# Multi-line assignment should be simply indented. Aligning them makes it even
+# harder to keep a sane line length.
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
 # In guard clauses, if ! is often more immediately clear
 Style/NegatedIf:
   Enabled: false

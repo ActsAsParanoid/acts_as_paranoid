@@ -223,8 +223,8 @@ class ParanoidTest < ParanoidBaseTest
     end
     Time.stub :now, 1.hour.ago do
       @paranoid_time_object.paranoid_has_many_dependants
-                           .last.paranoid_belongs_dependant
-                           .destroy
+        .last.paranoid_belongs_dependant
+        .destroy
     end
     @paranoid_time_object.destroy
     @paranoid_time_object.reload
