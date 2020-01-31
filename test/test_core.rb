@@ -147,7 +147,6 @@ class ParanoidTest < ParanoidBaseTest
       paranoid_boolean.save
 
       @paranoid_time_object.not_paranoids.create(name: "not_paranoid_a#{i}")
-
     end
 
     @paranoid_time_object.create_not_paranoid(name: "not_paranoid_belongs_to")
@@ -223,9 +222,9 @@ class ParanoidTest < ParanoidBaseTest
       @paranoid_time_object.paranoid_has_many_dependants.first.destroy
     end
     Time.stub :now, 1.hour.ago do
-      @paranoid_time_object.paranoid_has_many_dependants.
-        last.paranoid_belongs_dependant.
-        destroy
+      @paranoid_time_object.paranoid_has_many_dependants
+                           .last.paranoid_belongs_dependant
+                           .destroy
     end
     @paranoid_time_object.destroy
     @paranoid_time_object.reload
@@ -493,52 +492,52 @@ class ParanoidTest < ParanoidBaseTest
 
   # Test boolean type columns, that are not nullable
   def test_boolean_type_with_no_nil_value_before_destroy
-    ps = ParanoidBooleanNotNullable.create!()
+    ps = ParanoidBooleanNotNullable.create!
     assert_equal 1, ParanoidBooleanNotNullable.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_after_destroy
-    ps = ParanoidBooleanNotNullable.create!()
+    ps = ParanoidBooleanNotNullable.create!
     ps.destroy
     assert_equal 0, ParanoidBooleanNotNullable.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_before_destroy_with_deleted
-    ps = ParanoidBooleanNotNullable.create!()
+    ps = ParanoidBooleanNotNullable.create!
     assert_equal 1, ParanoidBooleanNotNullable.with_deleted.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_after_destroy_with_deleted
-    ps = ParanoidBooleanNotNullable.create!()
+    ps = ParanoidBooleanNotNullable.create!
     ps.destroy
     assert_equal 1, ParanoidBooleanNotNullable.with_deleted.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_before_destroy_only_deleted
-    ps = ParanoidBooleanNotNullable.create!()
+    ps = ParanoidBooleanNotNullable.create!
     assert_equal 0, ParanoidBooleanNotNullable.only_deleted.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_after_destroy_only_deleted
-    ps = ParanoidBooleanNotNullable.create!()
+    ps = ParanoidBooleanNotNullable.create!
     ps.destroy
     assert_equal 1, ParanoidBooleanNotNullable.only_deleted.where(id: ps).count
   end
 
   def test_boolean_type_with_no_nil_value_after_destroyed_twice
-    ps = ParanoidBooleanNotNullable.create!()
+    ps = ParanoidBooleanNotNullable.create!
     2.times { ps.destroy }
     assert_equal 0, ParanoidBooleanNotNullable.with_deleted.where(id: ps).count
   end
 
   def test_no_double_tap_destroys_fully
-    ps = ParanoidNoDoubleTapDestroysFully.create!()
+    ps = ParanoidNoDoubleTapDestroysFully.create!
     2.times { ps.destroy }
     assert_equal 1, ParanoidNoDoubleTapDestroysFully.with_deleted.where(id: ps).count
   end
 
   def test_decrement_counters
-    paranoid_boolean = ParanoidBoolean.create!()
+    paranoid_boolean = ParanoidBoolean.create!
     paranoid_with_counter_cache = ParanoidWithCounterCache.create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
@@ -549,7 +548,7 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_decrement_custom_counters
-    paranoid_boolean = ParanoidBoolean.create!()
+    paranoid_boolean = ParanoidBoolean.create!
     paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache.create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.custom_counter_cache
@@ -560,13 +559,13 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_destroy_with_optional_belongs_to_and_counter_cache
-    ps = ParanoidWithCounterCacheOnOptionalBelognsTo.create!()
+    ps = ParanoidWithCounterCacheOnOptionalBelognsTo.create!
     ps.destroy
     assert_equal 1, ParanoidWithCounterCacheOnOptionalBelognsTo.only_deleted.where(id: ps).count
   end
 
   def test_hard_destroy_decrement_counters
-    paranoid_boolean = ParanoidBoolean.create!()
+    paranoid_boolean = ParanoidBoolean.create!
     paranoid_with_counter_cache = ParanoidWithCounterCache.create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
@@ -577,7 +576,7 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_hard_destroy_decrement_custom_counters
-    paranoid_boolean = ParanoidBoolean.create!()
+    paranoid_boolean = ParanoidBoolean.create!
     paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache.create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.custom_counter_cache
@@ -588,7 +587,7 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_increment_counters
-    paranoid_boolean = ParanoidBoolean.create!()
+    paranoid_boolean = ParanoidBoolean.create!
     paranoid_with_counter_cache = ParanoidWithCounterCache.create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
@@ -603,7 +602,7 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_increment_custom_counters
-    paranoid_boolean = ParanoidBoolean.create!()
+    paranoid_boolean = ParanoidBoolean.create!
     paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache.create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.custom_counter_cache

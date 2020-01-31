@@ -7,8 +7,8 @@ gem "activesupport", "~> 5.2.0", require: "active_support"
 
 # Development dependencies
 group :development do
-  gem "sqlite3", platforms: [:ruby]
   gem "activerecord-jdbcsqlite3-adapter", platforms: [:jruby]
+  gem "sqlite3", platforms: [:ruby]
 end
 
 gemspec path: "../"

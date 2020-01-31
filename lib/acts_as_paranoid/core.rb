@@ -43,12 +43,12 @@ module ActsAsParanoid
 
       def paranoid_default_scope
         if string_type_with_deleted_value?
-          self.all.table[paranoid_column].eq(nil).
-            or(self.all.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value]))
+          all.table[paranoid_column].eq(nil)
+             .or(all.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value]))
         elsif boolean_type_not_nullable?
-          self.all.table[paranoid_column].eq(false)
+          all.table[paranoid_column].eq(false)
         else
-          self.all.table[paranoid_column].eq(nil)
+          all.table[paranoid_column].eq(nil)
         end
       end
 
@@ -69,7 +69,7 @@ module ActsAsParanoid
       end
 
       def dependent_associations
-        self.reflect_on_all_associations.select {|a| [:destroy, :delete_all].include?(a.options[:dependent]) }
+        reflect_on_all_associations.select { |a| [:destroy, :delete_all].include?(a.options[:dependent]) }
       end
 
       def delete_now_value
@@ -80,10 +80,10 @@ module ActsAsParanoid
         end
       end
 
-    protected
+      protected
 
       def without_paranoid_default_scope
-        scope = self.all
+        scope = all
 
         scope = scope.unscope(where: paranoid_default_scope)
         # Fix problems with unscope group chain
@@ -98,7 +98,7 @@ module ActsAsParanoid
     end
 
     def paranoid_value
-      self.send(self.class.paranoid_column)
+      send(self.class.paranoid_column)
     end
 
     # Straight from ActiveRecord 5.1!
@@ -115,7 +115,7 @@ module ActsAsParanoid
 
           if persisted?
             # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-            self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
+            self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(id)].transpose])
             decrement_counters_on_associations
           end
 
@@ -130,10 +130,9 @@ module ActsAsParanoid
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
-
             if persisted?
               # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-              self.class.delete_all(Hash[[Array(self.class.primary_key), Array(self.id)].transpose])
+              self.class.delete_all(Hash[[Array(self.class.primary_key), Array(id)].transpose])
               decrement_counters_on_associations
             end
 
@@ -144,16 +143,15 @@ module ActsAsParanoid
           end
         end
       else
-        if paranoid_configuration[:double_tap_destroys_fully]
-          destroy_fully!
-        end
+        destroy_fully! if paranoid_configuration[:double_tap_destroys_fully]
       end
     end
 
-    alias_method :destroy, :destroy!
+    alias destroy destroy!
 
-    def recover(options={})
-      return if !self.deleted?
+    def recover(options = {})
+      return if !deleted?
+
       options = {
         recursive: self.class.paranoid_configuration[:recover_dependent_associations],
         recovery_window: self.class.paranoid_configuration[:dependent_recovery_window],
@@ -162,19 +160,21 @@ module ActsAsParanoid
 
       self.class.transaction do
         run_callbacks :recover do
-          recover_dependent_associations(options[:recovery_window], options) if options[:recursive]
+          if options[:recursive]
+            recover_dependent_associations(options[:recovery_window], options)
+          end
           increment_counters_on_associations
           self.paranoid_value = self.class.paranoid_configuration[:recovery_value]
           if options[:raise_error]
-            self.save!
+            save!
           else
-            self.save
+            save
           end
         end
       end
     end
 
-    def recover!(options={})
+    def recover!(options = {})
       options[:raise_error] = true
 
       recover(options)
@@ -202,29 +202,27 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |reflection|
         next unless (klass = get_reflection_class(reflection)).paranoid?
 
-        klass.only_deleted.merge(get_association_scope(reflection: reflection)).each do |object|
-          object.destroy!
-        end
+        klass.only_deleted.merge(get_association_scope(reflection: reflection)).each(&:destroy!)
       end
     end
 
     def deleted?
       @destroyed || !if self.class.string_type_with_deleted_value?
-        paranoid_value != self.class.delete_now_value || paranoid_value.nil?
-      elsif self.class.boolean_type_not_nullable?
-        paranoid_value == false
-      else
-        paranoid_value.nil?
+                       paranoid_value != self.class.delete_now_value || paranoid_value.nil?
+                     elsif self.class.boolean_type_not_nullable?
+                       paranoid_value == false
+                     else
+                       paranoid_value.nil?
       end
     end
 
-    alias_method :destroyed?, :deleted?
+    alias destroyed? deleted?
 
     def deleted_fully?
       @destroyed
     end
 
-    alias_method :destroyed_fully?, :deleted_fully?
+    alias destroyed_fully? deleted_fully?
 
     private
 
@@ -234,18 +232,17 @@ module ActsAsParanoid
 
     def get_reflection_class(reflection)
       if reflection.macro == :belongs_to && reflection.options.include?(:polymorphic)
-        self.send(reflection.foreign_type).constantize
+        send(reflection.foreign_type).constantize
       else
         reflection.klass
       end
     end
 
     def paranoid_value=(value)
-      self.write_attribute(self.class.paranoid_column, value)
+      write_attribute(self.class.paranoid_column, value)
     end
 
-    def update_counters_on_associations method_sym
-
+    def update_counters_on_associations(method_sym)
       return unless [:decrement_counter, :increment_counter].include? method_sym
 
       each_counter_cached_association_reflection do |assoc_reflection|
@@ -257,17 +254,17 @@ module ActsAsParanoid
     end
 
     def each_counter_cached_association_reflection
-      _reflections.each do |name, reflection|
+      _reflections.each do |_name, reflection|
         yield reflection if reflection.belongs_to? && reflection.counter_cache_column
       end
     end
 
     def increment_counters_on_associations
-        update_counters_on_associations :increment_counter
+      update_counters_on_associations :increment_counter
     end
 
     def decrement_counters_on_associations
-        update_counters_on_associations :decrement_counter
+      update_counters_on_associations :decrement_counter
     end
 
     def stale_paranoid_value

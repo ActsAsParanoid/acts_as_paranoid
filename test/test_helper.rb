@@ -4,8 +4,8 @@ require "bundler"
 begin
   Bundler.require(:default, :development)
 rescue Bundler::BundlerError => e
-  $stderr.puts e.message
-  $stderr.puts "Run `bundle install` to install missing gems"
+  warn e.message
+  warn "Run `bundle install` to install missing gems"
   exit e.status_code
 end
 
@@ -168,7 +168,7 @@ def setup_db
     end
 
     create_table :paranoid_polygons do |t|
-      t.integer   :sides
+      t.integer :sides
       t.datetime :deleted_at
 
       timestamps t
@@ -227,8 +227,8 @@ def setup_db
 end
 
 def timestamps(table)
-  table.column  :created_at , :timestamp, null: false
-  table.column  :updated_at , :timestamp, null: false
+  table.column  :created_at, :timestamp, null: false
+  table.column  :updated_at, :timestamp, null: false
 end
 
 def teardown_db
@@ -401,7 +401,6 @@ class InheritedParanoid < SuperParanoid
   acts_as_paranoid
 end
 
-
 class ParanoidManyManyParentLeft < ActiveRecord::Base
   has_many :paranoid_many_many_children
   has_many :paranoid_many_many_parent_rights, through: :paranoid_many_many_children
@@ -482,7 +481,7 @@ class ParanoidForest < ActiveRecord::Base
 
   ActiveRecord::Base.logger = Logger.new(StringIO.new)
 
-  scope :rainforest, lambda{ where(rainforest: true) }
+  scope :rainforest, -> { where(rainforest: true) }
 
   has_many :paranoid_trees, dependent: :destroy
 end

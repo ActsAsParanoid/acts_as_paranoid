@@ -179,7 +179,7 @@ class AssociationsTest < ParanoidBaseTest
 
     assert_empty ParanoidHasManyDependant.with_deleted.joins(:paranoid_time)
     assert_equal [obj],
-      ParanoidHasManyDependant.with_deleted.joins(:paranoid_time_with_deleted)
+                 ParanoidHasManyDependant.with_deleted.joins(:paranoid_time_with_deleted)
   end
 
   def test_includes_with_deleted
