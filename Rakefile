@@ -4,11 +4,9 @@ require "bundler/gem_tasks"
 
 require "rake/testtask"
 require "rdoc/task"
+require "rubocop/rake_task"
 
 gemspec = eval(File.read(Dir["*.gemspec"].first))
-
-desc "Default: run unit tests."
-task default: "test:all"
 
 namespace :test do
   versions = Dir["gemfiles/*.gemfile"]
@@ -32,6 +30,8 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = true
 end
 
+RuboCop::RakeTask.new
+
 desc "Generate documentation for the acts_as_paranoid plugin."
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = "rdoc"
@@ -50,3 +50,6 @@ desc "Clean automatically generated files"
 task :clean do
   FileUtils.rm_rf "pkg"
 end
+
+desc "Default: run unit tests"
+task default: "test:all"
