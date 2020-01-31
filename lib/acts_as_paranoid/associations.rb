@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ActsAsParanoid
   module Associations
     def self.included(base)
@@ -31,7 +33,7 @@ module ActsAsParanoid
               if respond_to? :with_deleted
                 self.with_deleted
               else
-                self.all
+                all
               end
             end
           end
@@ -39,9 +41,7 @@ module ActsAsParanoid
 
         result = belongs_to_without_deleted(target, scope, options)
 
-        if with_deleted
-          result.values.last.options[:with_deleted] = with_deleted
-        end
+        result.values.last.options[:with_deleted] = with_deleted if with_deleted
 
         result
       end

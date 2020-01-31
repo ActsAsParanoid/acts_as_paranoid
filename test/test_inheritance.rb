@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class InheritanceTest < ParanoidBaseTest
   def test_destroy_dependents_with_inheritance

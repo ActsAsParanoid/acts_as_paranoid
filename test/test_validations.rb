@@ -1,8 +1,10 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class ValidatesUniquenessTest < ParanoidBaseTest
   def test_should_include_deleted_by_default
-    ParanoidTime.new(:name => 'paranoid').tap do |record|
+    ParanoidTime.new(name: "paranoid").tap do |record|
       assert !record.valid?
       ParanoidTime.first.destroy
       assert !record.valid?
@@ -12,7 +14,7 @@ class ValidatesUniquenessTest < ParanoidBaseTest
   end
 
   def test_should_validate_without_deleted
-    ParanoidBoolean.new(:name => 'paranoid').tap do |record|
+    ParanoidBoolean.new(name: "paranoid").tap do |record|
       refute record.valid?
       ParanoidBoolean.first.destroy
       assert record.valid?
@@ -22,8 +24,8 @@ class ValidatesUniquenessTest < ParanoidBaseTest
   end
 
   def test_models_with_scoped_validations_can_be_multiply_deleted
-    model_a = ParanoidWithScopedValidation.create(:name => "Model A", :category => "Category A")
-    model_b = ParanoidWithScopedValidation.create(:name => "Model B", :category => "Category B")
+    model_a = ParanoidWithScopedValidation.create(name: "Model A", category: "Category A")
+    model_b = ParanoidWithScopedValidation.create(name: "Model B", category: "Category B")
 
     ParanoidWithScopedValidation.delete([model_a.id, model_b.id])
 
@@ -32,8 +34,8 @@ class ValidatesUniquenessTest < ParanoidBaseTest
   end
 
   def test_models_with_scoped_validations_can_be_multiply_destroyed
-    model_a = ParanoidWithScopedValidation.create(:name => "Model A", :category => "Category A")
-    model_b = ParanoidWithScopedValidation.create(:name => "Model B", :category => "Category B")
+    model_a = ParanoidWithScopedValidation.create(name: "Model A", category: "Category A")
+    model_b = ParanoidWithScopedValidation.create(name: "Model B", category: "Category B")
 
     ParanoidWithScopedValidation.destroy([model_a.id, model_b.id])
 

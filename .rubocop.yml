@@ -1,0 +1,32 @@
+inherit_from: .rubocop_todo.yml
+
+# Exclude any vendored gems
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+
+# Be lenient with line length
+Layout/LineLength:
+  Max: 92
+
+# Multi-line method calls should be simply indented. Aligning them makes it
+# even harder to keep a sane line length.
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+# Multi-line assignment should be simply indented. Aligning them makes it even
+# harder to keep a sane line length.
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+# In guard clauses, if ! is often more immediately clear
+Style/NegatedIf:
+  Enabled: false
+
+# Do not commit to use of interpolation
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+# Prefer symbols to look like symbols
+Style/SymbolArray:
+  EnforcedStyle: brackets

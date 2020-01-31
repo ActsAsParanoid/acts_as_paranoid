@@ -1,4 +1,6 @@
-require 'active_support/core_ext/array/wrap'
+# frozen_string_literal: true
+
+require "active_support/core_ext/array/wrap"
 
 module ActsAsParanoid
   module Validations
@@ -7,25 +9,29 @@ module ActsAsParanoid
     end
 
     class UniquenessWithoutDeletedValidator < ActiveRecord::Validations::UniquenessValidator
-      
       def validate_each(record, attribute, value)
         finder_class = find_finder_class_for(record)
         table = finder_class.arel_table
 
         relation = build_relation(finder_class, attribute, value)
-        [Array(finder_class.primary_key), Array(record.send(:id))].transpose.each do |pk_key, pk_value|
-          relation = relation.where(table[pk_key.to_sym].not_eq(pk_value))
-        end if record.persisted?
+        if record.persisted?
+          [Array(finder_class.primary_key), Array(record.send(:id))]
+            .transpose
+            .each do |pk_key, pk_value|
+            relation = relation.where(table[pk_key.to_sym].not_eq(pk_value))
+          end
+        end
 
         Array.wrap(options[:scope]).each do |scope_item|
           relation = relation.where(table[scope_item].eq(record.public_send(scope_item)))
         end
 
         if relation.where(finder_class.paranoid_default_scope).exists?(relation)
-          record.errors.add(attribute, :taken, options.except(:case_sensitive, :scope).merge(:value => value))
+          record.errors.add(attribute,
+                            :taken,
+                            options.except(:case_sensitive, :scope).merge(value: value))
         end
       end
-    
     end
 
     module ClassMethods
