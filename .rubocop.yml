@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 # Be lenient with line length
 Layout/LineLength:
   Max: 92
