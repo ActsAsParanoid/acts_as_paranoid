@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ActsAsParanoid
   module Associations
     def self.included(base)
