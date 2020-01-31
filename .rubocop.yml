@@ -1,3 +1,7 @@
+# Be lenient with line length
+Layout/LineLength:
+  Max: 92
+
 # Do not commit to use of interpolation
 Style/StringLiterals:
   EnforcedStyle: double_quotes
