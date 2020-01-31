@@ -15,7 +15,9 @@ module ActsAsParanoid
 
         relation = build_relation(finder_class, attribute, value)
         if record.persisted?
-          [Array(finder_class.primary_key), Array(record.send(:id))].transpose.each do |pk_key, pk_value|
+          [Array(finder_class.primary_key), Array(record.send(:id))]
+            .transpose
+            .each do |pk_key, pk_value|
             relation = relation.where(table[pk_key.to_sym].not_eq(pk_value))
           end
         end
@@ -25,7 +27,9 @@ module ActsAsParanoid
         end
 
         if relation.where(finder_class.paranoid_default_scope).exists?(relation)
-          record.errors.add(attribute, :taken, options.except(:case_sensitive, :scope).merge(value: value))
+          record.errors.add(attribute,
+                            :taken,
+                            options.except(:case_sensitive, :scope).merge(value: value))
         end
       end
     end

@@ -21,7 +21,14 @@ module ActsAsParanoid
 
     class_attribute :paranoid_configuration
 
-    self.paranoid_configuration = { column: "deleted_at", column_type: "time", recover_dependent_associations: true, dependent_recovery_window: 2.minutes, recovery_value: nil, double_tap_destroys_fully: true }
+    self.paranoid_configuration = {
+      column: "deleted_at",
+      column_type: "time",
+      recover_dependent_associations: true,
+      dependent_recovery_window: 2.minutes,
+      recovery_value: nil,
+      double_tap_destroys_fully: true
+    }
     if options[:column_type] == "string"
       paranoid_configuration.merge!(deleted_value: "deleted")
     end
@@ -29,7 +36,8 @@ module ActsAsParanoid
     paranoid_configuration.merge!(options) # user options
 
     unless %w[time boolean string].include? paranoid_configuration[:column_type]
-      raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}"
+      raise ArgumentError, "'time', 'boolean' or 'string' expected" \
+        " for :column_type option, got #{paranoid_configuration[:column_type]}"
     end
 
     def self.paranoid_column_reference
@@ -48,8 +56,12 @@ module ActsAsParanoid
         deleted_after_time((time - window)).deleted_before_time((time + window))
       }
 
-      scope :deleted_after_time, ->(time)  { where("#{table_name}.#{paranoid_column} > ?", time) }
-      scope :deleted_before_time, ->(time) { where("#{table_name}.#{paranoid_column} < ?", time) }
+      scope :deleted_after_time, lambda { |time|
+                                   where("#{table_name}.#{paranoid_column} > ?", time)
+                                 }
+      scope :deleted_before_time, lambda { |time|
+                                    where("#{table_name}.#{paranoid_column} < ?", time)
+                                  }
     end
   end
 end

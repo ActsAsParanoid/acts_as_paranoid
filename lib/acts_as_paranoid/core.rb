@@ -25,7 +25,8 @@ module ActsAsParanoid
 
       def only_deleted
         if string_type_with_deleted_value?
-          without_paranoid_default_scope.where(paranoid_column_reference => paranoid_configuration[:deleted_value])
+          without_paranoid_default_scope
+            .where(paranoid_column_reference => paranoid_configuration[:deleted_value])
         elsif boolean_type_not_nullable?
           without_paranoid_default_scope.where(paranoid_column_reference => true)
         else
@@ -38,7 +39,8 @@ module ActsAsParanoid
       end
 
       def delete_all(conditions = nil)
-        where(conditions).update_all(["#{paranoid_configuration[:column]} = ?", delete_now_value])
+        where(conditions)
+          .update_all(["#{paranoid_configuration[:column]} = ?", delete_now_value])
       end
 
       def paranoid_default_scope
@@ -69,7 +71,9 @@ module ActsAsParanoid
       end
 
       def dependent_associations
-        reflect_on_all_associations.select { |a| [:destroy, :delete_all].include?(a.options[:dependent]) }
+        reflect_on_all_associations.select do |a|
+          [:destroy, :delete_all].include?(a.options[:dependent])
+        end
       end
 
       def delete_now_value
@@ -114,8 +118,10 @@ module ActsAsParanoid
           destroy_dependent_associations!
 
           if persisted?
-            # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-            self.class.delete_all!(Hash[[Array(self.class.primary_key), Array(id)].transpose])
+            # Handle composite keys, otherwise we would just use
+            # `self.class.primary_key.to_sym => self.id`.
+            self.class
+              .delete_all!(Hash[[Array(self.class.primary_key), Array(id)].transpose])
             decrement_counters_on_associations
           end
 
@@ -131,8 +137,10 @@ module ActsAsParanoid
         with_transaction_returning_status do
           run_callbacks :destroy do
             if persisted?
-              # Handle composite keys, otherwise we would just use `self.class.primary_key.to_sym => self.id`.
-              self.class.delete_all(Hash[[Array(self.class.primary_key), Array(id)].transpose])
+              # Handle composite keys, otherwise we would just use
+              # `self.class.primary_key.to_sym => self.id`.
+              self.class
+                .delete_all(Hash[[Array(self.class.primary_key), Array(id)].transpose])
               decrement_counters_on_associations
             end
 
@@ -202,7 +210,9 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |reflection|
         next unless (klass = get_reflection_class(reflection)).paranoid?
 
-        klass.only_deleted.merge(get_association_scope(reflection: reflection)).each(&:destroy!)
+        klass
+          .only_deleted.merge(get_association_scope(reflection: reflection))
+          .each(&:destroy!)
       end
     end
 
@@ -246,10 +256,11 @@ module ActsAsParanoid
       return unless [:decrement_counter, :increment_counter].include? method_sym
 
       each_counter_cached_association_reflection do |assoc_reflection|
-        if associated_object = send(assoc_reflection.name)
-          counter_cache_column = assoc_reflection.counter_cache_column
-          associated_object.class.send(method_sym, counter_cache_column, associated_object.id)
-        end
+        next unless associated_object = send(assoc_reflection.name)
+
+        counter_cache_column = assoc_reflection.counter_cache_column
+        associated_object.class.send(method_sym, counter_cache_column,
+                                     associated_object.id)
       end
     end
 

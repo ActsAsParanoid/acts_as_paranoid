@@ -11,7 +11,8 @@ desc "Default: run unit tests."
 task default: "test:all"
 
 namespace :test do
-  versions = Dir["gemfiles/*.gemfile"].map { |gemfile_path| gemfile_path.split(%r{/|\.})[1] }
+  versions = Dir["gemfiles/*.gemfile"]
+    .map { |gemfile_path| gemfile_path.split(%r{/|\.})[1] }
 
   versions.each do |version|
     desc "Test acts_as_paranoid against #{version}"

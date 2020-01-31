@@ -114,7 +114,8 @@ def setup_db
 
     create_table :super_paranoids do |t|
       t.string :type
-      t.references :has_many_inherited_super_paranoidz, index: { name: "index__sp_id_on_has_many_isp" }
+      t.references :has_many_inherited_super_paranoidz,
+                   index: { name: "index__sp_id_on_has_many_isp" }
       t.datetime :deleted_at
 
       timestamps t
@@ -309,10 +310,17 @@ end
 class ParanoidHasManyDependant < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :paranoid_time
-  belongs_to :paranoid_time_with_scope, -> { where(name: "hello").includes(:not_paranoid) }, class_name: "ParanoidTime", foreign_key: :paranoid_time_id
-  belongs_to :paranoid_time_with_deleted, class_name: "ParanoidTime", foreign_key: :paranoid_time_id, with_deleted: true
-  belongs_to :paranoid_time_with_scope_with_deleted, -> { where(name: "hello").includes(:not_paranoid) }, class_name: "ParanoidTime", foreign_key: :paranoid_time_id, with_deleted: true
-  belongs_to :paranoid_time_polymorphic_with_deleted, class_name: "ParanoidTime", foreign_key: :paranoid_time_id, polymorphic: true, with_deleted: true
+  belongs_to :paranoid_time_with_scope,
+             -> { where(name: "hello").includes(:not_paranoid) },
+             class_name: "ParanoidTime", foreign_key: :paranoid_time_id
+  belongs_to :paranoid_time_with_deleted, class_name: "ParanoidTime",
+                                          foreign_key: :paranoid_time_id, with_deleted: true
+  belongs_to :paranoid_time_with_scope_with_deleted,
+             -> { where(name: "hello").includes(:not_paranoid) },
+             class_name: "ParanoidTime", foreign_key: :paranoid_time_id, with_deleted: true
+  belongs_to :paranoid_time_polymorphic_with_deleted, class_name: "ParanoidTime",
+                                                      foreign_key: :paranoid_time_id,
+                                                      polymorphic: true, with_deleted: true
 
   belongs_to :paranoid_belongs_dependant, dependent: :destroy
 end
@@ -332,7 +340,8 @@ end
 class ParanoidWithCallback < ActiveRecord::Base
   acts_as_paranoid
 
-  attr_accessor :called_before_destroy, :called_after_destroy, :called_after_commit_on_destroy
+  attr_accessor :called_before_destroy, :called_after_destroy,
+                :called_after_commit_on_destroy
   attr_accessor :called_before_recover, :called_after_recover
 
   before_destroy :call_me_before_destroy

@@ -129,7 +129,8 @@ class ParanoidTest < ParanoidBaseTest
 
     # Create one extra ParanoidHasManyDependant record so that we can validate
     # the correct dependants are recovered.
-    ParanoidTime.where("id <> ?", @paranoid_time_object.id).first.paranoid_has_many_dependants.create(name: "should not be recovered").destroy
+    ParanoidTime.where("id <> ?", @paranoid_time_object.id).first
+      .paranoid_has_many_dependants.create(name: "should not be recovered").destroy
 
     @paranoid_boolean_count = ParanoidBoolean.count
 
@@ -138,11 +139,13 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 1, NotParanoid.count
 
     (1..3).each do |i|
-      has_many_object = @paranoid_time_object.paranoid_has_many_dependants.create(name: "has_many_#{i}")
+      has_many_object = @paranoid_time_object.paranoid_has_many_dependants
+        .create(name: "has_many_#{i}")
       has_many_object.create_paranoid_belongs_dependant(name: "belongs_to_#{i}")
       has_many_object.save
 
-      paranoid_boolean = @paranoid_time_object.paranoid_booleans.create(name: "boolean_#{i}")
+      paranoid_boolean = @paranoid_time_object.paranoid_booleans
+        .create(name: "boolean_#{i}")
       paranoid_boolean.create_paranoid_has_one_dependant(name: "has_one_#{i}")
       paranoid_boolean.save
 
@@ -538,7 +541,8 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_decrement_counters
     paranoid_boolean = ParanoidBoolean.create!
-    paranoid_with_counter_cache = ParanoidWithCounterCache.create!(paranoid_boolean: paranoid_boolean)
+    paranoid_with_counter_cache = ParanoidWithCounterCache
+      .create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
 
@@ -549,7 +553,8 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_decrement_custom_counters
     paranoid_boolean = ParanoidBoolean.create!
-    paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache.create!(paranoid_boolean: paranoid_boolean)
+    paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache
+      .create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.custom_counter_cache
 
@@ -561,12 +566,14 @@ class ParanoidTest < ParanoidBaseTest
   def test_destroy_with_optional_belongs_to_and_counter_cache
     ps = ParanoidWithCounterCacheOnOptionalBelognsTo.create!
     ps.destroy
-    assert_equal 1, ParanoidWithCounterCacheOnOptionalBelognsTo.only_deleted.where(id: ps).count
+    assert_equal 1, ParanoidWithCounterCacheOnOptionalBelognsTo.only_deleted
+      .where(id: ps).count
   end
 
   def test_hard_destroy_decrement_counters
     paranoid_boolean = ParanoidBoolean.create!
-    paranoid_with_counter_cache = ParanoidWithCounterCache.create!(paranoid_boolean: paranoid_boolean)
+    paranoid_with_counter_cache = ParanoidWithCounterCache
+      .create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
 
@@ -577,7 +584,8 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_hard_destroy_decrement_custom_counters
     paranoid_boolean = ParanoidBoolean.create!
-    paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache.create!(paranoid_boolean: paranoid_boolean)
+    paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache
+      .create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.custom_counter_cache
 
@@ -588,7 +596,8 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_increment_counters
     paranoid_boolean = ParanoidBoolean.create!
-    paranoid_with_counter_cache = ParanoidWithCounterCache.create!(paranoid_boolean: paranoid_boolean)
+    paranoid_with_counter_cache = ParanoidWithCounterCache
+      .create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
 
@@ -603,7 +612,8 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_increment_custom_counters
     paranoid_boolean = ParanoidBoolean.create!
-    paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache.create!(paranoid_boolean: paranoid_boolean)
+    paranoid_with_custom_counter_cache = ParanoidWithCustomCounterCache
+      .create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.custom_counter_cache
 
@@ -617,6 +627,7 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_explicitly_setting_table_name_after_acts_as_paranoid_macro
-    assert_equal "explicit_table.deleted_at", ParanoidWithExplicitTableNameAfterMacro.paranoid_column_reference
+    assert_equal "explicit_table.deleted_at", ParanoidWithExplicitTableNameAfterMacro
+      .paranoid_column_reference
   end
 end
