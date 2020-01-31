@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "active_record"
 require "acts_as_paranoid/core"
 require "acts_as_paranoid/associations"
 require "acts_as_paranoid/validations"

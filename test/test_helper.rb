@@ -2,11 +2,16 @@
 
 require "bundler"
 begin
-  Bundler.require(:default, :development)
+  Bundler.load
 rescue Bundler::BundlerError => e
   warn e.message
   warn "Run `bundle install` to install missing gems"
   exit e.status_code
+end
+
+require "simplecov"
+SimpleCov.start do
+  enable_coverage :branch
 end
 
 require "acts_as_paranoid"
