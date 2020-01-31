@@ -5,3 +5,7 @@ Layout/LineLength:
 # Do not commit to use of interpolation
 Style/StringLiterals:
   EnforcedStyle: double_quotes
+
+# Prefer symbols to look like symbols
+Style/SymbolArray:
+  EnforcedStyle: brackets
