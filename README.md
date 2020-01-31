@@ -15,11 +15,12 @@ If you're working with Rails 5.1 and earlier, or with Ruby 2.3 or earlier,
 please switch to the corresponding branch or require an older version of the
 `acts_as_paranoid` gem.
 
-### Known issues with Rails 5.2+
+### Known issues
 
 * Using `acts_as_paranoid` and ActiveStorage on the same model
   [leads to a SystemStackError](https://github.com/ActsAsParanoid/acts_as_paranoid/issues/103).
-* You cannot directly create a model in a deleted state.
+* You cannot directly create a model in a deleted state, or update a model
+  after it's been deleted.
 
 ## Usage
 
