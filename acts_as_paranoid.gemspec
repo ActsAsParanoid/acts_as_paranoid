@@ -1,9 +1,9 @@
 # coding: utf-8
 # frozen_string_literal: true
 
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'acts_as_paranoid/version'
+require "acts_as_paranoid/version"
 
 Gem::Specification.new do |spec|
   spec.name        = "acts_as_paranoid"

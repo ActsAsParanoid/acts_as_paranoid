@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class AssociationsTest < ParanoidBaseTest
   def test_removal_with_associations
@@ -44,13 +44,13 @@ class AssociationsTest < ParanoidBaseTest
 
     assert_equal includes_values, paranoid_has_many_dependant.association(:paranoid_time_with_scope).scope.includes_values
 
-    paranoid_time = ParanoidTime.create(name: 'not-hello')
+    paranoid_time = ParanoidTime.create(name: "not-hello")
     paranoid_has_many_dependant.paranoid_time = paranoid_time
     paranoid_has_many_dependant.save!
 
     assert_nil paranoid_has_many_dependant.paranoid_time_with_scope
 
-    paranoid_time.update(name: 'hello')
+    paranoid_time.update(name: "hello")
 
     paranoid_has_many_dependant.reload
 
@@ -70,13 +70,13 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal includes_values, paranoid_has_many_dependant
       .association(:paranoid_time_with_scope_with_deleted).scope.includes_values
 
-    paranoid_time = ParanoidTime.create(name: 'not-hello')
+    paranoid_time = ParanoidTime.create(name: "not-hello")
     paranoid_has_many_dependant.paranoid_time = paranoid_time
     paranoid_has_many_dependant.save!
 
     assert_nil paranoid_has_many_dependant.paranoid_time_with_scope_with_deleted
 
-    paranoid_time.update(name: 'hello')
+    paranoid_time.update(name: "hello")
     paranoid_has_many_dependant.reload
 
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_scope_with_deleted
@@ -89,7 +89,7 @@ class AssociationsTest < ParanoidBaseTest
 
   def test_belongs_to_with_deleted
     paranoid_time = ParanoidTime.first
-    paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(name: 'dependant!')
+    paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(name: "dependant!")
 
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
@@ -103,7 +103,7 @@ class AssociationsTest < ParanoidBaseTest
 
   def test_belongs_to_polymorphic_with_deleted
     paranoid_time = ParanoidTime.first
-    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(name: 'dependant!', paranoid_time_polymorphic_with_deleted: paranoid_time)
+    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(name: "dependant!", paranoid_time_polymorphic_with_deleted: paranoid_time)
 
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
@@ -116,7 +116,7 @@ class AssociationsTest < ParanoidBaseTest
 
   def test_belongs_to_nil_polymorphic_with_deleted
     paranoid_time = ParanoidTime.first
-    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(name: 'dependant!', paranoid_time_polymorphic_with_deleted: nil)
+    paranoid_has_many_dependant = ParanoidHasManyDependant.create!(name: "dependant!", paranoid_time_polymorphic_with_deleted: nil)
 
     assert_nil paranoid_has_many_dependant.paranoid_time
     assert_nil paranoid_has_many_dependant.paranoid_time_polymorphic_with_deleted
@@ -184,7 +184,7 @@ class AssociationsTest < ParanoidBaseTest
 
   def test_includes_with_deleted
     paranoid_time = ParanoidTime.first
-    paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(name: 'dependant!')
+    paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants.create(name: "dependant!")
 
     paranoid_time.destroy
 
@@ -194,10 +194,10 @@ class AssociationsTest < ParanoidBaseTest
   end
 
   def test_includes_with_deleted_with_polymorphic_parent
-    not_paranoid_parent = NotParanoidHasManyAsParent.create(name: 'not paranoid parent')
-    paranoid_parent = ParanoidHasManyAsParent.create(name: 'paranoid parent')
-    ParanoidBelongsToPolymorphic.create(name: 'belongs_to', parent: not_paranoid_parent)
-    ParanoidBelongsToPolymorphic.create(name: 'belongs_to', parent: paranoid_parent)
+    not_paranoid_parent = NotParanoidHasManyAsParent.create(name: "not paranoid parent")
+    paranoid_parent = ParanoidHasManyAsParent.create(name: "paranoid parent")
+    ParanoidBelongsToPolymorphic.create(name: "belongs_to", parent: not_paranoid_parent)
+    ParanoidBelongsToPolymorphic.create(name: "belongs_to", parent: paranoid_parent)
 
     paranoid_parent.destroy
 
@@ -316,12 +316,12 @@ class AssociationsTest < ParanoidBaseTest
   end
 
   def test_mass_assignment_of_paranoid_column_enabled
-    if Gem.loaded_specs['activerecord'].version >= Gem::Version.new('5.2.0')
-      skip 'Creation as deleted is not supported with Rails >= 5.2'
+    if Gem.loaded_specs["activerecord"].version >= Gem::Version.new("5.2.0")
+      skip "Creation as deleted is not supported with Rails >= 5.2"
     end
     now = Time.now
-    record = ParanoidTime.create! name: 'Foo', deleted_at: now
-    assert_equal 'Foo', record.name
+    record = ParanoidTime.create! name: "Foo", deleted_at: now
+    assert_equal "Foo", record.name
     assert_equal now, record.deleted_at
   end
 end

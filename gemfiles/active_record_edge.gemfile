@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-github 'rails/rails' do
-  gem 'activerecord', require: 'active_record'
-  gem 'activesupport', require: 'active_support'
+github "rails/rails" do
+  gem "activerecord", require: "active_record"
+  gem "activesupport", require: "active_support"
 end
 
 # Development dependencies
@@ -13,6 +13,6 @@ group :development do
   gem "activerecord-jdbcsqlite3-adapter", platforms: [:jruby]
 end
 
-gemspec path: '../'
+gemspec path: "../"
 
 gem "arel", github: "rails/arel"

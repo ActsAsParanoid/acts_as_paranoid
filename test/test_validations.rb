@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class ValidatesUniquenessTest < ParanoidBaseTest
   def test_should_include_deleted_by_default
-    ParanoidTime.new(name: 'paranoid').tap do |record|
+    ParanoidTime.new(name: "paranoid").tap do |record|
       assert !record.valid?
       ParanoidTime.first.destroy
       assert !record.valid?
@@ -14,7 +14,7 @@ class ValidatesUniquenessTest < ParanoidBaseTest
   end
 
   def test_should_validate_without_deleted
-    ParanoidBoolean.new(name: 'paranoid').tap do |record|
+    ParanoidBoolean.new(name: "paranoid").tap do |record|
       refute record.valid?
       ParanoidBoolean.first.destroy
       assert record.valid?

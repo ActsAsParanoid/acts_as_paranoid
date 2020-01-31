@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class RelationsTest < ParanoidBaseTest
   def setup
@@ -13,10 +13,10 @@ class RelationsTest < ParanoidBaseTest
     assert_equal 3, ParanoidForest.count
     assert_equal 2, ParanoidForest.rainforest.count
 
-    @paranoid_forest_1.paranoid_trees.create! name: 'ParanoidTree #1'
-    @paranoid_forest_1.paranoid_trees.create! name: 'ParanoidTree #2'
-    @paranoid_forest_2.paranoid_trees.create! name: 'ParanoidTree #3'
-    @paranoid_forest_2.paranoid_trees.create! name: 'ParanoidTree #4'
+    @paranoid_forest_1.paranoid_trees.create! name: "ParanoidTree #1"
+    @paranoid_forest_1.paranoid_trees.create! name: "ParanoidTree #2"
+    @paranoid_forest_2.paranoid_trees.create! name: "ParanoidTree #3"
+    @paranoid_forest_2.paranoid_trees.create! name: "ParanoidTree #4"
 
     assert_equal 4, ParanoidTree.count
   end

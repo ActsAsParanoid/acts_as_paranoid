@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'bundler'
+require "bundler"
 begin
   Bundler.require(:default, :development)
 rescue Bundler::BundlerError => e
@@ -9,8 +9,8 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 
-require 'acts_as_paranoid'
-require 'minitest/autorun'
+require "acts_as_paranoid"
+require "minitest/autorun"
 
 # Silence deprecation halfway through the test
 I18n.enforce_available_locales = true
@@ -114,14 +114,14 @@ def setup_db
 
     create_table :super_paranoids do |t|
       t.string :type
-      t.references :has_many_inherited_super_paranoidz, index: { name: 'index__sp_id_on_has_many_isp' }
+      t.references :has_many_inherited_super_paranoidz, index: { name: "index__sp_id_on_has_many_isp" }
       t.datetime :deleted_at
 
       timestamps t
     end
 
     create_table :has_many_inherited_super_paranoidzs do |t|
-      t.references :super_paranoidz, index: { name: 'index_has_many_isp_on_sp_id' }
+      t.references :super_paranoidz, index: { name: "index_has_many_isp_on_sp_id" }
       t.datetime :deleted_at
 
       timestamps t
@@ -309,10 +309,10 @@ end
 class ParanoidHasManyDependant < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :paranoid_time
-  belongs_to :paranoid_time_with_scope, -> { where(name: 'hello').includes(:not_paranoid) }, class_name: 'ParanoidTime', foreign_key: :paranoid_time_id
-  belongs_to :paranoid_time_with_deleted, class_name: 'ParanoidTime', foreign_key: :paranoid_time_id, with_deleted: true
-  belongs_to :paranoid_time_with_scope_with_deleted, -> { where(name: 'hello').includes(:not_paranoid) }, class_name: 'ParanoidTime', foreign_key: :paranoid_time_id, with_deleted: true
-  belongs_to :paranoid_time_polymorphic_with_deleted, class_name: 'ParanoidTime', foreign_key: :paranoid_time_id, polymorphic: true, with_deleted: true
+  belongs_to :paranoid_time_with_scope, -> { where(name: "hello").includes(:not_paranoid) }, class_name: "ParanoidTime", foreign_key: :paranoid_time_id
+  belongs_to :paranoid_time_with_deleted, class_name: "ParanoidTime", foreign_key: :paranoid_time_id, with_deleted: true
+  belongs_to :paranoid_time_with_scope_with_deleted, -> { where(name: "hello").includes(:not_paranoid) }, class_name: "ParanoidTime", foreign_key: :paranoid_time_id, with_deleted: true
+  belongs_to :paranoid_time_polymorphic_with_deleted, class_name: "ParanoidTime", foreign_key: :paranoid_time_id, polymorphic: true, with_deleted: true
 
   belongs_to :paranoid_belongs_dependant, dependent: :destroy
 end
@@ -495,7 +495,7 @@ end
 
 class ParanoidPolygon < ActiveRecord::Base
   acts_as_paranoid
-  default_scope { where('sides = ?', 3) }
+  default_scope { where("sides = ?", 3) }
 end
 
 class ParanoidAndroid < ActiveRecord::Base
@@ -509,7 +509,7 @@ class ParanoidSection < ActiveRecord::Base
 end
 
 class ParanoidBooleanNotNullable < ActiveRecord::Base
-  acts_as_paranoid column: 'deleted', column_type: 'boolean', allow_nulls: false
+  acts_as_paranoid column: "deleted", column_type: "boolean", allow_nulls: false
 end
 
 class ParanoidWithExplicitTableNameAfterMacro < ActiveRecord::Base

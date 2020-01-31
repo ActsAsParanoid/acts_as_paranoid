@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class ParanoidTest < ParanoidBaseTest
   def test_paranoid?
@@ -105,7 +105,7 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_recovery!
     ParanoidBoolean.first.destroy
-    ParanoidBoolean.create(name: 'paranoid')
+    ParanoidBoolean.create(name: "paranoid")
 
     assert_raise do
       ParanoidBoolean.only_deleted.first.recover!
@@ -129,7 +129,7 @@ class ParanoidTest < ParanoidBaseTest
 
     # Create one extra ParanoidHasManyDependant record so that we can validate
     # the correct dependants are recovered.
-    ParanoidTime.where('id <> ?', @paranoid_time_object.id).first.paranoid_has_many_dependants.create(name: "should not be recovered").destroy
+    ParanoidTime.where("id <> ?", @paranoid_time_object.id).first.paranoid_has_many_dependants.create(name: "should not be recovered").destroy
 
     @paranoid_boolean_count = ParanoidBoolean.count
 
@@ -453,40 +453,40 @@ class ParanoidTest < ParanoidBaseTest
 
   # Test string type columns that don't have a nil value when not deleted (Y/N for example)
   def test_string_type_with_no_nil_value_before_destroy
-    ps = ParanoidString.create!(deleted: 'not dead')
+    ps = ParanoidString.create!(deleted: "not dead")
     assert_equal 1, ParanoidString.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_after_destroy
-    ps = ParanoidString.create!(deleted: 'not dead')
+    ps = ParanoidString.create!(deleted: "not dead")
     ps.destroy
     assert_equal 0, ParanoidString.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_before_destroy_with_deleted
-    ps = ParanoidString.create!(deleted: 'not dead')
+    ps = ParanoidString.create!(deleted: "not dead")
     assert_equal 1, ParanoidString.with_deleted.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_after_destroy_with_deleted
-    ps = ParanoidString.create!(deleted: 'not dead')
+    ps = ParanoidString.create!(deleted: "not dead")
     ps.destroy
     assert_equal 1, ParanoidString.with_deleted.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_before_destroy_only_deleted
-    ps = ParanoidString.create!(deleted: 'not dead')
+    ps = ParanoidString.create!(deleted: "not dead")
     assert_equal 0, ParanoidString.only_deleted.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_after_destroy_only_deleted
-    ps = ParanoidString.create!(deleted: 'not dead')
+    ps = ParanoidString.create!(deleted: "not dead")
     ps.destroy
     assert_equal 1, ParanoidString.only_deleted.where(id: ps).count
   end
 
   def test_string_type_with_no_nil_value_after_destroyed_twice
-    ps = ParanoidString.create!(deleted: 'not dead')
+    ps = ParanoidString.create!(deleted: "not dead")
     2.times { ps.destroy }
     assert_equal 0, ParanoidString.with_deleted.where(id: ps).count
   end

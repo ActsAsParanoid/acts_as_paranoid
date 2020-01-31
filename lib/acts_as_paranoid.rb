@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'acts_as_paranoid/core'
-require 'acts_as_paranoid/associations'
-require 'acts_as_paranoid/validations'
-require 'acts_as_paranoid/relation'
+require "acts_as_paranoid/core"
+require "acts_as_paranoid/associations"
+require "acts_as_paranoid/validations"
+require "acts_as_paranoid/relation"
 
 module ActsAsParanoid
 
@@ -25,7 +25,7 @@ module ActsAsParanoid
     self.paranoid_configuration.merge!({ allow_nulls: true }) if options[:column_type] == "boolean"
     self.paranoid_configuration.merge!(options) # user options
 
-    raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean', 'string'].include? paranoid_configuration[:column_type]
+    raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ["time", "boolean", "string"].include? paranoid_configuration[:column_type]
 
     def self.paranoid_column_reference
       "#{self.table_name}.#{paranoid_configuration[:column]}"
@@ -38,7 +38,7 @@ module ActsAsParanoid
     # Magic!
     default_scope { where(paranoid_default_scope) }
 
-    if paranoid_configuration[:column_type] == 'time'
+    if paranoid_configuration[:column_type] == "time"
       scope :deleted_inside_time_window, lambda {|time, window|
         deleted_after_time((time - window)).deleted_before_time((time + window))
       }
