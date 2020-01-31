@@ -26,6 +26,7 @@ jobs:
       gemfile: gemfiles/active_record_52.gemfile
     - stage: rubocop
       script: bundle exec rake rubocop
+      gemfile: Gemfile
       rvm: 2.6.5
   fast_finish: true
 
