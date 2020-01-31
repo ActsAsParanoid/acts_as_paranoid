@@ -1,5 +1,10 @@
 inherit_from: .rubocop_todo.yml
 
+# Exclude any vendored gems
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+
 # Be lenient with line length
 Layout/LineLength:
   Max: 92
