@@ -110,6 +110,18 @@ class ParanoidTest < ParanoidBaseTest
     end
   end
 
+  # Rails does not allow saving deleted records
+  def test_no_save_after_destroy
+    paranoid = ParanoidString.first
+    paranoid.destroy
+    paranoid.name = "Let's update!"
+
+    assert_not paranoid.save
+    assert_raises ActiveRecord::RecordNotSaved do
+      paranoid.save!
+    end
+  end
+
   def setup_recursive_tests
     @paranoid_time_object = ParanoidTime.first
 
