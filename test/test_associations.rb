@@ -161,6 +161,25 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
   end
 
+  def test_join_with_model_with_deleted
+    obj = ParanoidHasManyDependant.create(paranoid_time: ParanoidTime.create)
+    assert_not_nil obj.paranoid_time
+    assert_not_nil obj.paranoid_time_with_deleted
+
+    obj.paranoid_time.destroy
+    obj.reload
+
+    assert_nil obj.paranoid_time
+    assert_not_nil obj.paranoid_time_with_deleted
+
+    # Note that obj is destroyed because of dependent: :destroy in ParanoidTime
+    assert obj.destroyed?
+
+    assert_empty ParanoidHasManyDependant.with_deleted.joins(:paranoid_time)
+    assert_equal [obj],
+      ParanoidHasManyDependant.with_deleted.joins(:paranoid_time_with_deleted)
+  end
+
   def test_cannot_find_a_paranoid_deleted_many_many_association
     left = ParanoidManyManyParentLeft.create
     right = ParanoidManyManyParentRight.create
