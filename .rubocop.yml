@@ -19,6 +19,14 @@ Layout/MultilineMethodCallIndentation:
 Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
+# Enable new cops
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
+
 # In guard clauses, if ! is often more immediately clear
 Style/NegatedIf:
   Enabled: false
