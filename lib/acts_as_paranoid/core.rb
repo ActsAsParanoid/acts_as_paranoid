@@ -209,7 +209,11 @@ module ActsAsParanoid
       self.class.dependent_associations.each do |reflection|
         next unless (klass = get_reflection_class(reflection)).paranoid?
 
-        scope = public_send(reflection.name).only_deleted
+        scope = if reflection.is_a?(ActiveRecord::Reflection::HasManyReflection)
+                  public_send(reflection.name).only_deleted
+                else
+                  klass.only_deleted.merge(get_association_scope(reflection: reflection))
+                end
 
         # We can only recover by window if both parent and dependant have a
         # paranoid column type of :time.
