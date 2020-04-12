@@ -15,6 +15,10 @@ namespace :test do
   versions.each do |version|
     desc "Test acts_as_paranoid against #{version}"
     task version do
+      if ENV["RUBYOPT"] =~ %r{bundler/setup}
+        raise "Do not run the test:#{version} task with bundle exec!"
+      end
+
       sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle install --quiet"
       sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle exec rake -t test"
     end
