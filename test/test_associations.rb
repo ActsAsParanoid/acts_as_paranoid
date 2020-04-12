@@ -199,8 +199,7 @@ class AssociationsTest < ParanoidBaseTest
 
   def test_includes_with_deleted
     paranoid_time = ParanoidTime.first
-    paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants
-      .create(name: "dependant!")
+    paranoid_time.paranoid_has_many_dependants.create(name: "dependant!")
 
     paranoid_time.destroy
 

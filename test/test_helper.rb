@@ -286,7 +286,13 @@ end
 
 class DoubleHasOneNotParanoid < HasOneNotParanoid
   belongs_to :paranoid_time, with_deleted: true
-  belongs_to :paranoid_time, with_deleted: true
+  begin
+    verbose = $VERBOSE
+    $VERBOSE = false
+    belongs_to :paranoid_time, with_deleted: true
+  ensure
+    $VERBOSE = verbose
+  end
 end
 
 class ParanoidWithCounterCache < ActiveRecord::Base
