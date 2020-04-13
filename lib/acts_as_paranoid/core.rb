@@ -70,6 +70,10 @@ module ActsAsParanoid
         paranoid_configuration[:column_type].to_sym
       end
 
+      def paranoid_column_reference
+        "#{table_name}.#{paranoid_column}"
+      end
+
       def dependent_associations
         reflect_on_all_associations.select do |a|
           [:destroy, :delete_all].include?(a.options[:dependent])

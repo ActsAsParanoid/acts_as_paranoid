@@ -41,10 +41,6 @@ module ActsAsParanoid
         " for :column_type option, got #{paranoid_configuration[:column_type]}"
     end
 
-    def self.paranoid_column_reference
-      "#{table_name}.#{paranoid_configuration[:column]}"
-    end
-
     return if paranoid?
 
     include ActsAsParanoid::Core
