@@ -150,8 +150,8 @@ module ActsAsParanoid
             self
           end
         end
-      else
-        destroy_fully! if paranoid_configuration[:double_tap_destroys_fully]
+      elsif paranoid_configuration[:double_tap_destroys_fully]
+        destroy_fully!
       end
     end
 
@@ -217,13 +217,15 @@ module ActsAsParanoid
     end
 
     def deleted?
-      @destroyed || !if self.class.string_type_with_deleted_value?
-                       paranoid_value != self.class.delete_now_value || paranoid_value.nil?
-                     elsif self.class.boolean_type_not_nullable?
-                       paranoid_value == false
-                     else
-                       paranoid_value.nil?
-                     end
+      return true if @destroyed
+
+      if self.class.string_type_with_deleted_value?
+        paranoid_value == paranoid_configuration[:deleted_value]
+      elsif self.class.boolean_type_not_nullable?
+        paranoid_value == true
+      else
+        !paranoid_value.nil?
+      end
     end
 
     alias destroyed? deleted?
