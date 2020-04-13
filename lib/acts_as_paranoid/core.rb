@@ -90,6 +90,19 @@ module ActsAsParanoid
 
       protected
 
+      def define_deleted_time_scopes
+        scope :deleted_inside_time_window, lambda { |time, window|
+          deleted_after_time((time - window)).deleted_before_time((time + window))
+        }
+
+        scope :deleted_after_time, lambda { |time|
+          where("#{table_name}.#{paranoid_column} > ?", time)
+        }
+        scope :deleted_before_time, lambda { |time|
+          where("#{table_name}.#{paranoid_column} < ?", time)
+        }
+      end
+
       def without_paranoid_default_scope
         scope = all
 

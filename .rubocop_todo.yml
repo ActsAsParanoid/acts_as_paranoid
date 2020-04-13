@@ -67,13 +67,6 @@ Style/Documentation:
     - 'lib/acts_as_paranoid/relation.rb'
     - 'lib/acts_as_paranoid/validations.rb'
 
-# Offense count: 2
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Exclude:
-    - 'lib/acts_as_paranoid.rb'
-    - 'lib/acts_as_paranoid/validations.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: AutoCorrect, EnforcedStyle, IgnoredMethods.

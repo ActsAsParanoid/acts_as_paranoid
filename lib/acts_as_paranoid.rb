@@ -48,18 +48,7 @@ module ActsAsParanoid
     # Magic!
     default_scope { where(paranoid_default_scope) }
 
-    if paranoid_configuration[:column_type] == "time"
-      scope :deleted_inside_time_window, lambda { |time, window|
-        deleted_after_time((time - window)).deleted_before_time((time + window))
-      }
-
-      scope :deleted_after_time, lambda { |time|
-                                   where("#{table_name}.#{paranoid_column} > ?", time)
-                                 }
-      scope :deleted_before_time, lambda { |time|
-                                    where("#{table_name}.#{paranoid_column} < ?", time)
-                                  }
-    end
+    define_deleted_time_scopes if paranoid_column_type == :time
   end
 end
 
