@@ -23,8 +23,10 @@ I18n.enforce_available_locales = true
 ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
 ActiveRecord::Schema.verbose = false
 
+# rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/MethodLength
 def setup_db
-  ActiveRecord::Schema.define(version: 1) do
+  ActiveRecord::Schema.define(version: 1) do # rubocop:disable Metrics/BlockLength
     create_table :paranoid_times do |t|
       t.string    :name
       t.datetime  :deleted_at
@@ -231,6 +233,8 @@ def setup_db
     end
   end
 end
+# rubocop:enable Metrics/AbcSize
+# rubocop:enable Metrics/MethodLength
 
 def timestamps(table)
   table.column  :created_at, :timestamp, null: false
