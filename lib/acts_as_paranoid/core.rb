@@ -70,6 +70,10 @@ module ActsAsParanoid
         paranoid_configuration[:column_type].to_sym
       end
 
+      def paranoid_column_reference
+        "#{table_name}.#{paranoid_column}"
+      end
+
       def dependent_associations
         reflect_on_all_associations.select do |a|
           [:destroy, :delete_all].include?(a.options[:dependent])
@@ -85,6 +89,19 @@ module ActsAsParanoid
       end
 
       protected
+
+      def define_deleted_time_scopes
+        scope :deleted_inside_time_window, lambda { |time, window|
+          deleted_after_time((time - window)).deleted_before_time((time + window))
+        }
+
+        scope :deleted_after_time, lambda { |time|
+          where("#{table_name}.#{paranoid_column} > ?", time)
+        }
+        scope :deleted_before_time, lambda { |time|
+          where("#{table_name}.#{paranoid_column} < ?", time)
+        }
+      end
 
       def without_paranoid_default_scope
         scope = all
@@ -150,8 +167,8 @@ module ActsAsParanoid
             self
           end
         end
-      else
-        destroy_fully! if paranoid_configuration[:double_tap_destroys_fully]
+      elsif paranoid_configuration[:double_tap_destroys_fully]
+        destroy_fully!
       end
     end
 
@@ -217,13 +234,15 @@ module ActsAsParanoid
     end
 
     def deleted?
-      @destroyed || !if self.class.string_type_with_deleted_value?
-                       paranoid_value != self.class.delete_now_value || paranoid_value.nil?
-                     elsif self.class.boolean_type_not_nullable?
-                       paranoid_value == false
-                     else
-                       paranoid_value.nil?
-                     end
+      return true if @destroyed
+
+      if self.class.string_type_with_deleted_value?
+        paranoid_value == paranoid_configuration[:deleted_value]
+      elsif self.class.boolean_type_not_nullable?
+        paranoid_value == true
+      else
+        !paranoid_value.nil?
+      end
     end
 
     alias destroyed? deleted?
@@ -256,7 +275,8 @@ module ActsAsParanoid
       return unless [:decrement_counter, :increment_counter].include? method_sym
 
       each_counter_cached_association_reflection do |assoc_reflection|
-        next unless associated_object = send(assoc_reflection.name)
+        associated_object = send(assoc_reflection.name)
+        next unless associated_object
 
         counter_cache_column = assoc_reflection.counter_cache_column
         associated_object.class.send(method_sym, counter_cache_column,

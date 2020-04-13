@@ -19,7 +19,13 @@ Layout/MultilineMethodCallIndentation:
 Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
-# Enable new cops
+# Enable new cops (RuboCop 0.81)
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
+
+# Enable new cops (RuboCop 0.80)
 Style/HashEachMethods:
   Enabled: true
 Style/HashTransformKeys:
