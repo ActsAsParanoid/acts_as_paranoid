@@ -258,7 +258,8 @@ module ActsAsParanoid
       return unless [:decrement_counter, :increment_counter].include? method_sym
 
       each_counter_cached_association_reflection do |assoc_reflection|
-        next unless associated_object = send(assoc_reflection.name)
+        associated_object = send(assoc_reflection.name)
+        next unless associated_object
 
         counter_cache_column = assoc_reflection.counter_cache_column
         associated_object.class.send(method_sym, counter_cache_column,
