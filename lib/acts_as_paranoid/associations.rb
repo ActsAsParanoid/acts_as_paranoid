@@ -39,7 +39,7 @@ module ActsAsParanoid
           end
         end
 
-        result = belongs_to_without_deleted(target, scope, options)
+        result = belongs_to_without_deleted(target, scope, **options)
 
         result.values.last.options[:with_deleted] = with_deleted if with_deleted
 
