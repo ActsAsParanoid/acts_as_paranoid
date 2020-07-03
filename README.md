@@ -246,11 +246,27 @@ p1.recover #=> fails validation!
 
 ### Status
 
-You can check the status of your paranoid objects with the `deleted?` helper
+A paranoid object could be deleted or destroyed fully. 
+
+You can check if the object is deleted with the `deleted?` helper
 
 ```ruby
 Paranoiac.create(name: 'foo').destroy
 Paranoiac.with_deleted.first.deleted? #=> true
+```
+
+After the first call to .destroy the object is deleted?
+
+You can check if the object is fully destroyed with destroyed_fully? or deleted_fully?. 
+
+```ruby
+Paranoiac.create(name: 'foo').destroy
+Paranoiac.with_deleted.first.deleted? #=> true
+Paranoiac.with_deleted.first.destroyed_fully? #=> false
+p1 = Paranoiac.with_deleted.first
+p1.destroy # this fully destroys the object
+p1.destroyed_fully? #=> true
+p1.deleted_fully? #=> true
 ```
 
 ### Scopes
