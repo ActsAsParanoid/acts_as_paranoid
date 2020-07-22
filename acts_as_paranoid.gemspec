@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rdoc"
-  spec.add_development_dependency "rubocop", "~> 0.85.1"
+  spec.add_development_dependency "rubocop", "~> 0.88.0"
   spec.add_development_dependency "simplecov", "~> 0.18.1"
 end
