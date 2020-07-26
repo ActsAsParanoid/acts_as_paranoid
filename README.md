@@ -343,7 +343,7 @@ There are couple of callbacks that you may use when dealing with deletion and
 recovery of objects. There is `before_recover` and `after_recover` which will
 be triggered before and after the recovery of an object respectively.
 
-Default ActiveRecord callbaks such as `before_destroy` and `after_destroy` will
+Default ActiveRecord callbacks such as `before_destroy` and `after_destroy` will
 be triggered around `.destroy!` and `.destroy_fully!`.
 
 ```ruby
