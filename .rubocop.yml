@@ -5,6 +5,7 @@ AllCops:
   Exclude:
     - 'vendor/**/*'
   NewCops: enable
+  TargetRubyVersion: 2.4
 
 # Be lenient with line length
 Layout/LineLength:
