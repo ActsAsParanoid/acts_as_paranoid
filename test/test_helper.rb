@@ -41,6 +41,7 @@ def setup_db
       t.boolean   :is_deleted
       t.integer   :paranoid_time_id
       t.integer   :paranoid_with_counter_caches_count
+      t.integer   :paranoid_with_touch_and_counter_caches_count
       t.integer   :custom_counter_cache
       timestamps t
     end
@@ -271,6 +272,8 @@ class ParanoidBoolean < ActiveRecord::Base
   has_one :paranoid_has_one_dependant, dependent: :destroy
   has_many :paranoid_with_counter_cache, dependent: :destroy
   has_many :paranoid_with_custom_counter_cache, dependent: :destroy
+  has_many :paranoid_with_touch_and_counter_cache, dependent: :destroy
+  has_many :paranoid_with_touch, dependent: :destroy
 end
 
 class ParanoidString < ActiveRecord::Base
@@ -320,6 +323,18 @@ class ParanoidWithCounterCacheOnOptionalBelognsTo < ActiveRecord::Base
   else
     belongs_to :paranoid_boolean, counter_cache: true, optional: true
   end
+end
+
+class ParanoidWithTouch < ActiveRecord::Base
+  self.table_name = "paranoid_with_counter_caches"
+  acts_as_paranoid
+  belongs_to :paranoid_boolean, touch: true
+end
+
+class ParanoidWithTouchAndCounterCache < ActiveRecord::Base
+  self.table_name = "paranoid_with_counter_caches"
+  acts_as_paranoid
+  belongs_to :paranoid_boolean, touch: true, counter_cache: true
 end
 
 class ParanoidHasManyDependant < ActiveRecord::Base
