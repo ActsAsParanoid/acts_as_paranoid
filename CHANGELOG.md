@@ -2,26 +2,36 @@
 
 Notable changes to this project will be documented in this file.
 
-## UNRELEASED
+## 0.7.0
 
-* Update RuboCop and its configuration ([#171], by [Matijs van Zuijlen][mvz])
-* Adding example with `destroyed_fully?` and `deleted_fully?` to the readme
-  ([#170], by [Kiril Mitov][thebravoman])
-* Updates version number instructions for installing gem ([#164], by [Kevin McAlear][kevinmcalear])
-* Update rubocop ([#163], by [Matijs van Zuijlen][mvz])
-* Fix ruby 2.7 keyword argument deprecation warning ([#161], by [Jon Riddle][wtfspm])
-* Use correct unscope syntax so unscope works on Rails Edge ([#160], by [Matijs van Zuijlen][mvz])
-* Update RuboCop and fix some offenses ([#159], by [Matijs van Zuijlen][mvz])
-* Simplify validation override ([#158], by [Matijs van Zuijlen][mvz])
-* Improve dev experience ([#157], by [Matijs van Zuijlen][mvz])
-* Silence warnings ([#156], by [Matijs van Zuijlen][mvz])
-* Update RuboCop ([#152], by [Matijs van Zuijlen][mvz])
-* Add SimpleCov ([#150], by [Matijs van Zuijlen][mvz])
-* Add rubocop ([#148], by [Matijs van Zuijlen][mvz])
-* Handle `with_deleted` association option as a scope ([#147], by [Matijs van Zuijlen][mvz])
-* Document save after destroy behavior ([#146], by [Matijs van Zuijlen][mvz])
-* Update set of supported rubies to 2.4-2.7 ([#144], by [Matijs van Zuijlen][mvz])
+### Breaking changes
+
 * Support Rails 5.2+ only ([#126], by [Daniel Rice][danielricecodes])
+* Update set of supported rubies to 2.4-2.7 ([#144], [#173] by [Matijs van Zuijlen][mvz])
+
+### Improvements
+
+* Handle `with_deleted` association option as a scope ([#147], by [Matijs van Zuijlen][mvz])
+* Simplify validation override ([#158], by [Matijs van Zuijlen][mvz])
+* Use correct unscope syntax so unscope works on Rails Edge ([#160],
+  by [Matijs van Zuijlen][mvz])
+* Fix ruby 2.7 keyword argument deprecation warning ([#161], by [Jon Riddle][wtfspm])
+
+### Documentation
+
+* Document save after destroy behavior ([#146], by [Matijs van Zuijlen][mvz])
+* Update version number instructions for installing gem ([#164],
+  by [Kevin McAlear][kevinmcalear])
+* Add example with `destroyed_fully?` and `deleted_fully?` to the readme ([#170],
+  by [Kiril Mitov][thebravoman])
+
+### Internal
+
+* Improve code quality using RuboCop ([#148], [#152], [#159], [#163], [#171] and [#173],
+  by [Matijs van Zuijlen][mvz])
+* Measure code coverage using SimpleCov ([#150] and [#175] by [Matijs van Zuijlen][mvz])
+* Silence warnings emitted during tests ([#156], by [Matijs van Zuijlen][mvz])
+* Make rake tasks more robust and intuitive ([#157], by [Matijs van Zuijlen][mvz])
 
 ## 0.6.3
 
@@ -75,6 +85,8 @@ Notable changes to this project will be documented in this file.
 
 <!-- issues & pull requests -->
 
+[#175]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/175
+[#173]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/173
 [#171]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/171
 [#170]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/170
 [#164]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/164
