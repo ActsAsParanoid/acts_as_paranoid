@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         ruby: [2.5, 2.6, 2.7, jruby-9.2]
-        gemfile: [active_record_52, active_record_60]
+        gemfile: [active_record_52, active_record_60, active_record_61]
         include:
           - ruby: 2.4
             gemfile: active_record_52
