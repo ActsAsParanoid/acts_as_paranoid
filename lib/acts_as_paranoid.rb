@@ -32,8 +32,12 @@ module ActsAsParanoid
     }
     if options[:column_type] == "string"
       paranoid_configuration.merge!(deleted_value: "deleted")
+    elsif options[:column_type] == "boolean" && !options[:allow_nulls]
+      paranoid_configuration.merge!(recovery_value: false)
+    elsif options[:column_type] == "boolean"
+      paranoid_configuration.merge!(allow_nulls: true)
     end
-    paranoid_configuration.merge!(allow_nulls: true) if options[:column_type] == "boolean"
+
     paranoid_configuration.merge!(options) # user options
 
     unless %w[time boolean string].include? paranoid_configuration[:column_type]
