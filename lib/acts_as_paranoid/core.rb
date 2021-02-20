@@ -138,7 +138,7 @@ module ActsAsParanoid
             # Handle composite keys, otherwise we would just use
             # `self.class.primary_key.to_sym => self.id`.
             self.class
-              .delete_all!(Hash[[Array(self.class.primary_key), Array(id)].transpose])
+              .delete_all!([Array(self.class.primary_key), Array(id)].transpose.to_h)
             decrement_counters_on_associations
           end
 
@@ -157,7 +157,7 @@ module ActsAsParanoid
               # Handle composite keys, otherwise we would just use
               # `self.class.primary_key.to_sym => self.id`.
               self.class
-                .delete_all(Hash[[Array(self.class.primary_key), Array(id)].transpose])
+                .delete_all([Array(self.class.primary_key), Array(id)].transpose.to_h)
               decrement_counters_on_associations
             end
 
