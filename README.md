@@ -255,9 +255,9 @@ Paranoiac.create(name: 'foo').destroy
 Paranoiac.with_deleted.first.deleted? #=> true
 ```
 
-After the first call to .destroy the object is deleted?
+After the first call to `.destroy` the object is `deleted?`.
 
-You can check if the object is fully destroyed with destroyed_fully? or deleted_fully?. 
+You can check if the object is fully destroyed with `destroyed_fully?` or `deleted_fully?`.
 
 ```ruby
 Paranoiac.create(name: 'foo').destroy
