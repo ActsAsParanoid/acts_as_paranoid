@@ -24,6 +24,7 @@ end
 
 require "acts_as_paranoid"
 require "minitest/autorun"
+require "minitest/focus"
 
 # Silence deprecation halfway through the test
 I18n.enforce_available_locales = true
