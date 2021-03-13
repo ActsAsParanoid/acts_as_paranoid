@@ -539,16 +539,18 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 1, ParanoidNoDoubleTapDestroysFully.with_deleted.where(id: ps).count
   end
 
-  def test_decrement_counters
+  def test_decrement_counters_without_touch
     paranoid_boolean = ParanoidBoolean.create!
     paranoid_with_counter_cache = ParanoidWithCounterCache
       .create!(paranoid_boolean: paranoid_boolean)
 
     assert_equal 1, paranoid_boolean.paranoid_with_counter_caches_count
+    updated_at = paranoid_boolean.reload.updated_at
 
     paranoid_with_counter_cache.destroy
 
     assert_equal 0, paranoid_boolean.reload.paranoid_with_counter_caches_count
+    assert_equal updated_at, paranoid_boolean.reload.updated_at
   end
 
   def test_decrement_custom_counters
@@ -563,7 +565,7 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 0, paranoid_boolean.reload.custom_counter_cache
   end
 
-  def test_decrement_counters_and_touch
+  def test_decrement_counters_with_touch
     paranoid_boolean = ParanoidBoolean.create!
     paranoid_with_counter_cache = ParanoidWithTouchAndCounterCache
       .create!(paranoid_boolean: paranoid_boolean)
