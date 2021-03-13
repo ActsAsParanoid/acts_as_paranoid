@@ -22,10 +22,6 @@ jobs:
           - ruby: 2.4
             gemfile: active_record_52
         exclude:
-          # Exclude combination of JRuby with ActiveRecord 6.1 until a compatible
-          # version of activerecord-jdbcsqlite3-adapter has been released.
-          - ruby: jruby-9.2
-            gemfile: active_record_61
           # Rails 5.2 does not support Ruby 3.0
           - ruby: "3.0"
             gemfile: active_record_52
