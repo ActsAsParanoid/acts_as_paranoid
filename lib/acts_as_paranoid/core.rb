@@ -272,8 +272,6 @@ module ActsAsParanoid
     end
 
     def update_counters_on_associations(method_sym)
-      return unless [:decrement_counter, :increment_counter].include? method_sym
-
       each_counter_cached_association_reflection do |assoc_reflection|
         associated_object = send(assoc_reflection.name)
         next unless associated_object
