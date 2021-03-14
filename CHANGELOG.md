@@ -2,6 +2,13 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.7.1
+
+* Support Rails 6.1 ([#191], by [Matijs van Zuijlen][mvz])
+* Support `belongs_to` with both `:touch` and `:counter_cache` options ([#208],
+  by [Matijs van Zuijlen][mvz] with [Paul Druziak][pauldruziak])
+* Support Ruby 3.0 ([#209], by [Matijs van Zuijlen][mvz])
+
 ## 0.7.0
 
 ### Breaking changes
@@ -78,6 +85,7 @@ Notable changes to this project will be documented in this file.
 [mvz]: https://github.com/mvz
 [nedcampion]: https://github.com/nedcampion
 [ri4a]: https://github.com/ri4a
+[pauldruziak]: https://github.com/pauldruziak
 [shadydealer]: https://github.com/shadydealer
 [thebravoman]: https://github.com/thebravoman
 [valeriecodes]: https://github.com/valeriecodes
@@ -85,6 +93,9 @@ Notable changes to this project will be documented in this file.
 
 <!-- issues & pull requests -->
 
+[#209]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/209
+[#208]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/208
+[#191]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/191
 [#175]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/175
 [#173]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/173
 [#171]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/171
