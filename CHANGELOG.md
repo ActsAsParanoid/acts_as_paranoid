@@ -2,6 +2,12 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.7.2
+
+* Do not set boolean column to NULL on recovery if nulls are not allowed
+  ([#193], by [Shodai Suzuki][soartec-lab])
+* Add a CONTRIBUTING.md file ([#207], by [Matijs van Zuijlen][mvz])
+
 ## 0.7.1
 
 * Support Rails 6.1 ([#191], by [Matijs van Zuijlen][mvz])
@@ -87,6 +93,7 @@ Notable changes to this project will be documented in this file.
 [ri4a]: https://github.com/ri4a
 [pauldruziak]: https://github.com/pauldruziak
 [shadydealer]: https://github.com/shadydealer
+[soartec-lab]: https://github.com/soartec-lab
 [thebravoman]: https://github.com/thebravoman
 [valeriecodes]: https://github.com/valeriecodes
 [wtfspm]: https://github.com/wtfspm
@@ -95,6 +102,8 @@ Notable changes to this project will be documented in this file.
 
 [#209]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/209
 [#208]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/208
+[#207]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/207
+[#193]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/193
 [#191]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/191
 [#175]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/175
 [#173]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/173
