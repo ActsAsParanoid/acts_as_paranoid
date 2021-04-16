@@ -533,6 +533,24 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 0, ParanoidBooleanNotNullable.with_deleted.where(id: ps).count
   end
 
+  def test_boolean_type_with_no_nil_value_after_recover
+    ps = ParanoidBooleanNotNullable.create!
+    ps.destroy
+    assert_equal 1, ParanoidBooleanNotNullable.only_deleted.where(id: ps).count
+
+    ps.recover
+    assert_equal 1, ParanoidBooleanNotNullable.where(id: ps).count
+  end
+
+  def test_boolean_type_with_no_nil_value_after_recover!
+    ps = ParanoidBooleanNotNullable.create!
+    ps.destroy
+    assert_equal 1, ParanoidBooleanNotNullable.only_deleted.where(id: ps).count
+
+    ps.recover!
+    assert_equal 1, ParanoidBooleanNotNullable.where(id: ps).count
+  end
+
   def test_no_double_tap_destroys_fully
     ps = ParanoidNoDoubleTapDestroysFully.create!
     2.times { ps.destroy }
