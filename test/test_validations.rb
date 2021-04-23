@@ -23,6 +23,24 @@ class ValidatesUniquenessTest < ParanoidBaseTest
     end
   end
 
+  def test_validate_serialized_attribute_without_deleted
+    ParanoidWithSerializedColumn.create!(name: "ParanoidWithSerializedColumn #1",
+                                         colors: %w[Cyan Maroon])
+    record = ParanoidWithSerializedColumn.new(name: "ParanoidWithSerializedColumn #2")
+    record.colors = %w[Cyan Maroon]
+    refute record.valid?
+
+    record.colors = %w[Beige Turquoise]
+    assert record.valid?
+  end
+
+  def test_updated_serialized_attribute_validated_without_deleted
+    record = ParanoidWithSerializedColumn.create!(name: "ParanoidWithSerializedColumn #1",
+                                                  colors: %w[Cyan Maroon])
+    record.update!(colors: %w[Beige Turquoise])
+    assert record.valid?
+  end
+
   def test_models_with_scoped_validations_can_be_multiply_deleted
     model_a = ParanoidWithScopedValidation.create(name: "Model A", category: "Category A")
     model_b = ParanoidWithScopedValidation.create(name: "Model B", category: "Category B")

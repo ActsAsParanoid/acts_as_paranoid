@@ -241,6 +241,14 @@ def setup_db
 
       timestamps t
     end
+
+    create_table :paranoid_with_serialized_columns do |t|
+      t.string :name
+      t.datetime :deleted_at
+      t.string :colors
+
+      timestamps t
+    end
   end
 end
 # rubocop:enable Metrics/AbcSize
@@ -563,4 +571,13 @@ end
 class ParanoidWithExplicitTableNameAfterMacro < ActiveRecord::Base
   acts_as_paranoid
   self.table_name = "explicit_table"
+end
+
+class ParanoidWithSerializedColumn < ActiveRecord::Base
+  acts_as_paranoid
+  validates_as_paranoid
+
+  serialize :colors, Array
+
+  validates_uniqueness_of_without_deleted :colors
 end
