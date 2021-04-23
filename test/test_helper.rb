@@ -290,6 +290,7 @@ class ParanoidString < ActiveRecord::Base
 end
 
 class NotParanoid < ActiveRecord::Base
+  has_many :paranoid_times
 end
 
 class ParanoidNoDoubleTapDestroysFully < ActiveRecord::Base
