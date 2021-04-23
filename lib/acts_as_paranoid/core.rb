@@ -220,8 +220,13 @@ module ActsAsParanoid
           scope = scope.deleted_inside_time_window(paranoid_value, window)
         end
 
+        recovered = false
         scope.each do |object|
           object.recover(options)
+          recovered = true
+        end
+        if recovered && reflection.has_one?
+          send "reload_#{reflection.name}"
         end
       end
     end

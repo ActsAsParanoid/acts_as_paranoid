@@ -117,9 +117,11 @@ class ParanoidTest < ParanoidBaseTest
     child = parent.create_paranoid_has_one_dependant(name: "child")
 
     parent.destroy
-    assert child.destroyed?
+    assert parent.paranoid_has_one_dependant.destroyed?
 
     parent.recover
+    refute parent.paranoid_has_one_dependant.destroyed?
+
     child.reload
     refute child.destroyed?
   end
@@ -132,6 +134,8 @@ class ParanoidTest < ParanoidBaseTest
     assert child.destroyed?
 
     parent.recover
+    assert_equal 1, parent.paranoid_has_many_dependants.count
+
     child.reload
     refute child.destroyed?
   end
