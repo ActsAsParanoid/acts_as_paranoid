@@ -209,9 +209,10 @@ module ActsAsParanoid
 
     def recover_dependent_associations(window, options)
       self.class.dependent_associations.each do |reflection|
-        next unless (klass = get_reflection_class(reflection)).paranoid?
+        assoc = association(reflection.name)
+        next unless (klass = assoc.klass).paranoid?
 
-        scope = klass.only_deleted.merge(get_association_scope(reflection: reflection))
+        scope = klass.only_deleted.merge(get_association_scope(assoc))
 
         # We can only recover by window if both parent and dependant have a
         # paranoid column type of :time.
@@ -227,10 +228,11 @@ module ActsAsParanoid
 
     def destroy_dependent_associations!
       self.class.dependent_associations.each do |reflection|
-        next unless (klass = get_reflection_class(reflection)).paranoid?
+        assoc = association(reflection.name)
+        next unless (klass = assoc.klass).paranoid?
 
         klass
-          .only_deleted.merge(get_association_scope(reflection: reflection))
+          .only_deleted.merge(get_association_scope(assoc))
           .each(&:destroy!)
       end
     end
@@ -257,12 +259,8 @@ module ActsAsParanoid
 
     private
 
-    def get_association_scope(reflection:)
-      ActiveRecord::Associations::AssociationScope.scope(association(reflection.name))
-    end
-
-    def get_reflection_class(reflection)
-      association(reflection.name).klass
+    def get_association_scope(dependent_association)
+      ActiveRecord::Associations::AssociationScope.scope(dependent_association)
     end
 
     def paranoid_value=(value)
