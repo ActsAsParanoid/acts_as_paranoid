@@ -225,9 +225,8 @@ module ActsAsParanoid
           object.recover(options)
           recovered = true
         end
-        if recovered && reflection.has_one?
-          send "reload_#{reflection.name}"
-        end
+
+        assoc.reload if recovered && reflection.has_one? && assoc.loaded?
       end
     end
 
