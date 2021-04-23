@@ -21,6 +21,11 @@ Layout/MultilineMethodCallIndentation:
 Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
+# Allow test classes to have any length
+Metrics/ClassLength:
+  Exclude:
+    - 'test/**/*'
+
 # In guard clauses, if ! is often more immediately clear
 Style/NegatedIf:
   Enabled: false
