@@ -88,6 +88,16 @@ class RelationsTest < ParanoidBaseTest
     assert_equal 2, @paranoid_forest_2.paranoid_trees.with_deleted.count
   end
 
+  def test_fake_removal_through_has_many_relation_of_non_paranoid_model
+    not_paranoid = NotParanoid.create! name: "NotParanoid #1"
+    not_paranoid.paranoid_times.create! name: "ParanoidTime #1"
+    not_paranoid.paranoid_times.create! name: "ParanoidTime #2"
+
+    not_paranoid.paranoid_times.destroy_all
+    assert_equal 0, not_paranoid.paranoid_times.count
+    assert_equal 2, not_paranoid.paranoid_times.with_deleted.count
+  end
+
   def test_real_removal_through_relation_with_destroy_bang
     # Relation.destroy!: aliased to delete
     ParanoidForest.rainforest.destroy!(@paranoid_forest_3)
