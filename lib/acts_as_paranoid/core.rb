@@ -262,11 +262,7 @@ module ActsAsParanoid
     end
 
     def get_reflection_class(reflection)
-      if reflection.macro == :belongs_to && reflection.options.include?(:polymorphic)
-        send(reflection.foreign_type).constantize
-      else
-        reflection.klass
-      end
+      association(reflection.name).klass
     end
 
     def paranoid_value=(value)
