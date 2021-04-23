@@ -96,10 +96,12 @@ module ActsAsParanoid
         }
 
         scope :deleted_after_time, lambda { |time|
-          where("#{table_name}.#{paranoid_column} > ?", time)
+          only_deleted
+            .where("#{table_name}.#{paranoid_column} > ?", time)
         }
         scope :deleted_before_time, lambda { |time|
-          where("#{table_name}.#{paranoid_column} < ?", time)
+          only_deleted
+            .where("#{table_name}.#{paranoid_column} < ?", time)
         }
       end
 

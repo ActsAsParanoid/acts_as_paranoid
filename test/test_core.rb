@@ -676,4 +676,26 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal "explicit_table.deleted_at", ParanoidWithExplicitTableNameAfterMacro
       .paranoid_column_reference
   end
+
+  def test_deleted_after_time
+    ParanoidTime.first.destroy
+    assert_equal 0, ParanoidTime.deleted_after_time(1.hour.from_now).count
+    assert_equal 1, ParanoidTime.deleted_after_time(1.hour.ago).count
+  end
+
+  def test_deleted_before_time
+    ParanoidTime.first.destroy
+    assert_equal 1, ParanoidTime.deleted_before_time(1.hour.from_now).count
+    assert_equal 0, ParanoidTime.deleted_before_time(1.hour.ago).count
+  end
+
+  def test_deleted_inside_time_window
+    ParanoidTime.first.destroy
+    assert_equal 1, ParanoidTime.deleted_inside_time_window(1.minute.ago, 2.minutes).count
+    assert_equal 1,
+                 ParanoidTime.deleted_inside_time_window(1.minute.from_now, 2.minutes).count
+    assert_equal 0, ParanoidTime.deleted_inside_time_window(3.minutes.ago, 1.minute).count
+    assert_equal 0,
+                 ParanoidTime.deleted_inside_time_window(3.minutes.from_now, 1.minute).count
+  end
 end
