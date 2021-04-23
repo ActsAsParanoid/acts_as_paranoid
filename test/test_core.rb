@@ -112,6 +112,30 @@ class ParanoidTest < ParanoidBaseTest
     end
   end
 
+  def test_recover_has_one_association
+    parent = ParanoidBoolean.create(name: "parent")
+    child = parent.create_paranoid_has_one_dependant(name: "child")
+
+    parent.destroy
+    assert child.destroyed?
+
+    parent.recover
+    child.reload
+    refute child.destroyed?
+  end
+
+  def test_recover_has_many_association
+    parent = ParanoidTime.create(name: "parent")
+    child = parent.paranoid_has_many_dependants.create(name: "child")
+
+    parent.destroy
+    assert child.destroyed?
+
+    parent.recover
+    child.reload
+    refute child.destroyed?
+  end
+
   # Rails does not allow saving deleted records
   def test_no_save_after_destroy
     paranoid = ParanoidString.first
