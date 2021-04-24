@@ -209,28 +209,7 @@ module ActsAsParanoid
 
     def recover_dependent_associations(window, options)
       self.class.dependent_associations.each do |reflection|
-        assoc = association(reflection.name)
-        next unless (klass = assoc.klass).paranoid?
-
-        if reflection.belongs_to? && attributes[reflection.association_foreign_key].nil?
-          next
-        end
-
-        scope = klass.only_deleted.merge(get_association_scope(assoc))
-
-        # We can only recover by window if both parent and dependant have a
-        # paranoid column type of :time.
-        if self.class.paranoid_column_type == :time && klass.paranoid_column_type == :time
-          scope = scope.deleted_inside_time_window(paranoid_value, window)
-        end
-
-        recovered = false
-        scope.each do |object|
-          object.recover(options)
-          recovered = true
-        end
-
-        assoc.reload if recovered && reflection.has_one? && assoc.loaded?
+        recover_dependent_association(reflection, window, options)
       end
     end
 
@@ -266,6 +245,31 @@ module ActsAsParanoid
     alias destroyed_fully? deleted_fully?
 
     private
+
+    def recover_dependent_association(reflection, window, options)
+      assoc = association(reflection.name)
+      return unless (klass = assoc.klass).paranoid?
+
+      if reflection.belongs_to? && attributes[reflection.association_foreign_key].nil?
+        return
+      end
+
+      scope = klass.only_deleted.merge(get_association_scope(assoc))
+
+      # We can only recover by window if both parent and dependant have a
+      # paranoid column type of :time.
+      if self.class.paranoid_column_type == :time && klass.paranoid_column_type == :time
+        scope = scope.deleted_inside_time_window(paranoid_value, window)
+      end
+
+      recovered = false
+      scope.each do |object|
+        object.recover(options)
+        recovered = true
+      end
+
+      assoc.reload if recovered && reflection.has_one? && assoc.loaded?
+    end
 
     def get_association_scope(dependent_association)
       ActiveRecord::Associations::AssociationScope.scope(dependent_association)
