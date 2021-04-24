@@ -156,9 +156,8 @@ class RelationsTest < ActiveSupport::TestCase
     assert_equal 2, not_paranoid.paranoid_chocolates.with_deleted.count
   end
 
-  def test_real_removal_through_relation_with_destroy_bang
-    # Relation.destroy!: aliased to delete
-    ParanoidForest.rainforest.destroy!(@paranoid_forest_3)
+  def test_real_removal_through_relation_with_destroy_fully
+    ParanoidForest.rainforest.destroy_fully!(@paranoid_forest_3)
     assert_equal 1, ParanoidForest.rainforest.count
     assert_equal 1, ParanoidForest.rainforest.with_deleted.count
     assert_equal 0, ParanoidForest.rainforest.only_deleted.count

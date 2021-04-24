@@ -29,7 +29,7 @@ module ActsAsParanoid
           end
         end
 
-        def destroy!(id_or_array)
+        def destroy_fully!(id_or_array)
           where(primary_key => id_or_array).orig_delete_all
         end
       end
