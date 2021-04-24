@@ -32,6 +32,11 @@ I18n.enforce_available_locales = true
 ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
 ActiveRecord::Schema.verbose = false
 
+log_dir = File.expand_path("../log/", __dir__)
+FileUtils.mkdir_p log_dir
+file_path = File.join(log_dir, "test.log")
+ActiveRecord::Base.logger = Logger.new(file_path)
+
 # rubocop:disable Metrics/AbcSize
 # rubocop:disable Metrics/MethodLength
 def setup_db
@@ -535,8 +540,6 @@ end
 
 class ParanoidForest < ActiveRecord::Base
   acts_as_paranoid
-
-  ActiveRecord::Base.logger = Logger.new(StringIO.new)
 
   scope :rainforest, -> { where(rainforest: true) }
 

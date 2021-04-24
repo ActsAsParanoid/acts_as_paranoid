@@ -6,3 +6,4 @@ gemfiles/*.lock
 .idea/
 .ruby-version
 coverage/
+log/
