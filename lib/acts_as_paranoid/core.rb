@@ -212,6 +212,10 @@ module ActsAsParanoid
         assoc = association(reflection.name)
         next unless (klass = assoc.klass).paranoid?
 
+        if reflection.belongs_to? && attributes[reflection.association_foreign_key].nil?
+          next
+        end
+
         scope = klass.only_deleted.merge(get_association_scope(assoc))
 
         # We can only recover by window if both parent and dependant have a
