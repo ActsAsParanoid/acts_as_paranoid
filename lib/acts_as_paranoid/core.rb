@@ -88,6 +88,19 @@ module ActsAsParanoid
         end
       end
 
+      def recovery_value
+        if paranoid_configuration.key? :recovery_value
+          ActiveSupport::Deprecation.warn \
+            "The recovery_value setting is deprecated and will be removed in" \
+            " ActsAsParanoid 0.8.0"
+          paranoid_configuration[:recovery_value]
+        elsif boolean_type_not_nullable?
+          false
+        else
+          nil
+        end
+      end
+
       protected
 
       def define_deleted_time_scopes
@@ -189,7 +202,7 @@ module ActsAsParanoid
         run_callbacks :recover do
           increment_counters_on_associations
           deleted_value = paranoid_value
-          self.paranoid_value = self.class.paranoid_configuration[:recovery_value]
+          self.paranoid_value = self.class.recovery_value
           result = if options[:raise_error]
                      save!
                    else
