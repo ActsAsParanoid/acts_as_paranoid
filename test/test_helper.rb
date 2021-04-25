@@ -174,22 +174,6 @@ def setup_db
       timestamps t
     end
 
-    create_table :paranoid_forests do |t|
-      t.string   :name
-      t.boolean  :rainforest
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
-    create_table :paranoid_trees do |t|
-      t.integer  :paranoid_forest_id
-      t.string   :name
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
     create_table :paranoid_polygons do |t|
       t.integer :sides
       t.datetime :deleted_at
@@ -536,20 +520,6 @@ class ParanoidBaseTest < ActiveSupport::TestCase
     # puts sql here if you want to debug
     model.class.connection.select_one(sql)
   end
-end
-
-class ParanoidForest < ActiveRecord::Base
-  acts_as_paranoid
-
-  scope :rainforest, -> { where(rainforest: true) }
-
-  has_many :paranoid_trees, dependent: :destroy
-end
-
-class ParanoidTree < ActiveRecord::Base
-  acts_as_paranoid
-  belongs_to :paranoid_forest
-  validates_presence_of :name
 end
 
 class ParanoidPolygon < ActiveRecord::Base
