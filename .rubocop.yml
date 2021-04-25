@@ -26,6 +26,11 @@ Metrics/ClassLength:
   Exclude:
     - 'test/**/*'
 
+# Allow test methods to have any length
+Metrics/MethodLength:
+  Exclude:
+    - 'test/**/*'
+
 # In guard clauses, if ! is often more immediately clear
 Style/NegatedIf:
   Enabled: false

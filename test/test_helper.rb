@@ -38,7 +38,6 @@ file_path = File.join(log_dir, "test.log")
 ActiveRecord::Base.logger = Logger.new(file_path)
 
 # rubocop:disable Metrics/AbcSize
-# rubocop:disable Metrics/MethodLength
 def setup_db
   ActiveRecord::Schema.define(version: 1) do # rubocop:disable Metrics/BlockLength
     create_table :paranoid_times do |t|
@@ -240,9 +239,8 @@ def setup_db
     end
   end
 end
-# rubocop:enable Metrics/AbcSize
-# rubocop:enable Metrics/MethodLength
 
+# rubocop:enable Metrics/AbcSize
 def timestamps(table)
   table.column  :created_at, :timestamp, null: false
   table.column  :updated_at, :timestamp, null: false
