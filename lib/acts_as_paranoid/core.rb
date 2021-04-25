@@ -187,16 +187,16 @@ module ActsAsParanoid
 
       self.class.transaction do
         run_callbacks :recover do
-          if options[:recursive]
-            recover_dependent_associations(options[:recovery_window], options)
-          end
           increment_counters_on_associations
+          deleted_value = paranoid_value
           self.paranoid_value = self.class.paranoid_configuration[:recovery_value]
-          if options[:raise_error]
-            save!
-          else
-            save
-          end
+          result = if options[:raise_error]
+                     save!
+                   else
+                     save
+                   end
+          recover_dependent_associations(deleted_value, options) if options[:recursive]
+          result
         end
       end
     end
@@ -207,9 +207,9 @@ module ActsAsParanoid
       recover(options)
     end
 
-    def recover_dependent_associations(window, options)
+    def recover_dependent_associations(deleted_value, options)
       self.class.dependent_associations.each do |reflection|
-        recover_dependent_association(reflection, window, options)
+        recover_dependent_association(reflection, deleted_value, options)
       end
     end
 
@@ -246,7 +246,7 @@ module ActsAsParanoid
 
     private
 
-    def recover_dependent_association(reflection, window, options)
+    def recover_dependent_association(reflection, deleted_value, options)
       assoc = association(reflection.name)
       return unless (klass = assoc.klass).paranoid?
 
@@ -259,7 +259,7 @@ module ActsAsParanoid
       # We can only recover by window if both parent and dependant have a
       # paranoid column type of :time.
       if self.class.paranoid_column_type == :time && klass.paranoid_column_type == :time
-        scope = scope.deleted_inside_time_window(paranoid_value, window)
+        scope = scope.deleted_inside_time_window(deleted_value, options[:recovery_window])
       end
 
       recovered = false
