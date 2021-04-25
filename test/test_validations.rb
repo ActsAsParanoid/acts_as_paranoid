@@ -5,9 +5,9 @@ require "test_helper"
 class ValidatesUniquenessTest < ParanoidBaseTest
   def test_should_include_deleted_by_default
     ParanoidTime.new(name: "paranoid").tap do |record|
-      assert !record.valid?
+      refute record.valid?
       ParanoidTime.first.destroy
-      assert !record.valid?
+      refute record.valid?
       ParanoidTime.only_deleted.first.destroy!
       assert record.valid?
     end
