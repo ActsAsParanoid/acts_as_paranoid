@@ -31,6 +31,10 @@ Metrics/MethodLength:
   Exclude:
     - 'test/**/*'
 
+# Allow else clauses with explicit nil value
+Style/EmptyElse:
+  EnforcedStyle: empty
+
 # In guard clauses, if ! is often more immediately clear
 Style/NegatedIf:
   Enabled: false
