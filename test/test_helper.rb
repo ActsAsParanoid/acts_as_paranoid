@@ -38,7 +38,6 @@ file_path = File.join(log_dir, "test.log")
 ActiveRecord::Base.logger = Logger.new(file_path)
 
 # rubocop:disable Metrics/AbcSize
-# rubocop:disable Metrics/MethodLength
 def setup_db
   ActiveRecord::Schema.define(version: 1) do # rubocop:disable Metrics/BlockLength
     create_table :paranoid_times do |t|
@@ -174,22 +173,6 @@ def setup_db
       timestamps t
     end
 
-    create_table :paranoid_forests do |t|
-      t.string   :name
-      t.boolean  :rainforest
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
-    create_table :paranoid_trees do |t|
-      t.integer  :paranoid_forest_id
-      t.string   :name
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
     create_table :paranoid_polygons do |t|
       t.integer :sides
       t.datetime :deleted_at
@@ -256,9 +239,8 @@ def setup_db
     end
   end
 end
-# rubocop:enable Metrics/AbcSize
-# rubocop:enable Metrics/MethodLength
 
+# rubocop:enable Metrics/AbcSize
 def timestamps(table)
   table.column  :created_at, :timestamp, null: false
   table.column  :updated_at, :timestamp, null: false
@@ -536,20 +518,6 @@ class ParanoidBaseTest < ActiveSupport::TestCase
     # puts sql here if you want to debug
     model.class.connection.select_one(sql)
   end
-end
-
-class ParanoidForest < ActiveRecord::Base
-  acts_as_paranoid
-
-  scope :rainforest, -> { where(rainforest: true) }
-
-  has_many :paranoid_trees, dependent: :destroy
-end
-
-class ParanoidTree < ActiveRecord::Base
-  acts_as_paranoid
-  belongs_to :paranoid_forest
-  validates_presence_of :name
 end
 
 class ParanoidPolygon < ActiveRecord::Base

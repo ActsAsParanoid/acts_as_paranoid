@@ -2,9 +2,16 @@
 
 require "test_helper"
 
-class MultipleDefaultScopesTest < ParanoidBaseTest
+class MultipleDefaultScopesTest < ActiveSupport::TestCase
   def setup
-    setup_db
+    ActiveRecord::Schema.define(version: 1) do
+      create_table :paranoid_polygons do |t|
+        t.integer :sides
+        t.datetime :deleted_at
+
+        timestamps t
+      end
+    end
 
     ParanoidPolygon.create! sides: 3
     ParanoidPolygon.create! sides: 3
@@ -13,6 +20,10 @@ class MultipleDefaultScopesTest < ParanoidBaseTest
 
     assert_equal 3, ParanoidPolygon.count
     assert_equal 4, ParanoidPolygon.unscoped.count
+  end
+
+  def teardown
+    teardown_db
   end
 
   def test_fake_removal_with_multiple_default_scope
