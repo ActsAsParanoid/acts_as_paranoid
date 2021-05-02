@@ -2,6 +2,27 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.7.3
+
+## Improvements
+
+* Fix deletion time scopes ([#212] by [Matijs van Zuijlen][mvz])
+* Reload `has_one` associations after dependent recovery ([#214],
+  by [Matijs van Zuijlen][mvz])
+* Make dependent recovery work when parent is non-optional ([#227],
+  by [Matijs van Zuijlen][mvz])
+* Avoid querying nil `belongs_to` associations when recovering ([#219],
+  by [Matijs van Zuijlen][mvz])
+* On relations, deprecate `destroy!` in favour of `destroy_fully!` ([#222],
+  by [Matijs van Zuijlen][mvz])
+* Deprecate the undocumented `:recovery_value` setting. Calculate the correct
+  value instead. ([#220], by [Matijs van Zuijlen][mvz])
+
+## Developer experience
+
+* Log ActiveRecord activity to a visible log during tests ([#218],
+  by [Matijs van Zuijlen][mvz])
+
 ## 0.7.2
 
 * Do not set boolean column to NULL on recovery if nulls are not allowed
@@ -100,6 +121,13 @@ Notable changes to this project will be documented in this file.
 
 <!-- issues & pull requests -->
 
+[#227]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/227
+[#222]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/222
+[#220]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/220
+[#219]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/219
+[#218]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/218
+[#214]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/214
+[#212]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/212
 [#209]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/209
 [#208]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/208
 [#207]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/207
