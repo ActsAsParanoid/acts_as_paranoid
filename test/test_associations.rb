@@ -112,6 +112,21 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
   end
 
+  def test_building_belongs_to_associations
+    paranoid_has_many_dependant = ParanoidHasManyDependant.new
+    paranoid_time = ParanoidTime.new(paranoid_has_many_dependants: [paranoid_has_many_dependant])
+
+    # This test works
+    assert_equal paranoid_time.paranoid_has_many_dependants.first.paranoid_time, paranoid_time
+
+    # The following tests all fail
+    assert_equal paranoid_time.paranoid_has_many_dependants.first.paranoid_time_with_scope, paranoid_time
+    assert_equal paranoid_time.paranoid_has_many_dependants.first.paranoid_time_with_deleted, paranoid_time
+    assert_equal paranoid_time.paranoid_has_many_dependants.first.paranoid_time_with_scope_with_deleted, paranoid_time
+    assert_equal paranoid_time.paranoid_has_many_dependants.first.paranoid_time_polymorphic_with_deleted, paranoid_time
+    assert_equal paranoid_time.paranoid_has_many_dependants.first.paranoid_belongs_dependant, paranoid_time
+  end
+
   def test_belongs_to_polymorphic_with_deleted
     paranoid_time = ParanoidTime.first
     paranoid_has_many_dependant = ParanoidHasManyDependant
