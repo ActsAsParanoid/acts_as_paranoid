@@ -733,4 +733,24 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 0,
                  ParanoidTime.deleted_inside_time_window(3.minutes.from_now, 1.minute).count
   end
+
+  def test_configure_default_configuration
+    Rails.application.config.acts_as_paranoid_default_options = {
+      column: "test_column_name",
+      double_tap_destroys_fully: false,
+    }
+
+    temporary_paranoiac = Class.new(ActiveRecord::Base) do
+      acts_as_paranoid
+    end
+
+    expected_default_options = {
+      column_type: "time",
+      column: "test_column_name",
+      dependent_recovery_window: 2.minutes,
+      double_tap_destroys_fully: false,
+      recover_dependent_associations: true,
+    }
+    assert_equal expected_default_options, temporary_paranoiac.paranoid_configuration
+  end
 end
