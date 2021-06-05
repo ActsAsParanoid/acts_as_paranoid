@@ -179,7 +179,7 @@ class AssociationsTest < ParanoidBaseTest
 
     parent.reload
 
-    assert_equal [], parent.paranoid_has_many_dependants.to_a
+    assert_empty parent.paranoid_has_many_dependants.to_a
     assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
   end
 
@@ -236,8 +236,8 @@ class AssociationsTest < ParanoidBaseTest
 
     left.reload
 
-    assert_equal [], left.paranoid_many_many_children, "Linking objects not deleted"
-    assert_equal [], left.paranoid_many_many_parent_rights,
+    assert_empty left.paranoid_many_many_children, "Linking objects not deleted"
+    assert_empty left.paranoid_many_many_parent_rights,
                  "Associated objects not unlinked"
     assert_equal right, ParanoidManyManyParentRight.find(right.id),
                  "Associated object deleted"
@@ -252,8 +252,8 @@ class AssociationsTest < ParanoidBaseTest
 
     left.reload
 
-    assert_equal [], left.paranoid_many_many_children, "Linking objects not deleted"
-    assert_equal [], left.paranoid_many_many_parent_rights,
+    assert_empty left.paranoid_many_many_children, "Linking objects not deleted"
+    assert_empty left.paranoid_many_many_parent_rights,
                  "Associated objects not unlinked"
     assert_equal right, ParanoidManyManyParentRight.find(right.id),
                  "Associated object deleted"
@@ -270,7 +270,7 @@ class AssociationsTest < ParanoidBaseTest
 
     left.reload
 
-    assert_equal [], left.paranoid_many_many_parent_rights, "Associated objects not deleted"
+    assert_empty left.paranoid_many_many_parent_rights, "Associated objects not deleted"
   end
 
   def test_cannot_find_a_paranoid_deleted_model

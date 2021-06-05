@@ -4,7 +4,7 @@ require "test_helper"
 
 class ParanoidTest < ParanoidBaseTest
   def test_paranoid?
-    assert !NotParanoid.paranoid?
+    refute NotParanoid.paranoid?
     assert_raise(NoMethodError) { NotParanoid.delete_all! }
     assert_raise(NoMethodError) { NotParanoid.with_deleted }
     assert_raise(NoMethodError) { NotParanoid.only_deleted }
@@ -13,13 +13,13 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_scope_inclusion_with_time_column_type
-    assert ParanoidTime.respond_to?(:deleted_inside_time_window)
-    assert ParanoidTime.respond_to?(:deleted_before_time)
-    assert ParanoidTime.respond_to?(:deleted_after_time)
+    assert_respond_to ParanoidTime, :deleted_inside_time_window
+    assert_respond_to ParanoidTime, :deleted_before_time
+    assert_respond_to ParanoidTime, :deleted_after_time
 
-    assert !ParanoidBoolean.respond_to?(:deleted_inside_time_window)
-    assert !ParanoidBoolean.respond_to?(:deleted_before_time)
-    assert !ParanoidBoolean.respond_to?(:deleted_after_time)
+    refute_respond_to ParanoidBoolean, :deleted_inside_time_window
+    refute_respond_to ParanoidBoolean, :deleted_before_time
+    refute_respond_to ParanoidBoolean, :deleted_after_time
   end
 
   def test_fake_removal

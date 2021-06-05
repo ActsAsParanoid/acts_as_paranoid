@@ -498,10 +498,6 @@ class ParanoidBaseTest < ActiveSupport::TestCase
     teardown_db
   end
 
-  def assert_empty(collection)
-    assert(collection.respond_to?(:empty?) && collection.empty?)
-  end
-
   def assert_paranoid_deletion(model)
     row = find_row(model)
     assert_not_nil row, "#{model.class} entirely deleted"
