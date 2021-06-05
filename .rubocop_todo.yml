@@ -29,7 +29,20 @@ Metrics/ModuleLength:
 
 # Configuration parameters: IgnoredMethods.
 Metrics/PerceivedComplexity:
-  Max: 11
+  Max: 10
+
+Minitest/AssertionInLifecycleHook:
+  Exclude:
+    - 'test/test_default_scopes.rb'
+    - 'test/test_relations.rb'
+
+Minitest/MultipleAssertions:
+  Max: 16
+
+# Cop supports --auto-correct.
+Minitest/TestMethodName:
+  Exclude:
+    - 'test/test_core.rb'
 
 # Configuration parameters: EnforcedStyle, CheckMethodNames, CheckSymbols, AllowedIdentifiers.
 # SupportedStyles: snake_case, normalcase, non_integer
