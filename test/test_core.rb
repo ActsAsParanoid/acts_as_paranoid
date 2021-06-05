@@ -17,9 +17,9 @@ class ParanoidTest < ParanoidBaseTest
     assert_respond_to ParanoidTime, :deleted_before_time
     assert_respond_to ParanoidTime, :deleted_after_time
 
-    refute ParanoidBoolean.respond_to?(:deleted_inside_time_window)
-    refute ParanoidBoolean.respond_to?(:deleted_before_time)
-    refute ParanoidBoolean.respond_to?(:deleted_after_time)
+    refute_respond_to ParanoidBoolean, :deleted_inside_time_window
+    refute_respond_to ParanoidBoolean, :deleted_before_time
+    refute_respond_to ParanoidBoolean, :deleted_after_time
   end
 
   def test_fake_removal
