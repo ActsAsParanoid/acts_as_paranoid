@@ -13,9 +13,9 @@ class ParanoidTest < ParanoidBaseTest
   end
 
   def test_scope_inclusion_with_time_column_type
-    assert ParanoidTime.respond_to?(:deleted_inside_time_window)
-    assert ParanoidTime.respond_to?(:deleted_before_time)
-    assert ParanoidTime.respond_to?(:deleted_after_time)
+    assert_respond_to ParanoidTime, :deleted_inside_time_window
+    assert_respond_to ParanoidTime, :deleted_before_time
+    assert_respond_to ParanoidTime, :deleted_after_time
 
     refute ParanoidBoolean.respond_to?(:deleted_inside_time_window)
     refute ParanoidBoolean.respond_to?(:deleted_before_time)
