@@ -219,23 +219,6 @@ module ActsAsParanoid
       recover(options)
     end
 
-    def recover_dependent_associations(deleted_value, options)
-      self.class.dependent_associations.each do |reflection|
-        recover_dependent_association(reflection, deleted_value, options)
-      end
-    end
-
-    def destroy_dependent_associations!
-      self.class.dependent_associations.each do |reflection|
-        assoc = association(reflection.name)
-        next unless (klass = assoc.klass).paranoid?
-
-        klass
-          .only_deleted.merge(get_association_scope(assoc))
-          .each(&:destroy!)
-      end
-    end
-
     def deleted?
       return true if @destroyed
 
@@ -257,6 +240,23 @@ module ActsAsParanoid
     alias destroyed_fully? deleted_fully?
 
     private
+
+    def recover_dependent_associations(deleted_value, options)
+      self.class.dependent_associations.each do |reflection|
+        recover_dependent_association(reflection, deleted_value, options)
+      end
+    end
+
+    def destroy_dependent_associations!
+      self.class.dependent_associations.each do |reflection|
+        assoc = association(reflection.name)
+        next unless (klass = assoc.klass).paranoid?
+
+        klass
+          .only_deleted.merge(get_association_scope(assoc))
+          .each(&:destroy!)
+      end
+    end
 
     def recover_dependent_association(reflection, deleted_value, options)
       assoc = association(reflection.name)
