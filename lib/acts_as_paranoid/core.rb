@@ -121,7 +121,13 @@ module ActsAsParanoid
       def without_paranoid_default_scope
         scope = all
 
+        # unscope avoids applying the default scope when using this scope for associations
         scope = scope.unscope(where: paranoid_column)
+
+        paranoid_where_clause =
+          ActiveRecord::Relation::WhereClause.new([paranoid_default_scope])
+
+        scope.where_clause = all.where_clause - paranoid_where_clause
 
         scope
       end

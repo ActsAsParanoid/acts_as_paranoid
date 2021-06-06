@@ -174,6 +174,30 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 3, ParanoidBoolean.with_deleted.with_deleted.count
   end
 
+  def test_only_deleted_with_deleted_with_boolean_paranoid_column
+    ParanoidBoolean.first.destroy
+    assert_equal 1, ParanoidBoolean.only_deleted.count
+    assert_equal 1, ParanoidBoolean.only_deleted.with_deleted.count
+  end
+
+  def test_with_deleted_only_deleted_with_boolean_paranoid_column
+    ParanoidBoolean.first.destroy
+    assert_equal 1, ParanoidBoolean.only_deleted.count
+    assert_equal 1, ParanoidBoolean.with_deleted.only_deleted.count
+  end
+
+  def test_only_deleted_with_deleted_with_datetime_paranoid_column
+    ParanoidTime.first.destroy
+    assert_equal 1, ParanoidTime.only_deleted.count
+    assert_equal 1, ParanoidTime.only_deleted.with_deleted.count
+  end
+
+  def test_with_deleted_only_deleted_with_datetime_paranoid_column
+    ParanoidTime.first.destroy
+    assert_equal 1, ParanoidTime.only_deleted.count
+    assert_equal 1, ParanoidTime.with_deleted.only_deleted.count
+  end
+
   def setup_recursive_tests
     @paranoid_time_object = ParanoidTime.first
 
