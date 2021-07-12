@@ -85,6 +85,14 @@ class ParanoidTest < ParanoidBaseTest
     assert_not_nil pt.paranoid_value
   end
 
+  def test_halted_destroy
+    pt = ParanoidTime.create!(name: "john", destroyable: false)
+
+    assert_raises ActiveRecord::RecordNotDestroyed do
+      pt.destroy!
+    end
+  end
+
   def test_non_persisted_destroy_fully!
     pt = ParanoidTime.new
     assert_nil pt.paranoid_value

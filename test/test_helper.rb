@@ -265,6 +265,18 @@ class ParanoidTime < ActiveRecord::Base
   has_one :has_one_not_paranoid, dependent: :destroy
 
   belongs_to :not_paranoid, dependent: :destroy
+
+  attr_accessor :destroyable
+
+  before_destroy :ensure_destroyable
+
+  protected
+
+  def ensure_destroyable
+    return if destroyable.nil?
+
+    throw(:abort) unless destroyable
+  end
 end
 
 class ParanoidBoolean < ActiveRecord::Base
