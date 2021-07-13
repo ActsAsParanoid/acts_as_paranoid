@@ -163,7 +163,7 @@ module ActsAsParanoid
       end
     end
 
-    def destroy!
+    def destroy!(raise_error=true)
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
@@ -181,7 +181,7 @@ module ActsAsParanoid
             self
           end.tap do |result|
             # If the callback chain was halted, returns false. Otherwise returns the result of the block, nil if no callbacks have been set, or true if callbacks have been set but no block is given.
-            if result == false
+            if raise_error && (result == false)
               raise ActiveRecord::RecordNotDestroyed.new("Failed to destroy the record", self)
             end
           end
@@ -191,7 +191,9 @@ module ActsAsParanoid
       end
     end
 
-    alias destroy destroy!
+    def destroy
+      destroy!(false)
+    end
 
     def recover(options = {})
       return if !deleted?
