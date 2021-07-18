@@ -12,7 +12,7 @@ AllCops:
 
 # Be lenient with line length
 Layout/LineLength:
-  Max: 98
+  Max: 92
 
 # Multi-line method calls should be simply indented. Aligning them makes it
 # even harder to keep a sane line length.
