@@ -164,6 +164,12 @@ module ActsAsParanoid
     end
 
     def destroy!
+      destroy || raise(
+        ActiveRecord::RecordNotDestroyed.new("Failed to destroy the record", self)
+      )
+    end
+
+    def destroy
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
@@ -185,8 +191,6 @@ module ActsAsParanoid
         destroy_fully!
       end
     end
-
-    alias destroy destroy!
 
     def recover(options = {})
       return if !deleted?
