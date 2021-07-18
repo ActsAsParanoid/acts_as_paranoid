@@ -122,8 +122,6 @@ module ActsAsParanoid
         scope = all
 
         scope = scope.unscope(where: paranoid_column)
-        # Fix problems with unscope group chain
-        scope = scope.unscoped if scope.to_sql.include? paranoid_default_scope.to_sql
 
         scope
       end
