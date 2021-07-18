@@ -164,7 +164,9 @@ module ActsAsParanoid
     end
 
     def destroy!
-      destroy || raise(ActiveRecord::RecordNotDestroyed.new("Failed to destroy the record", self))
+      destroy || raise(
+        ActiveRecord::RecordNotDestroyed.new("Failed to destroy the record", self)
+      )
     end
 
     def destroy
