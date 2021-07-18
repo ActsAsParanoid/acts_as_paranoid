@@ -335,11 +335,7 @@ class ParanoidWithCounterCacheOnOptionalBelognsTo < ActiveRecord::Base
   self.table_name = "paranoid_with_counter_caches"
 
   acts_as_paranoid
-  if ActiveRecord::VERSION::MAJOR < 5
-    belongs_to :paranoid_boolean, counter_cache: true, required: false
-  else
-    belongs_to :paranoid_boolean, counter_cache: true, optional: true
-  end
+  belongs_to :paranoid_boolean, counter_cache: true, optional: true
 end
 
 class ParanoidWithTouch < ActiveRecord::Base
