@@ -26,6 +26,22 @@ class MultipleDefaultScopesTest < ActiveSupport::TestCase
     teardown_db
   end
 
+  def test_only_deleted_with_deleted_with_multiple_default_scope
+    3.times { ParanoidPolygon.create! sides: 3 }
+    ParanoidPolygon.create! sides: 8
+    ParanoidPolygon.first.destroy
+    assert_equal 1, ParanoidPolygon.only_deleted.count
+    assert_equal 1, ParanoidPolygon.only_deleted.with_deleted.count
+  end
+
+  def test_with_deleted_only_deleted_with_multiple_default_scope
+    3.times { ParanoidPolygon.create! sides: 3 }
+    ParanoidPolygon.create! sides: 8
+    ParanoidPolygon.first.destroy
+    assert_equal 1, ParanoidPolygon.only_deleted.count
+    assert_equal 1, ParanoidPolygon.with_deleted.only_deleted.count
+  end
+
   def test_fake_removal_with_multiple_default_scope
     ParanoidPolygon.first.destroy
     assert_equal 2, ParanoidPolygon.count
