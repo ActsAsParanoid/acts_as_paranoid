@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.homepage    = "https://github.com/ActsAsParanoid/acts_as_paranoid"
   spec.license     = "MIT"
 
-  spec.required_ruby_version = ">= 2.4.0"
+  spec.required_ruby_version = ">= 2.5.0"
 
   spec.files         = Dir["{lib}/**/*.rb", "LICENSE", "*.md"]
   spec.test_files    = Dir["test/*.rb"]
