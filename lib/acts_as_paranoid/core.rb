@@ -89,12 +89,7 @@ module ActsAsParanoid
       end
 
       def recovery_value
-        if paranoid_configuration.key? :recovery_value
-          ActiveSupport::Deprecation.warn \
-            "The recovery_value setting is deprecated and will be removed in" \
-            " ActsAsParanoid 0.8.0"
-          paranoid_configuration[:recovery_value]
-        elsif boolean_type_not_nullable?
+        if boolean_type_not_nullable?
           false
         else
           nil
