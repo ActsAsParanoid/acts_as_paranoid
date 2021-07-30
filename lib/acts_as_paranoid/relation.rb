@@ -29,13 +29,6 @@ module ActsAsParanoid
           end
         end
 
-        def destroy!(id_or_array)
-          destroy_fully! id_or_array
-        end
-
-        deprecate :destroy!,
-                  deprecator: ActiveSupport::Deprecation.new("0.8.0", "ActsAsParanoid")
-
         def destroy_fully!(id_or_array)
           where(primary_key => id_or_array).orig_delete_all
         end
