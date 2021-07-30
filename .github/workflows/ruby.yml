@@ -18,10 +18,6 @@ jobs:
       matrix:
         ruby: [2.5, 2.6, 2.7, "3.0", jruby-9.2]
         gemfile: [active_record_52, active_record_60, active_record_61]
-        include:
-          # Only Rails 5.2 supports Ruby 2.4
-          - ruby: 2.4
-            gemfile: active_record_52
         exclude:
           # Rails 5.2 does not support Ruby 3.0
           - ruby: "3.0"
