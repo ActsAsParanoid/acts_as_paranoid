@@ -163,13 +163,6 @@ class RelationsTest < ActiveSupport::TestCase
     assert_equal 0, ParanoidForest.rainforest.only_deleted.count
   end
 
-  def test_real_removal_through_relation_with_deprecated_destroy!
-    ParanoidForest.rainforest.destroy!(@paranoid_forest_3)
-    assert_equal 1, ParanoidForest.rainforest.count
-    assert_equal 1, ParanoidForest.rainforest.with_deleted.count
-    assert_equal 0, ParanoidForest.rainforest.only_deleted.count
-  end
-
   def test_two_step_real_removal_through_relation_with_destroy
     # destroy: two-step through a relation
     paranoid_tree = @paranoid_forest_1.paranoid_trees.first
