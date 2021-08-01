@@ -36,8 +36,9 @@ module ActsAsParanoid
     paranoid_configuration.merge!(options) # user options
 
     unless %w[time boolean string].include? paranoid_configuration[:column_type]
-      raise ArgumentError, "'time', 'boolean' or 'string' expected" \
-        " for :column_type option, got #{paranoid_configuration[:column_type]}"
+      raise ArgumentError,
+            "'time', 'boolean' or 'string' expected for :column_type option," \
+            " got #{paranoid_configuration[:column_type]}"
     end
 
     return if paranoid?
