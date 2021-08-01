@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors     = ["Zachary Scott", "Goncalo Silva", "Rick Olson"]
   spec.email       = ["e@zzak.io"]
   spec.summary     = "Active Record plugin which allows you to hide and restore" \
-    " records without actually deleting them."
+                     " records without actually deleting them."
   spec.description = "Check the home page for more in-depth information."
   spec.homepage    = "https://github.com/ActsAsParanoid/acts_as_paranoid"
   spec.license     = "MIT"
