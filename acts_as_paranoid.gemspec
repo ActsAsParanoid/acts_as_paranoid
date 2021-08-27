@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rdoc"
-  spec.add_development_dependency "rubocop", "~> 1.19.0"
+  spec.add_development_dependency "rubocop", "~> 1.20.0"
   spec.add_development_dependency "rubocop-minitest", "~> 0.15.0"
   spec.add_development_dependency "simplecov", [">= 0.18.1", "< 0.22.0"]
 end
