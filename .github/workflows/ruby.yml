@@ -12,11 +12,12 @@ on:
 
 jobs:
   test:
+
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        ruby: [2.5, 2.6, 2.7, "3.0", jruby-9.2]
+        ruby: [2.6, 2.7, "3.0", jruby-9.3]
         gemfile: [active_record_52, active_record_60, active_record_61]
         exclude:
           # Rails 5.2 does not support Ruby 3.0
@@ -54,6 +55,7 @@ jobs:
         run: bundle exec rake test
 
   rubocop:
+
     runs-on: ubuntu-latest
 
     steps:
