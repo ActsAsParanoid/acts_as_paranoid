@@ -5,10 +5,10 @@ help the process of handling issues and pull requests go smoothly.
 
 ## Issues
 
-When creating an issue, please try to provide as much information as possible.
-Also, please follow the guidelines below to make it easier for us to figure out
-what's going on. If you miss any of these points we will probably ask you to
-improve the ticket.
+When creating an issue, please provide as much information as possible, and
+follow the guidelines below to make it easier for us to figure out what's going
+on. If you miss any of these points we will probably ask you to improve the
+ticket.
 
 - Include a clear title describing the problem
 - Describe what you are trying to achieve
@@ -25,17 +25,16 @@ GitHub issue for it before trying to implement it yourself. That way, we can
 discuss the feature and whether it makes sense to include in ActsAsParanoid itself
 before putting in the work to implement it.
 
-If you want to send pull requests or patches, try to follow the instructions
-below. **If you get stuck, please make a pull request anyway and we'll try to
+To send pull requests or patches, please follow the instructions below.
+**If you get stuck, please make a pull request anyway and we'll try to
 help out.**
 
 - Make sure `rake test` runs without reporting any failures.
 - Add tests for your feature. Otherwise, we can't see if it works or if we
   break it later.
-- Make sure latest master merges cleanly with your branch. Things might
-  have moved around since you forked.
-- Try not to include changes that are irrelevant to your feature in the
-  same commit.
+- Create a separate branch for your feature based off of latest master.
+- Do not include changes that are irrelevant to your feature in the same
+  commit.
 - Keep an eye on the build results in GitHub Actions. If the build fails and it
   seems due to your changes, please update your pull request with a fix.
 
