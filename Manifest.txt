@@ -1,0 +1,10 @@
+lib/acts_as_paranoid.rb
+lib/acts_as_paranoid/associations.rb
+lib/acts_as_paranoid/core.rb
+lib/acts_as_paranoid/relation.rb
+lib/acts_as_paranoid/validations.rb
+lib/acts_as_paranoid/version.rb
+LICENSE
+CHANGELOG.md
+CONTRIBUTING.md
+README.md

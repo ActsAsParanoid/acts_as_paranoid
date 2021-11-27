@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 require "bundler/gem_tasks"
-
+require "rake/manifest/task"
 require "rake/testtask"
 require "rdoc/task"
 require "rubocop/rake_task"
-
-gemspec = eval(File.read(Dir["*.gemspec"].first))
 
 namespace :test do
   versions = Dir["gemfiles/*.gemfile"]
@@ -45,15 +43,16 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include("lib/**/*.rb")
 end
 
-desc "Install gem locally"
-task install: :build do
-  system "gem install pkg/#{gemspec.name}-#{gemspec.version}"
-end
-
 desc "Clean automatically generated files"
 task :clean do
   FileUtils.rm_rf "pkg"
 end
 
-desc "Default: run unit tests"
-task default: "test:all"
+Rake::Manifest::Task.new do |t|
+  t.patterns = ["{lib}/**/*", "LICENSE", "*.md"]
+end
+
+task build: ["manifest:check"]
+
+desc "Default: run tests and check manifest"
+task default: ["test:all", "manifest:check"]
