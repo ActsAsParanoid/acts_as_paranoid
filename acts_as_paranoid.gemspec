@@ -18,7 +18,6 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir["{lib}/**/*.rb", "LICENSE", "*.md"]
-  spec.test_files = Dir["test/*.rb"]
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "activerecord", ">= 5.2", "< 7.0"
