@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "bundler/gem_tasks"
-
+require "rake/manifest/task"
 require "rake/testtask"
 require "rdoc/task"
 require "rubocop/rake_task"
@@ -48,5 +48,11 @@ task :clean do
   FileUtils.rm_rf "pkg"
 end
 
-desc "Default: run unit tests"
-task default: "test:all"
+Rake::Manifest::Task.new do |t|
+  t.patterns = ["{lib}/**/*", "LICENSE", "*.md"]
+end
+
+task build: ["manifest:check"]
+
+desc "Default: run tests and check manifest"
+task default: ["test:all", "manifest:check"]

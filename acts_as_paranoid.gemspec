@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files = Dir["{lib}/**/*.rb", "LICENSE", "*.md"]
+  spec.files = File.read("Manifest.txt").split
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "activerecord", ">= 5.2", "< 7.0"
@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest-focus", "~> 1.3.0"
   spec.add_development_dependency "pry", "~> 0.14.1"
   spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "rake-manifest", "~> 0.2.0"
   spec.add_development_dependency "rdoc", "~> 6.3"
   spec.add_development_dependency "rubocop", "~> 1.22.0"
   spec.add_development_dependency "rubocop-minitest", "~> 0.17.0"
