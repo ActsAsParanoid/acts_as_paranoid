@@ -6,8 +6,6 @@ require "rake/testtask"
 require "rdoc/task"
 require "rubocop/rake_task"
 
-gemspec = eval(File.read(Dir["*.gemspec"].first))
-
 namespace :test do
   versions = Dir["gemfiles/*.gemfile"]
     .map { |gemfile_path| gemfile_path.split(%r{/|\.})[1] }
@@ -43,11 +41,6 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.options << "--line-numbers" << "--inline-source"
   rdoc.rdoc_files.include("README")
   rdoc.rdoc_files.include("lib/**/*.rb")
-end
-
-desc "Install gem locally"
-task install: :build do
-  system "gem install pkg/#{gemspec.name}-#{gemspec.version}"
 end
 
 desc "Clean automatically generated files"
