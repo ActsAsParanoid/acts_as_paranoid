@@ -25,6 +25,7 @@ jobs:
           # Rails 5.2 does not support Ruby 3.0
           - ruby: "3.0"
             gemfile: active_record_52
+          # Rails 7.0 does not support Ruby 2.6
           - ruby: 2.6
             gemfile: active_record_70
 
