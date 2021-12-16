@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.files = File.read("Manifest.txt").split
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "activerecord", ">= 5.2", "< 7.0"
+  spec.add_runtime_dependency "activerecord", ">= 5.2", "< 8.0"
   spec.add_runtime_dependency "activesupport", ">= 5.2", "< 7.0"
 
   spec.add_development_dependency "minitest", "~> 5.14"
