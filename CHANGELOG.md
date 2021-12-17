@@ -2,13 +2,16 @@
 
 Notable changes to this project will be documented in this file.
 
-## Upcoming
+## 0.8.0
 
 * Do not set `paranoid_value` when destroying fully ([#238], by [Aymeric Le Dorze][aymeric-ledorze])
 * Make helper methods for dependent associations private ([#239], by [Matijs van Zuijlen][mvz])
 * Raise ActiveRecord::RecordNotDestroyed if destroy returns false ([#240], by [Hao Liu][leomayleomay])
 * Make unscoping by `with_deleted` less blunt ([#241], by [Matijs van Zuijlen][mvz])
-* Drop support for Ruby 2.4 ([#243] by [Matijs van Zuijlen][mvz])
+* Drop support for Ruby 2.4 and 2.5 ([#243] and [#245] by [Matijs van Zuijlen][mvz])
+* Remove deprecated methods ([#244] by [Matijs van Zuijlen][mvz])
+* Remove test files from the gem ([#261] by [Matijs van Zuijlen][mvz])
+* Add support for Rails 7 ([#262] by [Vederis Leunardus][cloudsbird])
 
 ## 0.7.3
 
@@ -112,6 +115,7 @@ Notable changes to this project will be documented in this file.
 [AlexWheeler]: https://github.com/AlexWheeler
 [RomainAlexandre]: https://github.com/RomainAlexandre
 [avinoth]: https://github.com/avinoth
+[cloudsbird]: https://github.com/cloudsbird
 [aymeric-ledorze]: https://github.com/aymeric-ledorze
 [danielricecodes]: https://github.com/danielricecodes
 [jbryant92]: https://github.com/jbryant92
@@ -130,6 +134,10 @@ Notable changes to this project will be documented in this file.
 
 <!-- issues & pull requests -->
 
+[#262]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/262
+[#261]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/261
+[#245]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/245
+[#244]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/244
 [#243]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/243
 [#241]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/241
 [#240]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/240
