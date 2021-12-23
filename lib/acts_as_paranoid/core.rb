@@ -197,7 +197,7 @@ module ActsAsParanoid
               save
             end
           end
-          end
+        end
       end
     end
 
