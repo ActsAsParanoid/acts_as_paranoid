@@ -185,15 +185,17 @@ module ActsAsParanoid
 
       self.class.transaction do
         run_callbacks :recover do
-          if options[:recursive]
-            recover_dependent_associations(options[:recovery_window], options)
-          end
-          increment_counters_on_associations
-          self.paranoid_value = self.class.paranoid_configuration[:recovery_value]
-          if options[:raise_error]
-            save!
-          else
-            save
+          unless skip_recover
+            if options[:recursive]
+              recover_dependent_associations(options[:recovery_window], options)
+            end
+            increment_counters_on_associations
+            self.paranoid_value = self.class.paranoid_configuration[:recovery_value]
+            if options[:raise_error]
+              save!
+            else
+              save
+            end
           end
         end
       end
@@ -258,6 +260,8 @@ module ActsAsParanoid
     alias destroyed_fully? deleted_fully?
 
     private
+
+    attr_reader :skip_recover
 
     def get_association_scope(reflection:)
       ActiveRecord::Associations::AssociationScope.scope(association(reflection.name))
