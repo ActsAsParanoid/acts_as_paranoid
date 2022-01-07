@@ -1,12 +1,13 @@
 inherit_from: .rubocop_todo.yml
 
+inherit_mode:
+  merge:
+    - Exclude
+
 require:
   - rubocop-minitest
 
-# Exclude any vendored gems
 AllCops:
-  Exclude:
-    - 'vendor/**/*'
   NewCops: enable
   TargetRubyVersion: 2.6
 
