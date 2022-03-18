@@ -41,7 +41,7 @@ class DependentRecoveryTest < ActiveSupport::TestCase
     forest = ParanoidForest.create! name: "forest"
 
     tree = ParanoidTree.new name: "tree"
-    refute tree.valid?
+    refute_predicate tree, :valid?
     tree.paranoid_forest = forest
     assert_predicate tree, :valid?
     tree.save!

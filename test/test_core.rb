@@ -4,7 +4,7 @@ require "test_helper"
 
 class ParanoidTest < ParanoidBaseTest
   def test_paranoid?
-    refute NotParanoid.paranoid?
+    refute_predicate NotParanoid, :paranoid?
     assert_raise(NoMethodError) { NotParanoid.delete_all! }
     assert_raise(NoMethodError) { NotParanoid.with_deleted }
     assert_raise(NoMethodError) { NotParanoid.only_deleted }
@@ -135,10 +135,10 @@ class ParanoidTest < ParanoidBaseTest
     assert_predicate parent.paranoid_has_one_dependant, :destroyed?
 
     parent.recover
-    refute parent.paranoid_has_one_dependant.destroyed?
+    refute_predicate parent.paranoid_has_one_dependant, :destroyed?
 
     child.reload
-    refute child.destroyed?
+    refute_predicate child, :destroyed?
   end
 
   def test_recover_has_many_association
@@ -152,7 +152,7 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 1, parent.paranoid_has_many_dependants.count
 
     child.reload
-    refute child.destroyed?
+    refute_predicate child, :destroyed?
   end
 
   # Rails does not allow saving deleted records
