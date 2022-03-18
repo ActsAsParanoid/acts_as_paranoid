@@ -195,7 +195,7 @@ class AssociationsTest < ParanoidBaseTest
     assert_not_nil obj.paranoid_time_with_deleted
 
     # Note that obj is destroyed because of dependent: :destroy in ParanoidTime
-    assert obj.destroyed?
+    assert_predicate obj, :destroyed?
 
     assert_empty ParanoidHasManyDependant.with_deleted.joins(:paranoid_time)
     assert_equal [obj],

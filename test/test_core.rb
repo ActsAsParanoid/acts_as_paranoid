@@ -4,12 +4,12 @@ require "test_helper"
 
 class ParanoidTest < ParanoidBaseTest
   def test_paranoid?
-    refute NotParanoid.paranoid?
+    refute_predicate NotParanoid, :paranoid?
     assert_raise(NoMethodError) { NotParanoid.delete_all! }
     assert_raise(NoMethodError) { NotParanoid.with_deleted }
     assert_raise(NoMethodError) { NotParanoid.only_deleted }
 
-    assert ParanoidTime.paranoid?
+    assert_predicate ParanoidTime, :paranoid?
   end
 
   def test_scope_inclusion_with_time_column_type
@@ -132,13 +132,13 @@ class ParanoidTest < ParanoidBaseTest
     child = parent.create_paranoid_has_one_dependant(name: "child")
 
     parent.destroy
-    assert parent.paranoid_has_one_dependant.destroyed?
+    assert_predicate parent.paranoid_has_one_dependant, :destroyed?
 
     parent.recover
-    refute parent.paranoid_has_one_dependant.destroyed?
+    refute_predicate parent.paranoid_has_one_dependant, :destroyed?
 
     child.reload
-    refute child.destroyed?
+    refute_predicate child, :destroyed?
   end
 
   def test_recover_has_many_association
@@ -146,13 +146,13 @@ class ParanoidTest < ParanoidBaseTest
     child = parent.paranoid_has_many_dependants.create(name: "child")
 
     parent.destroy
-    assert child.destroyed?
+    assert_predicate child, :destroyed?
 
     parent.recover
     assert_equal 1, parent.paranoid_has_many_dependants.count
 
     child.reload
-    refute child.destroyed?
+    refute_predicate child, :destroyed?
   end
 
   # Rails does not allow saving deleted records
@@ -391,28 +391,28 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_deleted?
     ParanoidTime.first.destroy
-    assert ParanoidTime.with_deleted.first.deleted?
+    assert_predicate ParanoidTime.with_deleted.first, :deleted?
 
     ParanoidString.first.destroy
-    assert ParanoidString.with_deleted.first.deleted?
+    assert_predicate ParanoidString.with_deleted.first, :deleted?
   end
 
   def test_delete_deleted?
     ParanoidTime.first.delete
-    assert ParanoidTime.with_deleted.first.deleted?
+    assert_predicate ParanoidTime.with_deleted.first, :deleted?
 
     ParanoidString.first.delete
-    assert ParanoidString.with_deleted.first.deleted?
+    assert_predicate ParanoidString.with_deleted.first, :deleted?
   end
 
   def test_destroy_fully_deleted?
     object = ParanoidTime.first
     object.destroy_fully!
-    assert object.deleted?
+    assert_predicate object, :deleted?
 
     object = ParanoidString.first
     object.destroy_fully!
-    assert object.deleted?
+    assert_predicate object, :deleted?
   end
 
   def test_deleted_fully?
@@ -420,7 +420,7 @@ class ParanoidTest < ParanoidBaseTest
     assert_not ParanoidTime.with_deleted.first.deleted_fully?
 
     ParanoidString.first.destroy
-    assert ParanoidString.with_deleted.first.deleted?
+    assert_predicate ParanoidString.with_deleted.first, :deleted?
   end
 
   def test_delete_deleted_fully?
@@ -431,7 +431,7 @@ class ParanoidTest < ParanoidBaseTest
   def test_destroy_fully_deleted_fully?
     object = ParanoidTime.first
     object.destroy_fully!
-    assert object.deleted_fully?
+    assert_predicate object, :deleted_fully?
   end
 
   def test_paranoid_destroy_callbacks
