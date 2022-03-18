@@ -9,7 +9,7 @@ class ValidatesUniquenessTest < ParanoidBaseTest
       ParanoidTime.first.destroy
       refute record.valid?
       ParanoidTime.only_deleted.first.destroy!
-      assert record.valid?
+      assert_predicate record, :valid?
     end
   end
 
@@ -17,9 +17,9 @@ class ValidatesUniquenessTest < ParanoidBaseTest
     ParanoidBoolean.new(name: "paranoid").tap do |record|
       refute record.valid?
       ParanoidBoolean.first.destroy
-      assert record.valid?
+      assert_predicate record, :valid?
       ParanoidBoolean.only_deleted.first.destroy!
-      assert record.valid?
+      assert_predicate record, :valid?
     end
   end
 
@@ -31,14 +31,14 @@ class ValidatesUniquenessTest < ParanoidBaseTest
     refute record.valid?
 
     record.colors = %w[Beige Turquoise]
-    assert record.valid?
+    assert_predicate record, :valid?
   end
 
   def test_updated_serialized_attribute_validated_without_deleted
     record = ParanoidWithSerializedColumn.create!(name: "ParanoidWithSerializedColumn #1",
                                                   colors: %w[Cyan Maroon])
     record.update!(colors: %w[Beige Turquoise])
-    assert record.valid?
+    assert_predicate record, :valid?
   end
 
   def test_models_with_scoped_validations_can_be_multiply_deleted
