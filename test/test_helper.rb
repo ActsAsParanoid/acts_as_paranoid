@@ -150,13 +150,6 @@ def setup_db
       timestamps t
     end
 
-    create_table :paranoid_with_scoped_validations do |t|
-      t.string :name
-      t.string :category
-      t.datetime :deleted_at
-      timestamps t
-    end
-
     create_table :paranoid_polygons do |t|
       t.integer :sides
       t.datetime :deleted_at
@@ -210,14 +203,6 @@ def setup_db
       t.string    :name
       t.datetime  :deleted_at
       t.integer   :paranoid_boolean_id
-
-      timestamps t
-    end
-
-    create_table :paranoid_with_serialized_columns do |t|
-      t.string :name
-      t.datetime :deleted_at
-      t.string :colors
 
       timestamps t
     end
@@ -440,11 +425,6 @@ class ParanoidManyManyChild < ActiveRecord::Base
   belongs_to :paranoid_many_many_parent_right
 end
 
-class ParanoidWithScopedValidation < ActiveRecord::Base
-  acts_as_paranoid
-  validates_uniqueness_of :name, scope: :category
-end
-
 class ParanoidBelongsToPolymorphic < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :parent, polymorphic: true, with_deleted: true
@@ -476,23 +456,6 @@ class ParanoidBaseTest < ActiveSupport::TestCase
   def teardown
     teardown_db
   end
-
-  def assert_paranoid_deletion(model)
-    row = find_row(model)
-    assert_not_nil row, "#{model.class} entirely deleted"
-    assert_not_nil row["deleted_at"], "Deleted at not set"
-  end
-
-  def assert_non_paranoid_deletion(model)
-    row = find_row(model)
-    assert_nil row, "#{model.class} still exists"
-  end
-
-  def find_row(model)
-    sql = "select deleted_at from #{model.class.table_name} where id = #{model.id}"
-    # puts sql here if you want to debug
-    model.class.connection.select_one(sql)
-  end
 end
 
 class ParanoidPolygon < ActiveRecord::Base
@@ -519,11 +482,23 @@ class ParanoidWithExplicitTableNameAfterMacro < ActiveRecord::Base
   self.table_name = "explicit_table"
 end
 
-class ParanoidWithSerializedColumn < ActiveRecord::Base
-  acts_as_paranoid
-  validates_as_paranoid
+module ParanoidTestHelpers
+  def assert_paranoid_deletion(model)
+    row = find_row(model)
+    assert_not_nil row, "#{model.class} entirely deleted"
+    assert_not_nil row["deleted_at"], "Deleted at not set"
+  end
 
-  serialize :colors, Array
+  def assert_non_paranoid_deletion(model)
+    row = find_row(model)
+    assert_nil row, "#{model.class} still exists"
+  end
 
-  validates_uniqueness_of_without_deleted :colors
+  def find_row(model)
+    sql = "select deleted_at from #{model.class.table_name} where id = #{model.id}"
+    # puts sql here if you want to debug
+    model.class.connection.select_one(sql)
+  end
 end
+
+ActiveSupport::TestCase.include ParanoidTestHelpers
