@@ -110,46 +110,6 @@ def setup_db
       timestamps t
     end
 
-    create_table :paranoid_destroy_companies do |t|
-      t.string :name
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
-    create_table :paranoid_delete_companies do |t|
-      t.string :name
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
-    create_table :paranoid_products do |t|
-      t.integer :paranoid_destroy_company_id
-      t.integer :paranoid_delete_company_id
-      t.string :name
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
-    create_table :paranoid_many_many_parent_lefts do |t|
-      t.string :name
-      timestamps t
-    end
-
-    create_table :paranoid_many_many_parent_rights do |t|
-      t.string :name
-      timestamps t
-    end
-
-    create_table :paranoid_many_many_children do |t|
-      t.integer :paranoid_many_many_parent_left_id
-      t.integer :paranoid_many_many_parent_right_id
-      t.datetime :deleted_at
-      timestamps t
-    end
-
     create_table :paranoid_polygons do |t|
       t.integer :sides
       t.datetime :deleted_at
@@ -171,28 +131,6 @@ def setup_db
     create_table :paranoid_boolean_not_nullables do |t|
       t.string :name
       t.boolean :deleted, :boolean, null: false, default: false
-    end
-
-    create_table :paranoid_belongs_to_polymorphics do |t|
-      t.string :name
-      t.string :parent_type
-      t.integer :parent_id
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
-    create_table :not_paranoid_has_many_as_parents do |t|
-      t.string :name
-
-      timestamps t
-    end
-
-    create_table :paranoid_has_many_as_parents do |t|
-      t.string :name
-      t.datetime :deleted_at
-
-      timestamps t
     end
 
     create_table :paranoid_no_double_tap_destroys_fullies do |t|
@@ -277,17 +215,6 @@ class HasOneNotParanoid < ActiveRecord::Base
   belongs_to :paranoid_time, with_deleted: true
 end
 
-class DoubleHasOneNotParanoid < HasOneNotParanoid
-  belongs_to :paranoid_time, with_deleted: true
-  begin
-    verbose = $VERBOSE
-    $VERBOSE = false
-    belongs_to :paranoid_time, with_deleted: true
-  ensure
-    $VERBOSE = verbose
-  end
-end
-
 class ParanoidWithCounterCache < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :paranoid_boolean, counter_cache: true
@@ -321,18 +248,6 @@ end
 
 class ParanoidHasManyDependant < ActiveRecord::Base
   acts_as_paranoid
-  belongs_to :paranoid_time
-  belongs_to :paranoid_time_with_scope,
-             -> { where(name: "hello").includes(:not_paranoid) },
-             class_name: "ParanoidTime", foreign_key: :paranoid_time_id
-  belongs_to :paranoid_time_with_deleted, class_name: "ParanoidTime",
-                                          foreign_key: :paranoid_time_id, with_deleted: true
-  belongs_to :paranoid_time_with_scope_with_deleted,
-             -> { where(name: "hello").includes(:not_paranoid) },
-             class_name: "ParanoidTime", foreign_key: :paranoid_time_id, with_deleted: true
-  belongs_to :paranoid_time_polymorphic_with_deleted, class_name: "ParanoidTime",
-                                                      foreign_key: :paranoid_time_id,
-                                                      polymorphic: true, with_deleted: true
 
   belongs_to :paranoid_belongs_dependant, dependent: :destroy
 end
@@ -388,55 +303,6 @@ class ParanoidWithCallback < ActiveRecord::Base
   def call_me_after_recover
     @called_after_recover = true
   end
-end
-
-class ParanoidDestroyCompany < ActiveRecord::Base
-  acts_as_paranoid
-  validates :name, presence: true
-  has_many :paranoid_products, dependent: :destroy
-end
-
-class ParanoidDeleteCompany < ActiveRecord::Base
-  acts_as_paranoid
-  validates :name, presence: true
-  has_many :paranoid_products, dependent: :delete_all
-end
-
-class ParanoidProduct < ActiveRecord::Base
-  acts_as_paranoid
-  belongs_to :paranoid_destroy_company
-  belongs_to :paranoid_delete_company
-  validates_presence_of :name
-end
-
-class ParanoidManyManyParentLeft < ActiveRecord::Base
-  has_many :paranoid_many_many_children
-  has_many :paranoid_many_many_parent_rights, through: :paranoid_many_many_children
-end
-
-class ParanoidManyManyParentRight < ActiveRecord::Base
-  has_many :paranoid_many_many_children
-  has_many :paranoid_many_many_parent_lefts, through: :paranoid_many_many_children
-end
-
-class ParanoidManyManyChild < ActiveRecord::Base
-  acts_as_paranoid
-  belongs_to :paranoid_many_many_parent_left
-  belongs_to :paranoid_many_many_parent_right
-end
-
-class ParanoidBelongsToPolymorphic < ActiveRecord::Base
-  acts_as_paranoid
-  belongs_to :parent, polymorphic: true, with_deleted: true
-end
-
-class NotParanoidHasManyAsParent < ActiveRecord::Base
-  has_many :paranoid_belongs_to_polymorphics, as: :parent, dependent: :destroy
-end
-
-class ParanoidHasManyAsParent < ActiveRecord::Base
-  acts_as_paranoid
-  has_many :paranoid_belongs_to_polymorphics, as: :parent, dependent: :destroy
 end
 
 class ParanoidBaseTest < ActiveSupport::TestCase
