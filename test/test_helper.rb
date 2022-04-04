@@ -133,22 +133,6 @@ def setup_db
       timestamps t
     end
 
-    create_table :super_paranoids do |t|
-      t.string :type
-      t.references :has_many_inherited_super_paranoidz,
-                   index: { name: "index__sp_id_on_has_many_isp" }
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
-    create_table :has_many_inherited_super_paranoidzs do |t|
-      t.references :super_paranoidz, index: { name: "index_has_many_isp_on_sp_id" }
-      t.datetime :deleted_at
-
-      timestamps t
-    end
-
     create_table :paranoid_many_many_parent_lefts do |t|
       t.string :name
       timestamps t
@@ -438,19 +422,6 @@ class ParanoidProduct < ActiveRecord::Base
   belongs_to :paranoid_destroy_company
   belongs_to :paranoid_delete_company
   validates_presence_of :name
-end
-
-class SuperParanoid < ActiveRecord::Base
-  acts_as_paranoid
-  belongs_to :has_many_inherited_super_paranoidz
-end
-
-class HasManyInheritedSuperParanoidz < ActiveRecord::Base
-  has_many :super_paranoidz, class_name: "InheritedParanoid", dependent: :destroy
-end
-
-class InheritedParanoid < SuperParanoid
-  acts_as_paranoid
 end
 
 class ParanoidManyManyParentLeft < ActiveRecord::Base
