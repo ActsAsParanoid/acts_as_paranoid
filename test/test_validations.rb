@@ -2,23 +2,89 @@
 
 require "test_helper"
 
-class ValidatesUniquenessTest < ParanoidBaseTest
+class ValidatesUniquenessTest < ActiveSupport::TestCase
+  class ParanoidUniqueness < ActiveRecord::Base
+    acts_as_paranoid
+
+    validates_uniqueness_of :name
+  end
+
+  class ParanoidUniquenessWithoutDeleted < ActiveRecord::Base
+    acts_as_paranoid
+    validates_as_paranoid
+
+    validates_uniqueness_of_without_deleted :name
+  end
+
+  class ParanoidWithSerializedColumn < ActiveRecord::Base
+    acts_as_paranoid
+    validates_as_paranoid
+
+    serialize :colors, Array
+
+    validates_uniqueness_of_without_deleted :colors
+  end
+
+  class ParanoidWithScopedValidation < ActiveRecord::Base
+    acts_as_paranoid
+    validates_uniqueness_of :name, scope: :category
+  end
+
+  def setup
+    ActiveRecord::Schema.define(version: 1) do
+      create_table :paranoid_uniquenesses do |t|
+        t.string    :name
+        t.datetime  :deleted_at
+
+        timestamps t
+      end
+
+      create_table :paranoid_uniqueness_without_deleteds do |t|
+        t.string    :name
+        t.datetime  :deleted_at
+
+        timestamps t
+      end
+
+      create_table :paranoid_with_serialized_columns do |t|
+        t.string :name
+        t.datetime :deleted_at
+        t.string :colors
+
+        timestamps t
+      end
+
+      create_table :paranoid_with_scoped_validations do |t|
+        t.string :name
+        t.string :category
+        t.datetime :deleted_at
+        timestamps t
+      end
+    end
+  end
+
+  def teardown
+    teardown_db
+  end
+
   def test_should_include_deleted_by_default
-    ParanoidTime.new(name: "paranoid").tap do |record|
+    ParanoidUniqueness.create!(name: "paranoid")
+    ParanoidUniqueness.new(name: "paranoid").tap do |record|
       refute_predicate record, :valid?
-      ParanoidTime.first.destroy
+      ParanoidUniqueness.first.destroy
       refute_predicate record, :valid?
-      ParanoidTime.only_deleted.first.destroy!
+      ParanoidUniqueness.only_deleted.first.destroy!
       assert_predicate record, :valid?
     end
   end
 
   def test_should_validate_without_deleted
-    ParanoidBoolean.new(name: "paranoid").tap do |record|
+    ParanoidUniquenessWithoutDeleted.create!(name: "paranoid")
+    ParanoidUniquenessWithoutDeleted.new(name: "paranoid").tap do |record|
       refute_predicate record, :valid?
-      ParanoidBoolean.first.destroy
+      ParanoidUniquenessWithoutDeleted.first.destroy
       assert_predicate record, :valid?
-      ParanoidBoolean.only_deleted.first.destroy!
+      ParanoidUniquenessWithoutDeleted.only_deleted.first.destroy!
       assert_predicate record, :valid?
     end
   end

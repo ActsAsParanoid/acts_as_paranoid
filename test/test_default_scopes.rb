@@ -3,6 +3,11 @@
 require "test_helper"
 
 class MultipleDefaultScopesTest < ActiveSupport::TestCase
+  class ParanoidPolygon < ActiveRecord::Base
+    acts_as_paranoid
+    default_scope { where("sides = ?", 3) }
+  end
+
   def setup
     ActiveRecord::Schema.define(version: 1) do
       create_table :paranoid_polygons do |t|
