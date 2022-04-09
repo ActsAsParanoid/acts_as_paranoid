@@ -138,6 +138,16 @@ class AssociationsTest < ActiveSupport::TestCase
     end
   end
 
+  class ParanoidParent < ActiveRecord::Base
+    acts_as_paranoid
+    has_many :paranoid_children
+  end
+
+  class ParanoidChild < ActiveRecord::Base
+    acts_as_paranoid
+    belongs_to :paranoid_parent, with_deleted: true
+  end
+
   # rubocop:disable Metrics/AbcSize
   def setup
     ActiveRecord::Schema.define(version: 1) do # rubocop:disable Metrics/BlockLength
@@ -249,6 +259,19 @@ class AssociationsTest < ActiveSupport::TestCase
         t.string :parent_type
         t.integer :parent_id
         t.datetime :deleted_at
+
+        timestamps t
+      end
+
+      create_table :paranoid_parents do |t|
+        t.datetime :deleted_at
+
+        timestamps t
+      end
+
+      create_table :paranoid_children do |t|
+        t.datetime :deleted_at
+        t.integer :paranoid_parent_id
 
         timestamps t
       end
@@ -367,6 +390,13 @@ class AssociationsTest < ActiveSupport::TestCase
 
     assert_nil paranoid_has_many_dependant.paranoid_time
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
+  end
+
+  def test_building_belongs_to_associations
+    paranoid_child = ParanoidChild.new
+    paranoid_parent = ParanoidParent.new(paranoid_children: [paranoid_child])
+
+    assert_equal paranoid_parent, paranoid_parent.paranoid_children.first.paranoid_parent
   end
 
   def test_belongs_to_polymorphic_with_deleted
