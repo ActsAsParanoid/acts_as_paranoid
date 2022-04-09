@@ -18,32 +18,38 @@ module ActsAsParanoid
         end
 
         with_deleted = options.delete(:with_deleted)
-        if with_deleted
-          if scope
-            old_scope = scope
-            scope = proc do |*args|
-              if old_scope.arity == 0
-                instance_exec(&old_scope).with_deleted
-              else
-                old_scope.call(*args).with_deleted
-              end
-            end
-          else
-            scope = proc do
-              if respond_to? :with_deleted
-                self.with_deleted
-              else
-                all
-              end
-            end
-          end
-        end
+        scope = make_scope_with_deleted(scope) if with_deleted
 
         result = belongs_to_without_deleted(target, scope, **options)
 
         result.values.last.options[:with_deleted] = with_deleted if with_deleted
 
         result
+      end
+
+      private
+
+      def make_scope_with_deleted(scope)
+        if scope
+          old_scope = scope
+          scope = proc do |*args|
+            if old_scope.arity == 0
+              instance_exec(&old_scope).with_deleted
+            else
+              old_scope.call(*args).with_deleted
+            end
+          end
+        else
+          scope = proc do
+            if respond_to? :with_deleted
+              with_deleted
+            else
+              all
+            end
+          end
+        end
+
+        scope
       end
     end
   end
