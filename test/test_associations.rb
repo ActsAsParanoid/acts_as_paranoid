@@ -399,6 +399,13 @@ class AssociationsTest < ActiveSupport::TestCase
     assert_equal paranoid_parent, paranoid_parent.paranoid_children.first.paranoid_parent
   end
 
+  def test_belongs_to_with_deleted_as_inverse_of_has_many
+    has_many_reflection = ParanoidParent.reflect_on_association :paranoid_children
+    belongs_to_reflection = ParanoidChild.reflect_on_association :paranoid_parent
+
+    assert_equal belongs_to_reflection, has_many_reflection.inverse_of
+  end
+
   def test_belongs_to_polymorphic_with_deleted
     paranoid_time = ParanoidTime.create! name: "paranoid"
     paranoid_has_many_dependant = ParanoidHasManyDependant
