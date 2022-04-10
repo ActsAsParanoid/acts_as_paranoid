@@ -55,4 +55,4 @@ end
 task build: ["manifest:check"]
 
 desc "Default: run tests and check manifest"
-task default: ["test:all", "manifest:check"]
+task default: ["test", "manifest:check"]
