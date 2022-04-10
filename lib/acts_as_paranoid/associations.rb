@@ -29,6 +29,10 @@ module ActsAsParanoid
 
       private
 
+      # NOTE: This breaks automatic finding of inverse_of because it sets scope
+      # where there was none.
+      # Specifically, it makes Reflection#scope_allows_automatic_inverse_of
+      # fail for the inverse reflection.
       def make_scope_with_deleted(scope)
         if scope
           old_scope = scope
