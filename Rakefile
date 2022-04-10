@@ -6,26 +6,6 @@ require "rake/testtask"
 require "rdoc/task"
 require "rubocop/rake_task"
 
-namespace :test do
-  versions = Dir["gemfiles/*.gemfile"]
-    .map { |gemfile_path| gemfile_path.split(%r{/|\.})[1] }
-
-  versions.each do |version|
-    desc "Test acts_as_paranoid against #{version}"
-    task version do
-      if ENV["RUBYOPT"] =~ %r{bundler/setup}
-        raise "Do not run the test:#{version} task with bundle exec!"
-      end
-
-      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle install --quiet"
-      sh "BUNDLE_GEMFILE='gemfiles/#{version}.gemfile' bundle exec rake -t test"
-    end
-  end
-
-  desc "Run all tests for acts_as_paranoid"
-  task all: versions
-end
-
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
   t.pattern = "test/test_*.rb"
@@ -55,4 +35,4 @@ end
 task build: ["manifest:check"]
 
 desc "Default: run tests and check manifest"
-task default: ["test:all", "manifest:check"]
+task default: ["test", "manifest:check"]

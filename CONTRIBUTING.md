@@ -29,7 +29,7 @@ To send pull requests or patches, please follow the instructions below.
 **If you get stuck, please make a pull request anyway and we'll try to
 help out.**
 
-- Make sure `rake test` runs without reporting any failures.
+- Make sure `bundle exec rake` runs without reporting any failures.
 - Add tests for your feature. Otherwise, we can't see if it works or if we
   break it later.
 - Create a separate branch for your feature based off of latest master.
@@ -37,6 +37,18 @@ help out.**
   commit.
 - Keep an eye on the build results in GitHub Actions. If the build fails and it
   seems due to your changes, please update your pull request with a fix.
+
+### Testing your changes
+
+You can run the test suite with the latest version of all dependencies by running the following:
+
+- Run `bundle install` if you haven't done so already, or `bundle update` to update the dependencies
+- Run `bundle exec rake` to run the tests
+
+To run the tests suite for a particular version of ActiveRecord use
+[appraisal](https://github.com/thoughtbot/appraisal). For example, to run the
+specs with ActiveRecord 6.1, run `appraisal active_record_61 rake`. See appraisal's
+documentation for details.
 
 ### The review process
 
