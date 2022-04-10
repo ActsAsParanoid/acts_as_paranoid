@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "activerecord", ">= 5.2", "< 7.1"
   spec.add_runtime_dependency "activesupport", ">= 5.2", "< 7.1"
 
+  spec.add_development_dependency "appraisal", "~> 2.3"
   spec.add_development_dependency "minitest", "~> 5.14"
   spec.add_development_dependency "minitest-focus", "~> 1.3"
   spec.add_development_dependency "pry", "~> 0.14.1"
