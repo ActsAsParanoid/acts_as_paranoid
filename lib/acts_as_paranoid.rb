@@ -5,6 +5,7 @@ require "acts_as_paranoid/core"
 require "acts_as_paranoid/associations"
 require "acts_as_paranoid/validations"
 require "acts_as_paranoid/relation"
+require "acts_as_paranoid/association_reflection"
 
 module ActsAsParanoid
   def paranoid?
@@ -63,3 +64,6 @@ ActiveRecord::Relation.include ActsAsParanoid::Relation
 
 # Push the recover callback onto the activerecord callback list
 ActiveRecord::Callbacks::CALLBACKS.push(:before_recover, :after_recover)
+
+ActiveRecord::Reflection::AssociationReflection
+  .prepend ActsAsParanoid::AssociationReflection

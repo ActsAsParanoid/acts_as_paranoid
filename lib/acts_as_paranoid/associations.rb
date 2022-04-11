@@ -18,11 +18,18 @@ module ActsAsParanoid
         end
 
         with_deleted = options.delete(:with_deleted)
-        scope = make_scope_with_deleted(scope) if with_deleted
+        if with_deleted
+          original_scope = scope
+          scope = make_scope_with_deleted(scope)
+        end
 
         result = belongs_to_without_deleted(target, scope, **options)
 
-        result.values.last.options[:with_deleted] = with_deleted if with_deleted
+        if with_deleted
+          options = result.values.last.options
+          options[:with_deleted] = with_deleted
+          options[:original_scope] = original_scope
+        end
 
         result
       end
