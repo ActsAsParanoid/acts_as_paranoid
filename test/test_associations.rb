@@ -87,7 +87,6 @@ class AssociationsTest < ActiveSupport::TestCase
     has_many :paranoid_has_many_dependants, dependent: :destroy
     has_many :paranoid_booleans, dependent: :destroy
     has_many :not_paranoids, dependent: :delete_all
-    # has_many :paranoid_sections, dependent: :destroy
 
     has_one :has_one_not_paranoid, dependent: :destroy
 
