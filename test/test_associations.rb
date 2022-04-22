@@ -87,7 +87,6 @@ class AssociationsTest < ActiveSupport::TestCase
     has_many :paranoid_has_many_dependants, dependent: :destroy
     has_many :paranoid_booleans, dependent: :destroy
     has_many :not_paranoids, dependent: :delete_all
-    # has_many :paranoid_sections, dependent: :destroy
 
     has_one :has_one_not_paranoid, dependent: :destroy
 
@@ -136,6 +135,28 @@ class AssociationsTest < ActiveSupport::TestCase
     ensure
       $VERBOSE = verbose
     end
+  end
+
+  class ParanoidParent < ActiveRecord::Base
+    acts_as_paranoid
+    has_many :paranoid_children
+    has_many :paranoid_no_inverse_children
+    has_many :paranoid_foreign_key_children
+  end
+
+  class ParanoidChild < ActiveRecord::Base
+    acts_as_paranoid
+    belongs_to :paranoid_parent, with_deleted: true
+  end
+
+  class ParanoidNoInverseChild < ActiveRecord::Base
+    acts_as_paranoid
+    belongs_to :paranoid_parent, with_deleted: true, inverse_of: false
+  end
+
+  class ParanoidForeignKeyChild < ActiveRecord::Base
+    acts_as_paranoid
+    belongs_to :paranoid_parent, with_deleted: true, foreign_key: :paranoid_parent_id
   end
 
   # rubocop:disable Metrics/AbcSize
@@ -249,6 +270,33 @@ class AssociationsTest < ActiveSupport::TestCase
         t.string :parent_type
         t.integer :parent_id
         t.datetime :deleted_at
+
+        timestamps t
+      end
+
+      create_table :paranoid_parents do |t|
+        t.datetime :deleted_at
+
+        timestamps t
+      end
+
+      create_table :paranoid_children do |t|
+        t.datetime :deleted_at
+        t.integer :paranoid_parent_id
+
+        timestamps t
+      end
+
+      create_table :paranoid_no_inverse_children do |t|
+        t.datetime :deleted_at
+        t.integer :paranoid_parent_id
+
+        timestamps t
+      end
+
+      create_table :paranoid_foreign_key_children do |t|
+        t.datetime :deleted_at
+        t.integer :paranoid_parent_id
 
         timestamps t
       end
@@ -367,6 +415,52 @@ class AssociationsTest < ActiveSupport::TestCase
 
     assert_nil paranoid_has_many_dependant.paranoid_time
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
+  end
+
+  def test_building_belongs_to_associations
+    paranoid_product = ParanoidProduct.new
+    paranoid_destroy_company =
+      ParanoidDestroyCompany.new(paranoid_products: [paranoid_product])
+
+    assert_equal paranoid_destroy_company,
+                 paranoid_destroy_company.paranoid_products.first.paranoid_destroy_company
+  end
+
+  def test_building_belongs_to_associations_with_deleted
+    paranoid_child = ParanoidChild.new
+    paranoid_parent = ParanoidParent.new(paranoid_children: [paranoid_child])
+
+    assert_equal paranoid_parent, paranoid_parent.paranoid_children.first.paranoid_parent
+  end
+
+  def test_building_polymorphic_belongs_to_associations_with_deleted
+    paranoid_belongs_to = ParanoidBelongsToPolymorphic.new
+    paranoid_has_many =
+      ParanoidHasManyAsParent.new(paranoid_belongs_to_polymorphics: [paranoid_belongs_to])
+
+    assert_equal paranoid_has_many,
+                 paranoid_has_many.paranoid_belongs_to_polymorphics.first.parent
+  end
+
+  def test_building_belongs_to_associations_with_deleted_with_inverse_of_false
+    paranoid_child = ParanoidNoInverseChild.new
+    paranoid_parent = ParanoidParent.new(paranoid_no_inverse_children: [paranoid_child])
+
+    assert_nil paranoid_parent.paranoid_no_inverse_children.first.paranoid_parent
+  end
+
+  def test_building_belongs_to_associations_with_deleted_with_foreign_key
+    paranoid_child = ParanoidForeignKeyChild.new
+    paranoid_parent = ParanoidParent.new(paranoid_foreign_key_children: [paranoid_child])
+
+    assert_nil paranoid_parent.paranoid_foreign_key_children.first.paranoid_parent
+  end
+
+  def test_belongs_to_with_deleted_as_inverse_of_has_many
+    has_many_reflection = ParanoidParent.reflect_on_association :paranoid_children
+    belongs_to_reflection = ParanoidChild.reflect_on_association :paranoid_parent
+
+    assert_equal belongs_to_reflection, has_many_reflection.inverse_of
   end
 
   def test_belongs_to_polymorphic_with_deleted
