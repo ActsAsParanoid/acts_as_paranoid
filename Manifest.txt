@@ -1,4 +1,5 @@
 lib/acts_as_paranoid.rb
+lib/acts_as_paranoid/association_reflection.rb
 lib/acts_as_paranoid/associations.rb
 lib/acts_as_paranoid/core.rb
 lib/acts_as_paranoid/relation.rb
