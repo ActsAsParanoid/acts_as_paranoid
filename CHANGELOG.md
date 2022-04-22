@@ -2,6 +2,11 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.8.1
+
+* Officially support Ruby 3.1 ([#268], by [Matijs van Zuijlen][mvz])
+* Fix association building for `belongs_to` with `:with_deleted` option ([#277], by [Matijs van Zuijlen][mvz])
+
 ## 0.8.0
 
 * Do not set `paranoid_value` when destroying fully ([#238], by [Aymeric Le Dorze][aymeric-ledorze])
@@ -134,6 +139,8 @@ Notable changes to this project will be documented in this file.
 
 <!-- issues & pull requests -->
 
+[#277]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/277
+[#268]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/268
 [#262]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/262
 [#261]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/261
 [#245]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/245
