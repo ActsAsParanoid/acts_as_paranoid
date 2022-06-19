@@ -17,6 +17,8 @@ if RUBY_ENGINE == "jruby"
   require "i18n/backend/simple"
 end
 
+require "newrelic_rpm"
+
 require "simplecov"
 SimpleCov.start do
   enable_coverage :branch
