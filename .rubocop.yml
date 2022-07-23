@@ -11,6 +11,9 @@ AllCops:
   NewCops: enable
   TargetRubyVersion: 2.6
 
+Layout/LineContinuationLeadingSpace:
+  EnforcedStyle: leading
+
 # Be lenient with line length
 Layout/LineLength:
   Max: 92
