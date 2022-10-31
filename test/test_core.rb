@@ -342,6 +342,14 @@ class ParanoidTest < ActiveSupport::TestCase
     assert_equal 1, ParanoidString.with_deleted.count
   end
 
+  def test_boolean_nil_value_is_bad
+    ParanoidBoolean.create! name: "null flag", is_deleted: nil
+
+    assert_equal 3, ParanoidBoolean.count
+    assert_equal 4, ParanoidBoolean.with_deleted.count
+    assert_equal 0, ParanoidBoolean.only_deleted.count
+  end
+
   def test_real_removal
     ParanoidTime.first.destroy_fully!
     ParanoidBoolean.delete_all!("name = 'extremely paranoid' OR name = 'really paranoid'")

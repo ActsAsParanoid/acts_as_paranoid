@@ -74,11 +74,12 @@ marking an object as deleted by passing `:deleted_value` (default is
 "deleted"). Any records with a non-matching value in this column will be
 treated normally, i.e., as not deleted.
 
-If your column type is a `boolean`, it is possible to specify `allow_nulls`
-option which is `true` by default. When set to `false`, entities that have
+If your column type is a `boolean`, it is possible to specify an `allow_nulls`
+option, which is `false` by default. When set to `false`, entities that have
 `false` value in this column will be considered not deleted, and those which
-have `true` will be considered deleted. When `true` everything that has a
-not-null value will be considered deleted.
+have `true` will be considered deleted (`NULL` values deliver unexpected
+results!). When `true`, everything that has a not-null value will be considered
+deleted.
 
 ### Filtering
 
