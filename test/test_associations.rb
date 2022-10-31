@@ -316,12 +316,14 @@ class AssociationsTest < ActiveSupport::TestCase
     assert_equal 1, ParanoidProduct.count
 
     ParanoidDestroyCompany.first.destroy
+
     assert_equal 0, ParanoidDestroyCompany.count
     assert_equal 0, ParanoidProduct.count
     assert_equal 1, ParanoidDestroyCompany.with_deleted.count
     assert_equal 1, ParanoidProduct.with_deleted.count
 
     ParanoidDestroyCompany.with_deleted.first.destroy
+
     assert_equal 0, ParanoidDestroyCompany.count
     assert_equal 0, ParanoidProduct.count
     assert_equal 0, ParanoidDestroyCompany.with_deleted.count
@@ -336,12 +338,14 @@ class AssociationsTest < ActiveSupport::TestCase
     assert_equal 1, ParanoidProduct.count
 
     ParanoidDeleteCompany.first.destroy
+
     assert_equal 0, ParanoidDeleteCompany.count
     assert_equal 0, ParanoidProduct.count
     assert_equal 1, ParanoidDeleteCompany.with_deleted.count
     assert_equal 1, ParanoidProduct.with_deleted.count
 
     ParanoidDeleteCompany.with_deleted.first.destroy
+
     assert_equal 0, ParanoidDeleteCompany.count
     assert_equal 0, ParanoidProduct.count
     assert_equal 0, ParanoidDeleteCompany.with_deleted.count
@@ -497,6 +501,7 @@ class AssociationsTest < ActiveSupport::TestCase
   def test_belongs_to_options
     paranoid_time = ParanoidHasManyDependant.reflections
       .with_indifferent_access[:paranoid_time]
+
     assert_equal :belongs_to, paranoid_time.macro
     assert_nil paranoid_time.options[:with_deleted]
   end
@@ -505,6 +510,7 @@ class AssociationsTest < ActiveSupport::TestCase
     paranoid_time_with_deleted =
       ParanoidHasManyDependant.reflections
         .with_indifferent_access[:paranoid_time_with_deleted]
+
     assert_equal :belongs_to, paranoid_time_with_deleted.macro
     assert paranoid_time_with_deleted.options[:with_deleted]
   end
@@ -512,6 +518,7 @@ class AssociationsTest < ActiveSupport::TestCase
   def test_belongs_to_polymorphic_with_deleted_options
     paranoid_time_polymorphic_with_deleted = ParanoidHasManyDependant.reflections
       .with_indifferent_access[:paranoid_time_polymorphic_with_deleted]
+
     assert_equal :belongs_to, paranoid_time_polymorphic_with_deleted.macro
     assert paranoid_time_polymorphic_with_deleted.options[:with_deleted]
   end
@@ -526,6 +533,7 @@ class AssociationsTest < ActiveSupport::TestCase
     unrelated_parent.paranoid_has_many_dependants << unrelated_child
 
     child.destroy
+
     assert_paranoid_deletion(child)
 
     parent.reload
@@ -536,6 +544,7 @@ class AssociationsTest < ActiveSupport::TestCase
 
   def test_join_with_model_with_deleted
     obj = ParanoidHasManyDependant.create(paranoid_time: ParanoidTime.create)
+
     assert_not_nil obj.paranoid_time
     assert_not_nil obj.paranoid_time_with_deleted
 
@@ -639,6 +648,7 @@ class AssociationsTest < ActiveSupport::TestCase
     left.paranoid_many_many_parent_rights << right
 
     child = left.paranoid_many_many_children.first
+
     assert_equal left, child.paranoid_many_many_parent_left,
                  "Child's left parent is incorrect"
     assert_equal right, child.paranoid_many_many_parent_right,
@@ -655,6 +665,7 @@ class AssociationsTest < ActiveSupport::TestCase
     left.paranoid_many_many_parent_rights << right
 
     child = left.paranoid_many_many_children.first
+
     assert_equal left, child.paranoid_many_many_parent_left,
                  "Child's left parent is incorrect"
     assert_equal right, child.paranoid_many_many_parent_right,
@@ -671,6 +682,7 @@ class AssociationsTest < ActiveSupport::TestCase
     left.paranoid_many_many_parent_rights << right
 
     child = left.paranoid_many_many_children.first
+
     assert_equal left, child.paranoid_many_many_parent_left,
                  "Child's left parent is incorrect"
     assert_equal right, child.paranoid_many_many_parent_right,

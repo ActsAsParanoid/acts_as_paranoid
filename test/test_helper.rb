@@ -45,12 +45,14 @@ end
 module ParanoidTestHelpers
   def assert_paranoid_deletion(model)
     row = find_row(model)
+
     assert_not_nil row, "#{model.class} entirely deleted"
     assert_not_nil row["deleted_at"], "Deleted at not set"
   end
 
   def assert_non_paranoid_deletion(model)
     row = find_row(model)
+
     assert_nil row, "#{model.class} still exists"
   end
 
