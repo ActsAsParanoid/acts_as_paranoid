@@ -72,8 +72,10 @@ class ValidatesUniquenessTest < ActiveSupport::TestCase
     ParanoidUniqueness.new(name: "paranoid").tap do |record|
       refute_predicate record, :valid?
       ParanoidUniqueness.first.destroy
+
       refute_predicate record, :valid?
       ParanoidUniqueness.only_deleted.first.destroy!
+
       assert_predicate record, :valid?
     end
   end
@@ -83,8 +85,10 @@ class ValidatesUniquenessTest < ActiveSupport::TestCase
     ParanoidUniquenessWithoutDeleted.new(name: "paranoid").tap do |record|
       refute_predicate record, :valid?
       ParanoidUniquenessWithoutDeleted.first.destroy
+
       assert_predicate record, :valid?
       ParanoidUniquenessWithoutDeleted.only_deleted.first.destroy!
+
       assert_predicate record, :valid?
     end
   end
@@ -94,9 +98,11 @@ class ValidatesUniquenessTest < ActiveSupport::TestCase
                                          colors: %w[Cyan Maroon])
     record = ParanoidWithSerializedColumn.new(name: "ParanoidWithSerializedColumn #2")
     record.colors = %w[Cyan Maroon]
+
     refute_predicate record, :valid?
 
     record.colors = %w[Beige Turquoise]
+
     assert_predicate record, :valid?
   end
 
@@ -104,6 +110,7 @@ class ValidatesUniquenessTest < ActiveSupport::TestCase
     record = ParanoidWithSerializedColumn.create!(name: "ParanoidWithSerializedColumn #1",
                                                   colors: %w[Cyan Maroon])
     record.update!(colors: %w[Beige Turquoise])
+
     assert_predicate record, :valid?
   end
 

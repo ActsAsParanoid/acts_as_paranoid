@@ -87,6 +87,7 @@ class RelationsTest < ActiveSupport::TestCase
     assert_equal 0, ParanoidForest.only_deleted.rainforest.count
 
     ParanoidForest.rainforest.first.destroy
+
     assert_equal 1, ParanoidForest.rainforest.count
 
     assert_equal 2, ParanoidForest.rainforest.with_deleted.count
@@ -101,16 +102,19 @@ class RelationsTest < ActiveSupport::TestCase
     assert_equal 2, @paranoid_forest_2.paranoid_trees.with_deleted.count
 
     @paranoid_forest_1.paranoid_trees.first.destroy
+
     assert_equal 1, @paranoid_forest_1.paranoid_trees.count
     assert_equal 2, @paranoid_forest_1.paranoid_trees.with_deleted.count
     assert_equal 4, ParanoidTree.with_deleted.count
 
     @paranoid_forest_2.paranoid_trees.first.destroy
+
     assert_equal 1, @paranoid_forest_2.paranoid_trees.count
     assert_equal 2, @paranoid_forest_2.paranoid_trees.with_deleted.count
     assert_equal 4, ParanoidTree.with_deleted.count
 
     @paranoid_forest_1.paranoid_trees.first.destroy
+
     assert_equal 0, @paranoid_forest_1.paranoid_trees.count
     assert_equal 2, @paranoid_forest_1.paranoid_trees.with_deleted.count
     assert_equal 4, ParanoidTree.with_deleted.count
@@ -121,14 +125,17 @@ class RelationsTest < ActiveSupport::TestCase
     assert_equal 0, @paranoid_forest_2.paranoid_trees.only_deleted.count
 
     @paranoid_forest_1.paranoid_trees.first.destroy
+
     assert_equal 1, @paranoid_forest_1.paranoid_trees.only_deleted.count
     assert_equal 1, ParanoidTree.only_deleted.count
 
     @paranoid_forest_2.paranoid_trees.first.destroy
+
     assert_equal 1, @paranoid_forest_2.paranoid_trees.only_deleted.count
     assert_equal 2, ParanoidTree.only_deleted.count
 
     @paranoid_forest_1.paranoid_trees.first.destroy
+
     assert_equal 2, @paranoid_forest_1.paranoid_trees.only_deleted.count
     assert_equal 3, ParanoidTree.only_deleted.count
   end
@@ -136,12 +143,14 @@ class RelationsTest < ActiveSupport::TestCase
   def test_fake_removal_through_relation
     # destroy: through a relation.
     ParanoidForest.rainforest.destroy(@paranoid_forest_3.id)
+
     assert_equal 1, ParanoidForest.rainforest.count
     assert_equal 2, ParanoidForest.rainforest.with_deleted.count
     assert_equal 1, ParanoidForest.rainforest.only_deleted.count
 
     # destroy_all: through a relation
     @paranoid_forest_2.paranoid_trees.destroy_all
+
     assert_equal 0, @paranoid_forest_2.paranoid_trees.count
     assert_equal 2, @paranoid_forest_2.paranoid_trees.with_deleted.count
   end
@@ -152,12 +161,14 @@ class RelationsTest < ActiveSupport::TestCase
     not_paranoid.paranoid_chocolates.create! name: "ParanoidChocolate #2"
 
     not_paranoid.paranoid_chocolates.destroy_all
+
     assert_equal 0, not_paranoid.paranoid_chocolates.count
     assert_equal 2, not_paranoid.paranoid_chocolates.with_deleted.count
   end
 
   def test_real_removal_through_relation_with_destroy_fully
     ParanoidForest.rainforest.destroy_fully!(@paranoid_forest_3)
+
     assert_equal 1, ParanoidForest.rainforest.count
     assert_equal 1, ParanoidForest.rainforest.with_deleted.count
     assert_equal 0, ParanoidForest.rainforest.only_deleted.count
@@ -168,6 +179,7 @@ class RelationsTest < ActiveSupport::TestCase
     paranoid_tree = @paranoid_forest_1.paranoid_trees.first
     @paranoid_forest_1.paranoid_trees.destroy(paranoid_tree.id)
     @paranoid_forest_1.paranoid_trees.only_deleted.destroy(paranoid_tree.id)
+
     assert_equal 1, @paranoid_forest_1.paranoid_trees.count
     assert_equal 1, @paranoid_forest_1.paranoid_trees.with_deleted.count
     assert_equal 0, @paranoid_forest_1.paranoid_trees.only_deleted.count
@@ -177,6 +189,7 @@ class RelationsTest < ActiveSupport::TestCase
     # destroy_all: two-step through a relation
     @paranoid_forest_1.paranoid_trees.destroy_all
     @paranoid_forest_1.paranoid_trees.only_deleted.destroy_all
+
     assert_equal 0, @paranoid_forest_1.paranoid_trees.count
     assert_equal 0, @paranoid_forest_1.paranoid_trees.with_deleted.count
     assert_equal 0, @paranoid_forest_1.paranoid_trees.only_deleted.count
@@ -185,6 +198,7 @@ class RelationsTest < ActiveSupport::TestCase
   def test_real_removal_through_relation_with_delete_all_bang
     # delete_all!: through a relation
     @paranoid_forest_2.paranoid_trees.delete_all!
+
     assert_equal 0, @paranoid_forest_2.paranoid_trees.count
     assert_equal 0, @paranoid_forest_2.paranoid_trees.with_deleted.count
     assert_equal 0, @paranoid_forest_2.paranoid_trees.only_deleted.count
