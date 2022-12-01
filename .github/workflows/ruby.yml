@@ -49,7 +49,7 @@ jobs:
       - name: Create bundler lockfile
         run: |
           bundle lock
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           # NOTE: Bundler expands the path relative to the gemfile, not the
           # current directory.
