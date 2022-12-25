@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.description = "Check the home page for more in-depth information."
   spec.homepage = "https://github.com/ActsAsParanoid/acts_as_paranoid"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 2.7.0"
 
   spec.metadata["rubygems_mfa_required"] = "true"
 

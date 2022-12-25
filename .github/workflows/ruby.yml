@@ -19,25 +19,12 @@ jobs:
 
     strategy:
       matrix:
-        ruby: ["2.6", "2.7", "3.0", "3.1", "3.2", jruby-9.3, jruby-9.4]
-        gemfile: [active_record_52, active_record_60, active_record_61, active_record_70]
-        exclude:
-          # Rails 5.2 does not support Ruby 3.0
-          - ruby: "3.0"
+        ruby: ["2.7", "3.0", "3.1", "3.2", jruby-9.4]
+        gemfile: [active_record_60, active_record_61, active_record_70]
+        include:
+          # Rails 5.2 only works with Ruby 2.7 and below
+          - ruby: "2.7"
             gemfile: active_record_52
-          # Rails 5.2 does not support Ruby 3.1 and JRuby 9.4 implements Ruby 3.1
-          - ruby: "3.1"
-            gemfile: active_record_52
-          - ruby: "jruby-9.4"
-            gemfile: active_record_52
-          # Rails 5.2 does not support Ruby 3.2
-          - ruby: "3.2"
-            gemfile: active_record_52
-          # Rails 7.0 does not support Ruby 2.6 and JRuby 9.3 implements Ruby 2.6
-          - ruby: "2.6"
-            gemfile: active_record_70
-          - ruby: jruby-9.3
-            gemfile: active_record_70
 
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
