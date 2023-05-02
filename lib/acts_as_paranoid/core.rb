@@ -197,7 +197,8 @@ module ActsAsParanoid
       options = {
         recursive: self.class.paranoid_configuration[:recover_dependent_associations],
         recovery_window: self.class.paranoid_configuration[:dependent_recovery_window],
-        raise_error: false
+        raise_error: false,
+        validate: true
       }.merge(options)
 
       self.class.transaction do
@@ -206,9 +207,9 @@ module ActsAsParanoid
           deleted_value = paranoid_value
           self.paranoid_value = self.class.recovery_value
           result = if options[:raise_error]
-                     save!
+                     save!(validate: options[:validate])
                    else
-                     save
+                     save(validate: options[:validate])
                    end
           recover_dependent_associations(deleted_value, options) if options[:recursive]
           result
