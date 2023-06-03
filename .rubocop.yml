@@ -11,6 +11,10 @@ AllCops:
   NewCops: enable
   TargetRubyVersion: 2.7
 
+# Put development dependencies in the gemspec so rubygems.org knows about them
+Gemspec/DevelopmentDependencies:
+  EnforcedStyle: gemspec
+
 Layout/LineContinuationLeadingSpace:
   EnforcedStyle: leading
 
