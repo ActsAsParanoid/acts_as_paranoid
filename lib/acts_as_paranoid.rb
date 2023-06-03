@@ -30,9 +30,7 @@ module ActsAsParanoid
       dependent_recovery_window: 2.minutes,
       double_tap_destroys_fully: true
     }
-    if options[:column_type] == "string"
-      paranoid_configuration.merge!(deleted_value: "deleted")
-    end
+    paranoid_configuration[:deleted_value] = "deleted" if options[:column_type] == "string"
 
     paranoid_configuration.merge!(options) # user options
 
