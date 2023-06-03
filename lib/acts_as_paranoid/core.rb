@@ -74,9 +74,11 @@ module ActsAsParanoid
         "#{table_name}.#{paranoid_column}"
       end
 
+      DESTROYING_ASSOCIATION_DEPENDENCY_TYPES = [:destroy, :delete_all].freeze
+
       def dependent_associations
         reflect_on_all_associations.select do |a|
-          [:destroy, :delete_all].include?(a.options[:dependent])
+          DESTROYING_ASSOCIATION_DEPENDENCY_TYPES.include?(a.options[:dependent])
         end
       end
 
