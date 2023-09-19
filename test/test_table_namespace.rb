@@ -35,6 +35,7 @@ class TableNamespaceTest < ActiveSupport::TestCase
 
     b = Paranoid::Blob.new(name: "hello!")
     b.save!
+
     assert_equal b, Paranoid::Blob.first
   end
 end

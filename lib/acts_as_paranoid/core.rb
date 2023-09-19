@@ -89,12 +89,7 @@ module ActsAsParanoid
       end
 
       def recovery_value
-        if paranoid_configuration.key? :recovery_value
-          ActiveSupport::Deprecation.warn \
-            "The recovery_value setting is deprecated and will be removed in" \
-            " ActsAsParanoid 0.8.0"
-          paranoid_configuration[:recovery_value]
-        elsif boolean_type_not_nullable?
+        if boolean_type_not_nullable?
           false
         else
           nil
@@ -121,9 +116,13 @@ module ActsAsParanoid
       def without_paranoid_default_scope
         scope = all
 
+        # unscope avoids applying the default scope when using this scope for associations
         scope = scope.unscope(where: paranoid_column)
-        # Fix problems with unscope group chain
-        scope = scope.unscoped if scope.to_sql.include? paranoid_default_scope.to_sql
+
+        paranoid_where_clause =
+          ActiveRecord::Relation::WhereClause.new([paranoid_default_scope])
+
+        scope.where_clause = all.where_clause - paranoid_where_clause
 
         scope
       end
@@ -157,7 +156,6 @@ module ActsAsParanoid
             decrement_counters_on_associations
           end
 
-          stale_paranoid_value
           @destroyed = true
           freeze
         end
@@ -165,6 +163,12 @@ module ActsAsParanoid
     end
 
     def destroy!
+      destroy || raise(
+        ActiveRecord::RecordNotDestroyed.new("Failed to destroy the record", self)
+      )
+    end
+
+    def destroy
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
@@ -186,8 +190,6 @@ module ActsAsParanoid
         destroy_fully!
       end
     end
-
-    alias destroy destroy!
 
     def recover(options = {})
       return if !deleted?
@@ -220,23 +222,6 @@ module ActsAsParanoid
       recover(options)
     end
 
-    def recover_dependent_associations(deleted_value, options)
-      self.class.dependent_associations.each do |reflection|
-        recover_dependent_association(reflection, deleted_value, options)
-      end
-    end
-
-    def destroy_dependent_associations!
-      self.class.dependent_associations.each do |reflection|
-        assoc = association(reflection.name)
-        next unless (klass = assoc.klass).paranoid?
-
-        klass
-          .only_deleted.merge(get_association_scope(assoc))
-          .each(&:destroy!)
-      end
-    end
-
     def deleted?
       return true if @destroyed
 
@@ -258,6 +243,23 @@ module ActsAsParanoid
     alias destroyed_fully? deleted_fully?
 
     private
+
+    def recover_dependent_associations(deleted_value, options)
+      self.class.dependent_associations.each do |reflection|
+        recover_dependent_association(reflection, deleted_value, options)
+      end
+    end
+
+    def destroy_dependent_associations!
+      self.class.dependent_associations.each do |reflection|
+        assoc = association(reflection.name)
+        next unless (klass = assoc.klass).paranoid?
+
+        klass
+          .only_deleted.merge(get_association_scope(assoc))
+          .each(&:destroy!)
+      end
+    end
 
     def recover_dependent_association(reflection, deleted_value, options)
       assoc = association(reflection.name)
