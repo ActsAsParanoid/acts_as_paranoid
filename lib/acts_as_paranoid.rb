@@ -30,6 +30,11 @@ module ActsAsParanoid
       dependent_recovery_window: 2.minutes,
       double_tap_destroys_fully: true
     }
+    if defined?(Rails)
+      paranoid_configuration.merge!(
+        Hash(::Rails.try(:application).try(:config).try(:acts_as_paranoid_default_options))
+      )
+    end
     if options[:column_type] == "string"
       paranoid_configuration.merge!(deleted_value: "deleted")
     end

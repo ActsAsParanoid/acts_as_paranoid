@@ -37,6 +37,14 @@ FileUtils.mkdir_p log_dir
 file_path = File.join(log_dir, "test.log")
 ActiveRecord::Base.logger = Logger.new(file_path)
 
+unless defined?(Rails) # simulate Rails config behaviour during tests
+  Rails = Struct.new(:application).new(
+    Struct.new(:config).new( # application attribute
+      OpenStruct.new # config attribute
+    )
+  )
+end
+
 def timestamps(table)
   table.column  :created_at, :timestamp, null: false
   table.column  :updated_at, :timestamp, null: false

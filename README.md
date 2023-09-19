@@ -79,6 +79,22 @@ option which is `true` by default. When set to `false`, entities that have
 have `true` will be considered deleted. When `true` everything that has a
 not-null value will be considered deleted.
 
+### Configure Default Options
+
+If you want to use a configuration option globally in your application
+as a default, you can set up the following in your application.rb or in
+an initializer:
+```ruby
+  # config/initializers/acts_as_paranoid.rb:
+  Rails.application.config.acts_as_paranoid_default_options = {
+    column: 'deleted',
+    recover_dependent_associations: false,
+    double_tap_destroys_fully: false,
+  }
+```
+This overrides the defaults set by the gem but in turn can still be overriden
+when defining a class as `acts_as_paranoid`.
+
 ### Filtering
 
 If a record is deleted by ActsAsParanoid, it won't be retrieved when accessing
@@ -245,7 +261,7 @@ p1.recover #=> fails validation!
 
 ### Status
 
-A paranoid object could be deleted or destroyed fully. 
+A paranoid object could be deleted or destroyed fully.
 
 You can check if the object is deleted with the `deleted?` helper
 
