@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         ruby: ["2.7", "3.0", "3.1", "3.2", jruby-9.4]
-        gemfile: [active_record_60, active_record_61, active_record_70]
+        gemfile: [active_record_60, active_record_61, active_record_70, active_record_71]
         include:
           # Rails 5.2 only works with Ruby 2.7 and below
           - ruby: "2.7"
