@@ -25,6 +25,10 @@ jobs:
           # Rails 5.2 only works with Ruby 2.7 and below
           - ruby: "2.7"
             gemfile: active_record_52
+        exclude:
+          # The activerecord-jdbcsqlite3-adapter gem does not work with Rails 7.1 yet
+          - ruby: "jruby-9.4"
+            gemfile: active_record_71
 
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
