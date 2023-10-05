@@ -2,6 +2,21 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.9.0
+
+* Support JRuby 9.4 ([#299] by [Matijs van Zuijlen][mvz])
+* Add support for Ruby 3.2 ([#300] by [Matijs van Zuijlen][mvz])
+* Drop support for Ruby 2.6 ([#301] by [Matijs van Zuijlen][mvz])
+* Support Rails 7.1 ([#312] and [#317] by [Matijs van Zuijlen][mvz])
+* Drop support for Rails 5.2 and 6.0 ([#315] by [Matijs van Zuijlen][mvz])
+
+[#299]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/299
+[#300]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/300
+[#301]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/301
+[#312]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/312
+[#315]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/315
+[#317]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/317
+
 ## 0.8.1
 
 * Officially support Ruby 3.1 ([#268], by [Matijs van Zuijlen][mvz])
