@@ -312,7 +312,7 @@ module ActsAsParanoid
     end
 
     def each_counter_cached_association_reflection
-      _reflections.each do |_name, reflection|
+      _reflections.each_value do |reflection|
         yield reflection if reflection.belongs_to? && reflection.counter_cache_column
       end
     end
