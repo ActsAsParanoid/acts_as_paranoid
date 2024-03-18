@@ -123,31 +123,32 @@ class ParanoidTest < ActiveSupport::TestCase
     before_recover :call_me_before_recover
     after_recover :call_me_after_recover
 
-    def initialize(*attrs)
-      @called_before_destroy = false
-      @called_after_destroy = false
-      @called_after_commit_on_destroy = false
-      super(*attrs)
-    end
+    set_callback :initialize, lambda {
+      @called_before_destroy = 0
+      @called_after_destroy = 0
+      @called_after_commit_on_destroy = 0
+      @called_before_recover = 0
+      @called_after_recover = 0
+    }
 
     def call_me_before_destroy
-      @called_before_destroy = true
+      @called_before_destroy += 1
     end
 
     def call_me_after_destroy
-      @called_after_destroy = true
+      @called_after_destroy += 1
     end
 
     def call_me_after_commit_on_destroy
-      @called_after_commit_on_destroy = true
+      @called_after_commit_on_destroy += 1
     end
 
     def call_me_before_recover
-      @called_before_recover = true
+      @called_before_recover += 1
     end
 
     def call_me_after_recover
-      @called_after_recover = true
+      @called_after_recover += 1
     end
   end
 
@@ -779,21 +780,32 @@ class ParanoidTest < ActiveSupport::TestCase
       @paranoid_with_callback.destroy
     end
 
-    assert @paranoid_with_callback.called_before_destroy
-    assert @paranoid_with_callback.called_after_destroy
-    assert @paranoid_with_callback.called_after_commit_on_destroy
+    assert_equal 1, @paranoid_with_callback.called_before_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_commit_on_destroy
+  end
+
+  def test_paranoid_destroy_destroy_callbacks
+    @paranoid_with_callback = ParanoidWithCallback.first
+    ParanoidWithCallback.transaction do
+      @paranoid_with_callback.destroy.destroy
+    end
+
+    assert_equal 2, @paranoid_with_callback.called_before_destroy
+    assert_equal 2, @paranoid_with_callback.called_after_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_commit_on_destroy
   end
 
   def test_hard_destroy_callbacks
     @paranoid_with_callback = ParanoidWithCallback.first
 
     ParanoidWithCallback.transaction do
-      @paranoid_with_callback.destroy!
+      @paranoid_with_callback.destroy_fully!
     end
 
-    assert @paranoid_with_callback.called_before_destroy
-    assert @paranoid_with_callback.called_after_destroy
-    assert @paranoid_with_callback.called_after_commit_on_destroy
+    assert_equal 1, @paranoid_with_callback.called_before_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_commit_on_destroy
   end
 
   def test_recovery_callbacks
@@ -802,22 +814,66 @@ class ParanoidTest < ActiveSupport::TestCase
     ParanoidWithCallback.transaction do
       @paranoid_with_callback.destroy
 
-      assert_nil @paranoid_with_callback.called_before_recover
-      assert_nil @paranoid_with_callback.called_after_recover
+      assert_equal 1, @paranoid_with_callback.called_before_destroy
+      assert_equal 1, @paranoid_with_callback.called_after_destroy
+      assert_equal 0, @paranoid_with_callback.called_after_commit_on_destroy
+      assert_equal 0, @paranoid_with_callback.called_before_recover
+      assert_equal 0, @paranoid_with_callback.called_after_recover
 
       @paranoid_with_callback.recover
     end
 
-    assert @paranoid_with_callback.called_before_recover
-    assert @paranoid_with_callback.called_after_recover
+    assert_equal 1, @paranoid_with_callback.called_before_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_destroy
+    assert_includes 0..1, @paranoid_with_callback.called_after_commit_on_destroy
+    assert_equal 1, @paranoid_with_callback.called_before_recover
+    assert_equal 1, @paranoid_with_callback.called_after_recover
+  end
+
+  def test_recovery_callbacks_with_2_transactions
+    @paranoid_with_callback = ParanoidWithCallback.first
+
+    ParanoidWithCallback.transaction do
+      @paranoid_with_callback.destroy
+    end
+
+    assert_equal 1, @paranoid_with_callback.called_before_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_commit_on_destroy
+    assert_equal 0, @paranoid_with_callback.called_before_recover
+    assert_equal 0, @paranoid_with_callback.called_after_recover
+
+    ParanoidWithCallback.transaction do
+      @paranoid_with_callback.recover
+    end
+
+    assert_equal 1, @paranoid_with_callback.called_before_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_commit_on_destroy
+    assert_equal 1, @paranoid_with_callback.called_before_recover
+    assert_equal 1, @paranoid_with_callback.called_after_recover
+  end
+
+  def test_paranoid_destroy_with_update_callbacks
+    @paranoid_with_callback = ParanoidWithCallback.first
+    ParanoidWithCallback.transaction do
+      @paranoid_with_callback.destroy
+    end
+    ParanoidWithCallback.transaction do
+      @paranoid_with_callback.update(name: "still paranoid")
+    end
+
+    assert_equal 1, @paranoid_with_callback.called_before_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_destroy
+    assert_equal 1, @paranoid_with_callback.called_after_commit_on_destroy
   end
 
   def test_recovery_callbacks_without_destroy
     @paranoid_with_callback = ParanoidWithCallback.first
     @paranoid_with_callback.recover
 
-    assert_nil @paranoid_with_callback.called_before_recover
-    assert_nil @paranoid_with_callback.called_after_recover
+    assert_equal 0, @paranoid_with_callback.called_before_recover
+    assert_equal 0, @paranoid_with_callback.called_after_recover
   end
 
   def test_delete_by_multiple_id_is_paranoid

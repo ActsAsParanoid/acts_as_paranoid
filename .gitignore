@@ -7,3 +7,4 @@ gemfiles/*.lock
 .ruby-version
 coverage/
 log/
+test/tmp
