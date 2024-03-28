@@ -59,16 +59,16 @@ class AssociationsTest < ActiveSupport::TestCase
                -> { where(name: "hello").includes(:not_paranoid) },
                class_name: "ParanoidTime", foreign_key: :paranoid_time_id
     belongs_to :paranoid_time_with_deleted, class_name: "ParanoidTime",
-                                            foreign_key: :paranoid_time_id,
-                                            with_deleted: true
+               foreign_key: :paranoid_time_id,
+               with_deleted: true
     belongs_to :paranoid_time_with_scope_with_deleted,
                -> { where(name: "hello").includes(:not_paranoid) },
                class_name: "ParanoidTime", foreign_key: :paranoid_time_id,
                with_deleted: true
     belongs_to :paranoid_time_polymorphic_with_deleted, class_name: "ParanoidTime",
-                                                        foreign_key: :paranoid_time_id,
-                                                        polymorphic: true,
-                                                        with_deleted: true
+               foreign_key: :paranoid_time_id,
+               polymorphic: true,
+               with_deleted: true
 
     belongs_to :paranoid_belongs_dependant, dependent: :destroy
   end
@@ -77,6 +77,16 @@ class AssociationsTest < ActiveSupport::TestCase
     acts_as_paranoid
 
     has_many :paranoid_has_many_dependants
+    has_one :paranoid_has_one_dependant
+    has_one :paranoid_has_one_dependant_with_deleted,
+            class_name: "ParanoidHasOneDependant",
+            with_deleted: true
+  end
+
+  class ParanoidHasOneDependant < ActiveRecord::Base
+    acts_as_paranoid
+
+    belongs_to :paranoid_belongs_dependant, dependent: :destroy
   end
 
   class ParanoidTime < ActiveRecord::Base
@@ -192,6 +202,14 @@ class AssociationsTest < ActiveSupport::TestCase
       create_table :paranoid_belongs_dependants do |t|
         t.string    :name
         t.datetime  :deleted_at
+
+        timestamps t
+      end
+
+      create_table :paranoid_has_one_dependants do |t|
+        t.string    :name
+        t.datetime  :deleted_at
+        t.integer   :paranoid_belongs_dependant_id
 
         timestamps t
       end
@@ -357,7 +375,7 @@ class AssociationsTest < ActiveSupport::TestCase
 
     expected_includes_values = ParanoidTime.includes(:not_paranoid).includes_values
     includes_values = paranoid_has_many_dependant
-      .association(:paranoid_time_with_scope).scope.includes_values
+                        .association(:paranoid_time_with_scope).scope.includes_values
 
     assert_equal expected_includes_values, includes_values
 
@@ -385,7 +403,7 @@ class AssociationsTest < ActiveSupport::TestCase
     includes_values = ParanoidTime.includes(:not_paranoid).includes_values
 
     assert_equal includes_values, paranoid_has_many_dependant
-      .association(:paranoid_time_with_scope_with_deleted).scope.includes_values
+                                    .association(:paranoid_time_with_scope_with_deleted).scope.includes_values
 
     paranoid_time = ParanoidTime.create(name: "not-hello")
     paranoid_has_many_dependant.paranoid_time = paranoid_time
@@ -397,19 +415,19 @@ class AssociationsTest < ActiveSupport::TestCase
     paranoid_has_many_dependant.reload
 
     assert_equal paranoid_time, paranoid_has_many_dependant
-      .paranoid_time_with_scope_with_deleted
+                                  .paranoid_time_with_scope_with_deleted
 
     paranoid_time.destroy
     paranoid_has_many_dependant.reload
 
     assert_equal paranoid_time, paranoid_has_many_dependant
-      .paranoid_time_with_scope_with_deleted
+                                  .paranoid_time_with_scope_with_deleted
   end
 
   def test_belongs_to_with_deleted
     paranoid_time = ParanoidTime.create! name: "paranoid"
     paranoid_has_many_dependant = paranoid_time.paranoid_has_many_dependants
-      .create(name: "dependant!")
+                                               .create(name: "dependant!")
 
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time_with_deleted
@@ -470,17 +488,17 @@ class AssociationsTest < ActiveSupport::TestCase
   def test_belongs_to_polymorphic_with_deleted
     paranoid_time = ParanoidTime.create! name: "paranoid"
     paranoid_has_many_dependant = ParanoidHasManyDependant
-      .create!(name: "dependant!", paranoid_time_polymorphic_with_deleted: paranoid_time)
+                                    .create!(name: "dependant!", paranoid_time_polymorphic_with_deleted: paranoid_time)
 
     assert_equal paranoid_time, paranoid_has_many_dependant.paranoid_time
     assert_equal paranoid_time, paranoid_has_many_dependant
-      .paranoid_time_polymorphic_with_deleted
+                                  .paranoid_time_polymorphic_with_deleted
 
     paranoid_time.destroy
 
     assert_nil paranoid_has_many_dependant.reload.paranoid_time
     assert_equal paranoid_time, paranoid_has_many_dependant
-      .reload.paranoid_time_polymorphic_with_deleted
+                                  .reload.paranoid_time_polymorphic_with_deleted
   end
 
   def test_belongs_to_nil_polymorphic_with_deleted
@@ -500,7 +518,7 @@ class AssociationsTest < ActiveSupport::TestCase
 
   def test_belongs_to_options
     paranoid_time = ParanoidHasManyDependant.reflections
-      .with_indifferent_access[:paranoid_time]
+                                            .with_indifferent_access[:paranoid_time]
 
     assert_equal :belongs_to, paranoid_time.macro
     assert_nil paranoid_time.options[:with_deleted]
@@ -509,7 +527,7 @@ class AssociationsTest < ActiveSupport::TestCase
   def test_belongs_to_with_deleted_options
     paranoid_time_with_deleted =
       ParanoidHasManyDependant.reflections
-        .with_indifferent_access[:paranoid_time_with_deleted]
+                              .with_indifferent_access[:paranoid_time_with_deleted]
 
     assert_equal :belongs_to, paranoid_time_with_deleted.macro
     assert paranoid_time_with_deleted.options[:with_deleted]
@@ -517,7 +535,7 @@ class AssociationsTest < ActiveSupport::TestCase
 
   def test_belongs_to_polymorphic_with_deleted_options
     paranoid_time_polymorphic_with_deleted = ParanoidHasManyDependant.reflections
-      .with_indifferent_access[:paranoid_time_polymorphic_with_deleted]
+                                                                     .with_indifferent_access[:paranoid_time_polymorphic_with_deleted]
 
     assert_equal :belongs_to, paranoid_time_polymorphic_with_deleted.macro
     assert paranoid_time_polymorphic_with_deleted.options[:with_deleted]
@@ -540,6 +558,34 @@ class AssociationsTest < ActiveSupport::TestCase
 
     assert_empty parent.paranoid_has_many_dependants.to_a
     assert_equal [child], parent.paranoid_has_many_dependants.with_deleted.to_a
+  end
+
+  def test_has_one_with_deleted_options
+    parent =
+      ParanoidBelongsDependant.reflections
+                              .with_indifferent_access[:paranoid_has_one_dependant_with_deleted]
+
+    assert_equal :has_one, parent.macro
+    assert parent.options[:with_deleted]
+  end
+
+  def test_has_one_associated_records_when_finding_with_paranoid_deleted
+    parent = ParanoidBelongsDependant.create
+    child = ParanoidHasOneDependant.create
+    parent.paranoid_has_one_dependant = child
+
+    unrelated_parent = ParanoidBelongsDependant.create
+    unrelated_child = ParanoidHasOneDependant.create
+    unrelated_parent.paranoid_has_one_dependant = unrelated_child
+
+    child.destroy
+
+    assert_paranoid_deletion(child)
+
+    parent.reload
+
+    assert_nil parent.paranoid_has_one_dependant
+    assert_equal child, parent.paranoid_has_one_dependant_with_deleted
   end
 
   def test_join_with_model_with_deleted
@@ -569,7 +615,7 @@ class AssociationsTest < ActiveSupport::TestCase
     paranoid_time.destroy
 
     ParanoidHasManyDependant.with_deleted
-      .includes(:paranoid_time_with_deleted).each do |hasmany|
+                            .includes(:paranoid_time_with_deleted).each do |hasmany|
       assert_not_nil hasmany.paranoid_time_with_deleted
     end
   end

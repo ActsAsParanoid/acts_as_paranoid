@@ -197,7 +197,7 @@ or in the recover statement
 
 ```ruby
 Paranoiac.only_deleted.where("name = ?", "not dead yet").first
-  .recover(recovery_window: 30.seconds)
+         .recover(recovery_window: 30.seconds)
 ```
 
 ### recover!
@@ -245,7 +245,7 @@ p1.recover #=> fails validation!
 
 ### Status
 
-A paranoid object could be deleted or destroyed fully. 
+A paranoid object could be deleted or destroyed fully.
 
 You can check if the object is deleted with the `deleted?` helper
 
@@ -311,8 +311,9 @@ Paranoiac.pretty.only_deleted.count #=> 1
 Associations are also supported.
 
 From the simplest behaviors you'd expect to more nifty things like the ones
-mentioned previously or the usage of the `:with_deleted` option with
-`belongs_to`
+mentioned previously or the usage of the `:with_deleted` option with:
+
+#### belongs_to
 
 ```ruby
 class Parent < ActiveRecord::Base
@@ -334,6 +335,33 @@ parent.destroy
 
 child.parent #=> nil
 child.parent_including_deleted #=> Parent (it works!)
+```
+
+#### has_one
+
+```ruby
+class Parent < ActiveRecord::Base
+  has_one :child, class_name: "ParanoiacChild"
+  has_one :child_with_deleted, class_name: "ParanoiacChild", with_deleted: true
+end
+
+class ParanoiacChild < ActiveRecord::Base
+  acts_as_paranoid
+  belongs_to :parent
+end
+
+parent = Parent.first
+
+child = ParanoiacChild.create
+parent.child = child
+
+parent.child #=> ParanoiacChild
+
+child.destroy
+parent.reload
+
+parent.child #=> nil
+parent.child_with_deleted #=> ParanoiacChild
 ```
 
 ### Callbacks
