@@ -20,6 +20,29 @@ please require an older version of the `acts_as_paranoid` gem.
   [leads to a SystemStackError](https://github.com/ActsAsParanoid/acts_as_paranoid/issues/103).
 * You cannot directly create a model in a deleted state, or update a model
   after it's been deleted.
+* but You can use this method to achieve soft deletion with ActiveStorage
+
+```shell
+ActiveStorage::Attachment.class_eval do
+  acts_as_paranoid
+end
+```
+For example:
+Inside the model body, this method helps to override the ActiveStorage's destroy action
+```shell
+   class User < Base
+      ActiveStorage::Attachment.class_eval do
+       acts_as_paranoid
+      end
+   end
+```
+
+Firstly, you'll also need to create a migration for ActiveStorage.
+
+```shell
+    add_column :active_storage_blobs , :deleted_at, :datetime
+    add_index :active_storage_blobs , :deleted_at
+```
 
 ## Usage
 
