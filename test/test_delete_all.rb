@@ -42,14 +42,14 @@ class ActsAsParanoidTest < ActiveSupport::TestCase
       end
 
       create_table :paranoid_children do |t|
-        t.integer :paranoid_parent_id
-        t.integer :unhandled_delete_paranoid_parent_id
+        t.references :paranoid_parent, foreign_key: { on_delete: :cascade }
+        t.references :unhandled_delete_paranoid_parent, foreign_key: { on_delete: :cascade }
         t.datetime :deleted_at
         t.timestamps
       end
 
       create_table :paranoid_grandchildren do |t|
-        t.integer :paranoid_child_id
+        t.references :paranoid_child, foreign_key: { on_delete: :cascade }
         t.datetime :deleted_at
         t.timestamps
       end
