@@ -51,17 +51,19 @@ module ActsAsParanoid
   end
 end
 
-# Extend ActiveRecord's functionality
-ActiveRecord::Base.extend ActsAsParanoid
+ActiveSupport.on_load(:active_record) do
+  # Extend ActiveRecord's functionality
+  extend ActsAsParanoid
 
-# Extend ActiveRecord::Base with paranoid associations
-ActiveRecord::Base.include ActsAsParanoid::Associations
+  # Extend ActiveRecord::Base with paranoid associations
+  include ActsAsParanoid::Associations
 
-# Override ActiveRecord::Relation's behavior
-ActiveRecord::Relation.include ActsAsParanoid::Relation
+  # Override ActiveRecord::Relation's behavior
+  ActiveRecord::Relation.include ActsAsParanoid::Relation
 
-# Push the recover callback onto the activerecord callback list
-ActiveRecord::Callbacks::CALLBACKS.push(:before_recover, :after_recover)
+  # Push the recover callback onto the activerecord callback list
+  ActiveRecord::Callbacks::CALLBACKS.push(:before_recover, :after_recover)
 
-ActiveRecord::Reflection::AssociationReflection
-  .prepend ActsAsParanoid::AssociationReflection
+  ActiveRecord::Reflection::AssociationReflection
+    .prepend ActsAsParanoid::AssociationReflection
+end
