@@ -9,9 +9,9 @@ recoverable later.
 
 ## Support
 
-**This version targets Rails 6.1+ and Ruby 2.7+ only**
+**This version targets Rails 6.1+ and Ruby 3.0+ only**
 
-If you're working with Rails 6.0 and earlier, or with Ruby 2.6 or earlier,
+If you're working with Rails 6.0 and earlier, or with Ruby 2.7 or earlier,
 please require an older version of the `acts_as_paranoid` gem.
 
 ### Known issues
@@ -23,7 +23,7 @@ please require an older version of the `acts_as_paranoid` gem.
 
 ## Usage
 
-#### Install gem:
+#### Install gem
 
 ```ruby
 gem 'acts_as_paranoid'
@@ -245,7 +245,7 @@ p1.recover #=> fails validation!
 
 ### Status
 
-A paranoid object could be deleted or destroyed fully. 
+A paranoid object could be deleted or destroyed fully.
 
 You can check if the object is deleted with the `deleted?` helper
 

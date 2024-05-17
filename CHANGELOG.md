@@ -2,6 +2,18 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.10.0
+
+* Support Ruby 3.0 through 3.3, dropping support for 2.7 ([#322] by [mvz])
+* Use correct sqlite3 versions in tests ([#329] by [fatkodima])
+* Do not load `ActiveRecord` too early ([#330] by [fatkodima])
+
+[fatkodima]: https://github.com/fatkodima
+
+[#322]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/322
+[#329]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/329
+[#330]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/330
+
 ## 0.9.0
 
 * Support JRuby 9.4 ([#299] by [Matijs van Zuijlen][mvz])
