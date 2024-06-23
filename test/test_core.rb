@@ -127,7 +127,7 @@ class ParanoidTest < ActiveSupport::TestCase
       @called_before_destroy = false
       @called_after_destroy = false
       @called_after_commit_on_destroy = false
-      super(*attrs)
+      super
     end
 
     def call_me_before_destroy
