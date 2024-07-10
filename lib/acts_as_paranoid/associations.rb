@@ -7,11 +7,25 @@ module ActsAsParanoid
       class << base
         alias_method :belongs_to_without_deleted, :belongs_to
         alias_method :belongs_to, :belongs_to_with_deleted
+
+        alias_method :has_one_without_deleted, :has_one
+        alias_method :has_one, :has_one_with_deleted
       end
     end
 
     module ClassMethods
       def belongs_to_with_deleted(target, scope = nil, options = {})
+        relation_with_deleted(target, relation: :belongs_to, scope: scope, options: options)
+      end
+
+      def has_one_with_deleted(target, scope = nil, options = {})
+        relation_with_deleted(target, relation: :has_one, scope: scope, options: options)
+      end
+
+      private
+
+      # @param relation [String,Symbol] :belongs_to or :has_one
+      def relation_with_deleted(target, relation:, scope: nil, options: {})
         if scope.is_a?(Hash)
           options = scope
           scope = nil
@@ -23,7 +37,7 @@ module ActsAsParanoid
           scope = make_scope_with_deleted(scope)
         end
 
-        result = belongs_to_without_deleted(target, scope, **options)
+        result = send("#{relation}_without_deleted", target, scope, **options)
 
         if with_deleted
           options = result.values.last.options
@@ -33,8 +47,6 @@ module ActsAsParanoid
 
         result
       end
-
-      private
 
       def make_scope_with_deleted(scope)
         if scope
