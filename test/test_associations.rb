@@ -9,6 +9,7 @@ class AssociationsTest < ActiveSupport::TestCase
   end
 
   class ParanoidManyManyParentRight < ActiveRecord::Base
+    acts_as_paranoid
     has_many :paranoid_many_many_children
     has_many :paranoid_many_many_parent_lefts, through: :paranoid_many_many_children
   end
@@ -169,6 +170,7 @@ class AssociationsTest < ActiveSupport::TestCase
 
       create_table :paranoid_many_many_parent_rights do |t|
         t.string :name
+        t.datetime :deleted_at
         timestamps t
       end
 
@@ -306,6 +308,21 @@ class AssociationsTest < ActiveSupport::TestCase
 
   def teardown
     teardown_db
+  end
+
+  def test_through_relationships
+    paranoid_left = ParanoidManyManyParentLeft.create!
+    paranoid_left.paranoid_many_many_parent_rights.create!
+    paranoid_left.paranoid_many_many_children.first.destroy
+
+    assert_equal 0, ParanoidManyManyChild.count
+    assert_equal 1, ParanoidManyManyParentLeft.count
+    assert_equal 1, ParanoidManyManyParentRight.count
+
+    assert_equal 0, paranoid_left.paranoid_many_many_children.count
+    assert_equal 0, paranoid_left.paranoid_many_many_parent_rights.count
+    assert_equal 1, paranoid_left.paranoid_many_many_parent_rights.with_deleted.count
+    assert_equal 1, paranoid_left.paranoid_many_many_parent_rights.only_deleted.count
   end
 
   def test_removal_with_destroy_associations
