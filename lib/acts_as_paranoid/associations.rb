@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module ActsAsParanoid
+  # This module is included in ActiveRecord::Base to provide paranoid associations.
   module Associations
     def self.included(base)
       base.extend ClassMethods
