@@ -92,6 +92,190 @@ class AssociationsTest < ActiveSupport::TestCase
           end
         end
       end
+
+      describe "when classes are paranoid" do
+        before do
+          # NOTE: Because Book.authorships is dependent: destroy, if Book is
+          # paranoid, Authorship should also be paranoid.
+          authorship_class.acts_as_paranoid
+          book_class.acts_as_paranoid
+        end
+
+        it "destroys the join record when calling destroy on the associated record" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            book.destroy
+
+            author.reload
+
+            _(author.books).must_equal []
+            _(author.authorships).must_equal []
+          end
+        end
+
+        it "destroys just the join record when calling destroy on the association" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            author.books.destroy(book)
+
+            author.reload
+
+            _(author.books).must_equal []
+            _(author.authorships).must_equal []
+            _(Book.all).must_equal [book]
+          end
+        end
+
+        it "does not" \
+           " include destroyed records with deleted join records in .with_deleted scope" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            book.destroy
+
+            author.reload
+
+            # TODO: This should return [book]
+            _(author.books.with_deleted).must_equal []
+          end
+        end
+
+        it "does not include records with deleted join records in .with_deleted scope" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            author.books.destroy(book)
+
+            author.reload
+
+            # TODO: This should return [book]
+            _(author.books.with_deleted).must_equal []
+          end
+        end
+      end
+    end
+
+    describe "when relation to join table is not marked as dependent" do
+      let(:author_class) do
+        Class.new(ActiveRecord::Base) do
+          has_many :authorships
+          has_many :books, through: :authorships
+        end
+      end
+
+      let(:authorship_class) do
+        Class.new(ActiveRecord::Base) do
+          belongs_to :author
+          belongs_to :book
+        end
+      end
+
+      let(:book_class) do
+        Class.new(ActiveRecord::Base) do
+          has_many :authorships
+          has_many :authors, through: :authorships
+        end
+      end
+
+      let(:const_map) do
+        {
+          Author: author_class,
+          Authorship: authorship_class,
+          Book: book_class
+        }
+      end
+
+      describe "when classes are not paranoid" do
+        it "destroys just the associated record when calling destroy on it" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            book.destroy
+
+            author.reload
+
+            _(author.books).must_equal []
+            _(author.authorships).wont_equal []
+          end
+        end
+
+        it "destroys just the join record when calling destroy on the association" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            author.books.destroy(book)
+
+            author.reload
+
+            _(author.books).must_equal []
+            _(author.authorships).must_equal []
+            _(Book.all).must_equal [book]
+          end
+        end
+      end
+
+      describe "when classes are paranoid" do
+        before do
+          # NOTE: Because Book.authorships is dependent: destroy, if Book is
+          # paranoid, Authorship should also be paranoid.
+          authorship_class.acts_as_paranoid
+          book_class.acts_as_paranoid
+        end
+
+        it "destroys the join record when calling destroy on the associated record" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            book.destroy
+
+            author.reload
+
+            _(author.books).must_equal []
+            _(author.authorships).wont_equal []
+          end
+        end
+
+        it "destroys just the join record when calling destroy on the association" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            author.books.destroy(book)
+
+            author.reload
+
+            _(author.books).must_equal []
+            _(author.authorships).must_equal []
+            _(Book.all).must_equal [book]
+          end
+        end
+
+        it "includes destroyed associated records in .with_deleted scope" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            book.destroy
+
+            author.reload
+
+            _(author.books.with_deleted).must_equal [book]
+          end
+        end
+
+        it "does not include records with deleted join records in .with_deleted scope" do
+          AssociationsTest.stub_consts(const_map) do
+            author = Author.create!
+            book = author.books.create!
+            author.books.destroy(book)
+
+            author.reload
+
+            # TODO: This should return [book]
+            _(author.books.with_deleted).must_equal []
+          end
+        end
+      end
     end
   end
 end
