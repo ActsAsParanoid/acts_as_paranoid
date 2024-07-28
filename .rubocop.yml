@@ -35,6 +35,11 @@ Layout/MultilineMethodCallIndentation:
 Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
+# Allow minitest-spec blocks to have any length
+Metrics/BlockLength:
+  Exclude:
+    - 'test/integration/**_test.rb'
+
 # Allow test classes to have any length
 Metrics/ClassLength:
   Exclude:
