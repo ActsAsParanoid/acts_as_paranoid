@@ -128,8 +128,7 @@ class AssociationsTest < ActiveSupport::TestCase
           end
         end
 
-        it "does not" \
-           " include destroyed records with deleted join records in .with_deleted scope" do
+        it "includes destroyed records with deleted join records in .with_deleted scope" do
           AssociationsTest.stub_consts(const_map) do
             author = Author.create!
             book = author.books.create!
@@ -137,12 +136,11 @@ class AssociationsTest < ActiveSupport::TestCase
 
             author.reload
 
-            # TODO: This should return [book]
-            _(author.books.with_deleted).must_equal []
+            _(author.books.with_deleted).must_equal [book]
           end
         end
 
-        it "does not include records with deleted join records in .with_deleted scope" do
+        it "includes records with deleted join records in .with_deleted scope" do
           AssociationsTest.stub_consts(const_map) do
             author = Author.create!
             book = author.books.create!
@@ -150,8 +148,7 @@ class AssociationsTest < ActiveSupport::TestCase
 
             author.reload
 
-            # TODO: This should return [book]
-            _(author.books.with_deleted).must_equal []
+            _(author.books.with_deleted).must_equal [book]
           end
         end
       end
@@ -263,7 +260,7 @@ class AssociationsTest < ActiveSupport::TestCase
           end
         end
 
-        it "does not include records with deleted join records in .with_deleted scope" do
+        it "includes records with deleted join records in .with_deleted scope" do
           AssociationsTest.stub_consts(const_map) do
             author = Author.create!
             book = author.books.create!
@@ -271,8 +268,7 @@ class AssociationsTest < ActiveSupport::TestCase
 
             author.reload
 
-            # TODO: This should return [book]
-            _(author.books.with_deleted).must_equal []
+            _(author.books.with_deleted).must_equal [book]
           end
         end
       end
