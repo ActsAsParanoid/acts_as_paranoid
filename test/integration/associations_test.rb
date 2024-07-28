@@ -3,6 +3,7 @@
 require "test_helper"
 require "minitest/spec"
 require "minitest/stub_const"
+require "minitest/around"
 
 class AssociationsTest < ActiveSupport::TestCase
   describe "a many-to-many association specified with has_many through:" do
@@ -31,6 +32,12 @@ class AssociationsTest < ActiveSupport::TestCase
     after do
       ActiveRecord::Base.connection.data_sources.each do |table|
         ActiveRecord::Base.connection.drop_table(table)
+      end
+    end
+
+    around do |test|
+      AssociationsTest.stub_consts(const_map) do
+        test.call
       end
     end
 
@@ -64,32 +71,28 @@ class AssociationsTest < ActiveSupport::TestCase
         }
       end
 
+      let(:author) { Author.first }
+      let(:book) { Book.first }
+
+      before do
+        author = Author.create!
+        author.books.create!
+      end
+
       describe "when classes are not paranoid" do
         it "destroys the join record when calling destroy on the associated record" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            book.destroy
+          book.destroy
 
-            author.reload
-
-            _(author.books).must_equal []
-            _(author.authorships).must_equal []
-          end
+          _(author.reload.books).must_equal []
+          _(author.authorships).must_equal []
         end
 
         it "destroys just the join record when calling destroy on the association" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            author.books.destroy(book)
+          author.books.destroy(book)
 
-            author.reload
-
-            _(author.books).must_equal []
-            _(author.authorships).must_equal []
-            _(Book.all).must_equal [book]
-          end
+          _(author.reload.books).must_equal []
+          _(author.authorships).must_equal []
+          _(Book.all).must_equal [book]
         end
       end
 
@@ -102,54 +105,30 @@ class AssociationsTest < ActiveSupport::TestCase
         end
 
         it "destroys the join record when calling destroy on the associated record" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            book.destroy
+          book.destroy
 
-            author.reload
-
-            _(author.books).must_equal []
-            _(author.authorships).must_equal []
-          end
+          _(author.reload.books).must_equal []
+          _(author.authorships).must_equal []
         end
 
         it "destroys just the join record when calling destroy on the association" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            author.books.destroy(book)
+          author.books.destroy(book)
 
-            author.reload
-
-            _(author.books).must_equal []
-            _(author.authorships).must_equal []
-            _(Book.all).must_equal [book]
-          end
+          _(author.reload.books).must_equal []
+          _(author.authorships).must_equal []
+          _(Book.all).must_equal [book]
         end
 
         it "includes destroyed records with deleted join records in .with_deleted scope" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            book.destroy
+          book.destroy
 
-            author.reload
-
-            _(author.books.with_deleted).must_equal [book]
-          end
+          _(author.reload.books.with_deleted).must_equal [book]
         end
 
         it "includes records with deleted join records in .with_deleted scope" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            author.books.destroy(book)
+          author.books.destroy(book)
 
-            author.reload
-
-            _(author.books.with_deleted).must_equal [book]
-          end
+          _(author.reload.books.with_deleted).must_equal [book]
         end
       end
     end
@@ -184,32 +163,28 @@ class AssociationsTest < ActiveSupport::TestCase
         }
       end
 
+      let(:author) { Author.first }
+      let(:book) { Book.first }
+
+      before do
+        author = Author.create!
+        author.books.create!
+      end
+
       describe "when classes are not paranoid" do
         it "destroys just the associated record when calling destroy on it" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            book.destroy
+          book.destroy
 
-            author.reload
-
-            _(author.books).must_equal []
-            _(author.authorships).wont_equal []
-          end
+          _(author.reload.books).must_equal []
+          _(author.authorships).wont_equal []
         end
 
         it "destroys just the join record when calling destroy on the association" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            author.books.destroy(book)
+          author.books.destroy(book)
 
-            author.reload
-
-            _(author.books).must_equal []
-            _(author.authorships).must_equal []
-            _(Book.all).must_equal [book]
-          end
+          _(author.reload.books).must_equal []
+          _(author.authorships).must_equal []
+          _(Book.all).must_equal [book]
         end
       end
 
@@ -222,54 +197,30 @@ class AssociationsTest < ActiveSupport::TestCase
         end
 
         it "destroys the join record when calling destroy on the associated record" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            book.destroy
+          book.destroy
 
-            author.reload
-
-            _(author.books).must_equal []
-            _(author.authorships).wont_equal []
-          end
+          _(author.reload.books).must_equal []
+          _(author.authorships).wont_equal []
         end
 
         it "destroys just the join record when calling destroy on the association" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            author.books.destroy(book)
+          author.books.destroy(book)
 
-            author.reload
-
-            _(author.books).must_equal []
-            _(author.authorships).must_equal []
-            _(Book.all).must_equal [book]
-          end
+          _(author.reload.books).must_equal []
+          _(author.authorships).must_equal []
+          _(Book.all).must_equal [book]
         end
 
         it "includes destroyed associated records in .with_deleted scope" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            book.destroy
+          book.destroy
 
-            author.reload
-
-            _(author.books.with_deleted).must_equal [book]
-          end
+          _(author.reload.books.with_deleted).must_equal [book]
         end
 
         it "includes records with deleted join records in .with_deleted scope" do
-          AssociationsTest.stub_consts(const_map) do
-            author = Author.create!
-            book = author.books.create!
-            author.books.destroy(book)
+          author.books.destroy(book)
 
-            author.reload
-
-            _(author.books.with_deleted).must_equal [book]
-          end
+          _(author.reload.books.with_deleted).must_equal [book]
         end
       end
     end
