@@ -42,28 +42,22 @@ class AssociationsTest < ActiveSupport::TestCase
     end
 
     describe "when relation to join table is marked as dependent: destroy" do
-      let(:author_class) do
-        Class.new(ActiveRecord::Base) do
+      let(:const_map) do
+        author_class = Class.new(ActiveRecord::Base) do
           has_many :authorships, dependent: :destroy
           has_many :books, through: :authorships
         end
-      end
 
-      let(:authorship_class) do
-        Class.new(ActiveRecord::Base) do
+        authorship_class = Class.new(ActiveRecord::Base) do
           belongs_to :author
           belongs_to :book
         end
-      end
 
-      let(:book_class) do
-        Class.new(ActiveRecord::Base) do
+        book_class = Class.new(ActiveRecord::Base) do
           has_many :authorships, dependent: :destroy
           has_many :authors, through: :authorships
         end
-      end
 
-      let(:const_map) do
         {
           Author: author_class,
           Authorship: authorship_class,
@@ -100,8 +94,8 @@ class AssociationsTest < ActiveSupport::TestCase
         before do
           # NOTE: Because Book.authorships is dependent: destroy, if Book is
           # paranoid, Authorship should also be paranoid.
-          authorship_class.acts_as_paranoid
-          book_class.acts_as_paranoid
+          Authorship.acts_as_paranoid
+          Book.acts_as_paranoid
         end
 
         it "destroys the join record when calling destroy on the associated record" do
@@ -134,35 +128,28 @@ class AssociationsTest < ActiveSupport::TestCase
     end
 
     describe "when relation to join table is not marked as dependent" do
-      let(:author_class) do
-        Class.new(ActiveRecord::Base) do
+      let(:const_map) do
+        author_class = Class.new(ActiveRecord::Base) do
           has_many :authorships
           has_many :books, through: :authorships
         end
-      end
 
-      let(:authorship_class) do
-        Class.new(ActiveRecord::Base) do
+        authorship_class = Class.new(ActiveRecord::Base) do
           belongs_to :author
           belongs_to :book
         end
-      end
 
-      let(:book_class) do
-        Class.new(ActiveRecord::Base) do
+        book_class = Class.new(ActiveRecord::Base) do
           has_many :authorships
           has_many :authors, through: :authorships
         end
-      end
 
-      let(:const_map) do
         {
           Author: author_class,
           Authorship: authorship_class,
           Book: book_class
         }
       end
-
       let(:author) { Author.first }
       let(:book) { Book.first }
 
@@ -192,8 +179,8 @@ class AssociationsTest < ActiveSupport::TestCase
         before do
           # NOTE: Because Book.authorships is dependent: destroy, if Book is
           # paranoid, Authorship should also be paranoid.
-          authorship_class.acts_as_paranoid
-          book_class.acts_as_paranoid
+          Authorship.acts_as_paranoid
+          Book.acts_as_paranoid
         end
 
         it "destroys the join record when calling destroy on the associated record" do
