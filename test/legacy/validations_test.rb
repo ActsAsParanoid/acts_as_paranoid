@@ -20,7 +20,12 @@ class ValidatesUniquenessTest < ActiveSupport::TestCase
     acts_as_paranoid
     validates_as_paranoid
 
-    serialize :colors, Array
+    
+    if Gem::Version.new(ActiveRecord::VERSION::STRING) < Gem::Version.new('7.2')
+      serialize :colors, Array
+    else
+      serialize :colors
+    end
 
     validates_uniqueness_of_without_deleted :colors
   end
