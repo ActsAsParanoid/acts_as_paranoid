@@ -2,6 +2,14 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.10.2
+
+* Support Rails 7.2 ([#341] by [kalashnikovisme])
+
+[kalashnikovisme]: https://github.com/kalashnikovisme
+
+[#341]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/341
+
 ## 0.10.1
 
 * Add changelog_uri to gemspec ([#332] by [fynsta])
