@@ -43,6 +43,15 @@ appraise "active_record_72" do
   gem "activesupport", "~> 7.2.0", require: "active_support"
 
   group :development do
-    gem "sqlite3", "~> 2.0.0", platforms: [:ruby]
+    gem "sqlite3", "~> 2.0", platforms: [:ruby]
+  end
+end
+
+appraise "active_record_80" do
+  gem "activerecord", "~> 8.0.0", require: "active_record"
+  gem "activesupport", "~> 8.0.0", require: "active_support"
+
+  group :development do
+    gem "sqlite3", "~> 2.0", platforms: [:ruby]
   end
 end
