@@ -15,6 +15,7 @@ appraise "active_record_61" do
 
   group :development do
     gem "activerecord-jdbcsqlite3-adapter", "~> 61.1", platforms: [:jruby]
+    gem "sqlite3", "~> 1.4", platforms: [:ruby]
   end
 end
 
@@ -24,6 +25,7 @@ appraise "active_record_70" do
 
   group :development do
     gem "activerecord-jdbcsqlite3-adapter", "~> 70.0", platforms: [:jruby]
+    gem "sqlite3", "~> 1.4", platforms: [:ruby]
   end
 end
 
@@ -32,7 +34,7 @@ appraise "active_record_71" do
   gem "activesupport", "~> 7.1.0", require: "active_support"
 
   group :development do
-    gem "activerecord-jdbcsqlite3-adapter", "~> 70.0", platforms: [:jruby]
+    gem "sqlite3", "~> 1.4", platforms: [:ruby]
   end
 end
 
@@ -41,6 +43,6 @@ appraise "active_record_72" do
   gem "activesupport", "~> 7.2.0", require: "active_support"
 
   group :development do
-    gem "activerecord-jdbcsqlite3-adapter", "~> 70.0", platforms: [:jruby]
+    gem "sqlite3", "~> 2.0.0", platforms: [:ruby]
   end
 end
