@@ -29,7 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest-around", "~> 0.5"
   spec.add_development_dependency "minitest-focus", "~> 1.3"
   spec.add_development_dependency "minitest-stub-const", "~> 0.6"
-  spec.add_development_dependency "pry", "~> 0.14.1"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rake-manifest", "~> 0.2.0"
   spec.add_development_dependency "rdoc", "~> 6.3"
