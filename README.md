@@ -26,7 +26,7 @@ please require an older version of the `acts_as_paranoid` gem.
 #### Install gem
 
 ```ruby
-gem 'acts_as_paranoid'
+gem "acts_as_paranoid", "~> 0.10.3"
 ```
 
 ```shell

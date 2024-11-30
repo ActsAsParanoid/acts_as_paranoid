@@ -2,6 +2,15 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.10.3
+
+* Fix CI Badge ([#350] by [tagliala])
+* Support Rails 8.0 ([#354] by [mvz])
+
+[tagliala]: https://github.com/tagliala
+[#350]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/350
+[#354]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/354
+
 ## 0.10.2
 
 * Support Rails 7.2 ([#341] by [kalashnikovisme])
@@ -52,13 +61,16 @@ Notable changes to this project will be documented in this file.
 ## 0.8.1
 
 * Officially support Ruby 3.1 ([#268], by [Matijs van Zuijlen][mvz])
-* Fix association building for `belongs_to` with `:with_deleted` option ([#277], by [Matijs van Zuijlen][mvz])
+* Fix association building for `belongs_to` with `:with_deleted` option
+  ([#277], by [Matijs van Zuijlen][mvz])
 
 ## 0.8.0
 
 * Do not set `paranoid_value` when destroying fully ([#238], by [Aymeric Le Dorze][aymeric-ledorze])
-* Make helper methods for dependent associations private ([#239], by [Matijs van Zuijlen][mvz])
-* Raise ActiveRecord::RecordNotDestroyed if destroy returns false ([#240], by [Hao Liu][leomayleomay])
+* Make helper methods for dependent associations private
+  ([#239], by [Matijs van Zuijlen][mvz])
+* Raise ActiveRecord::RecordNotDestroyed if destroy returns false
+  ([#240], by [Hao Liu][leomayleomay])
 * Make unscoping by `with_deleted` less blunt ([#241], by [Matijs van Zuijlen][mvz])
 * Drop support for Ruby 2.4 and 2.5 ([#243] and [#245] by [Matijs van Zuijlen][mvz])
 * Remove deprecated methods ([#244] by [Matijs van Zuijlen][mvz])
@@ -67,7 +79,7 @@ Notable changes to this project will be documented in this file.
 
 ## 0.7.3
 
-## Improvements
+### Improvements
 
 * Fix deletion time scopes ([#212] by [Matijs van Zuijlen][mvz])
 * Reload `has_one` associations after dependent recovery ([#214],
@@ -81,7 +93,7 @@ Notable changes to this project will be documented in this file.
 * Deprecate the undocumented `:recovery_value` setting. Calculate the correct
   value instead. ([#220], by [Matijs van Zuijlen][mvz])
 
-## Developer experience
+### Developer experience
 
 * Log ActiveRecord activity to a visible log during tests ([#218],
   by [Matijs van Zuijlen][mvz])
