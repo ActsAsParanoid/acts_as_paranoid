@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        ruby: ["3.0", "3.1", "3.2", "3.3", "jruby-9.4"]
+        ruby: ["3.1", "3.2", "3.3", "3.4", "jruby-9.4"]
         gemfile:
           - active_record_61
           - active_record_70
@@ -36,12 +36,7 @@ jobs:
             gemfile: active_record_72
           - ruby: "jruby-9.4"
             gemfile: active_record_80
-          # Rails 7.2 requires Ruby 3.1
-          - ruby: "3.0"
-            gemfile: active_record_72
           # Rails 8.0 requires Ruby 3.2
-          - ruby: "3.0"
-            gemfile: active_record_80
           - ruby: "3.1"
             gemfile: active_record_80
 
@@ -67,7 +62,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2"
+          ruby-version: "3.3"
           bundler-cache: true
       - name: Run RuboCop
         run: bundle exec rubocop -P
