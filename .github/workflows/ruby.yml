@@ -39,6 +39,11 @@ jobs:
           # Rails 8.0 requires Ruby 3.2
           - ruby: "3.1"
             gemfile: active_record_80
+          # Rails 6.1 and 7.0 do not support Ruby 3.4
+          - ruby: "3.4"
+            gemfile: active_record_61
+          - ruby: "3.4"
+            gemfile: active_record_70
 
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
