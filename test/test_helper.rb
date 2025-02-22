@@ -22,6 +22,11 @@ SimpleCov.start do
   enable_coverage :branch
 end
 
+# Load logger early to avoid errors when loading activesupport
+# See https://github.com/rails/rails/issues/54260
+# FIXME: Remove once we drop support for Rails 7.0
+require "logger"
+
 require "acts_as_paranoid"
 require "minitest/autorun"
 require "minitest/focus"
