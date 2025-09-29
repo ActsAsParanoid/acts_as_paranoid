@@ -27,6 +27,7 @@ module ActsAsParanoid
       column: "deleted_at",
       column_type: "time",
       recover_dependent_associations: true,
+      handle_delete_all_associations: false,
       dependent_recovery_window: 2.minutes,
       double_tap_destroys_fully: true
     }
