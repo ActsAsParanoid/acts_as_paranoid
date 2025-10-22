@@ -65,8 +65,7 @@ class AssociationsTest < ActiveSupport::TestCase
                -> { where(name: "hello").includes(:not_paranoid) },
                class_name: "ParanoidTime", foreign_key: :paranoid_time_id,
                with_deleted: true
-    belongs_to :paranoid_time_polymorphic_with_deleted, class_name: "ParanoidTime",
-                                                        foreign_key: :paranoid_time_id,
+    belongs_to :paranoid_time_polymorphic_with_deleted, foreign_key: :paranoid_time_id,
                                                         polymorphic: true,
                                                         with_deleted: true
 
