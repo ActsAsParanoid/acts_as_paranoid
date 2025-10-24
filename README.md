@@ -9,9 +9,9 @@ recoverable later.
 
 ## Support
 
-**This version targets Rails 6.1+ and Ruby 3.0+ only**
+**This version targets Rails 6.1+ and Ruby 3.1+ only**
 
-If you're working with Rails 6.0 and earlier, or with Ruby 2.7 or earlier,
+If you're working with Rails 6.0 and earlier, or with Ruby 3.0 or earlier,
 please require an older version of the `acts_as_paranoid` gem.
 
 ### Known issues
@@ -26,7 +26,7 @@ please require an older version of the `acts_as_paranoid` gem.
 #### Install gem
 
 ```ruby
-gem "acts_as_paranoid", "~> 0.10.3"
+gem "acts_as_paranoid", "~> 0.11.0"
 ```
 
 ```shell

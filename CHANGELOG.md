@@ -2,6 +2,14 @@
 
 Notable changes to this project will be documented in this file.
 
+## 0.11.0
+
+* Support Ruby 3.1 through 3.4, dropping support for Ruby 3.0 ([#359] by [mvz])
+* Support Rails 8.1 ([#368] by [fatkodima])
+
+[#359]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/359
+[#368]: https://github.com/ActsAsParanoid/acts_as_paranoid/pull/368
+
 ## 0.10.3
 
 * Fix CI Badge ([#350] by [tagliala])
@@ -21,9 +29,9 @@ Notable changes to this project will be documented in this file.
 
 ## 0.10.1
 
-* Add changelog_uri to gemspec ([#332] by [fynsta])
+* Add `changelog_uri` to gemspec ([#332] by [fynsta])
 * Improve contribution instructions ([#338] by [mvz])
-* Make with_deleted work with paranoid join records ([#339] by [mvz])
+* Make `with_deleted` work with paranoid join records ([#339] by [mvz])
 
 [fynsta]: https://github.com/fynsta
 
@@ -136,8 +144,8 @@ Notable changes to this project will be documented in this file.
 
 ### Internal
 
-* Improve code quality using RuboCop ([#148], [#152], [#159], [#163], [#171] and [#173],
-  by [Matijs van Zuijlen][mvz])
+* Improve code quality using RuboCop ([#148], [#152], [#159], [#163], [#171]
+  and [#173], by [Matijs van Zuijlen][mvz])
 * Measure code coverage using SimpleCov ([#150] and [#175] by [Matijs van Zuijlen][mvz])
 * Silence warnings emitted during tests ([#156], by [Matijs van Zuijlen][mvz])
 * Make rake tasks more robust and intuitive ([#157], by [Matijs van Zuijlen][mvz])
