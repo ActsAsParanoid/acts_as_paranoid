@@ -95,7 +95,7 @@ class AssociationsTest < ActiveSupport::TestCase
 
     before_destroy :ensure_destroyable
 
-    protected
+    private
 
     def ensure_destroyable
       return if destroyable.nil?
