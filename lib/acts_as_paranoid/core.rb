@@ -98,6 +98,45 @@ module ActsAsParanoid
         end
       end
 
+      def recover_dependent_delete_all_associations(scope, deleted_value, recovery_window)
+        reflect_on_all_associations(:has_many).each do |association|
+          unless association.options[:dependent] == :delete_all ||
+              association.options[:dependent] == :destroy
+            next
+          end
+          next unless (klass = association.klass).paranoid?
+          next unless paranoid_column_type == :time && klass.paranoid_column_type == :time
+
+          sub_scope = klass.only_deleted.where(
+            association.foreign_key => scope.select(:id)
+          ).deleted_inside_time_window(deleted_value, recovery_window)
+
+          klass.recover_dependent_delete_all_associations(sub_scope, deleted_value,
+                                                          recovery_window)
+        end
+
+        scope.update_all(paranoid_column => recovery_value)
+      end
+
+      def recursive_delete_dependent_delete_all_associations(scope,
+                                                             first_level_child: false)
+        reflect_on_all_associations(:has_many).each do |association|
+          unless association.options[:dependent] == :delete_all ||
+              association.options[:dependent] == :destroy
+            next
+          end
+          next unless (klass = association.klass).paranoid?
+
+          sub_scope = klass.where(association.foreign_key => scope.select(:id))
+
+          klass.recursive_delete_dependent_delete_all_associations(sub_scope)
+        end
+
+        # We skip this delete_all if it's the first level child,
+        # as they will be deleted by ActiveRecord automatically.
+        scope.delete_all unless first_level_child
+      end
+
       protected
 
       def define_deleted_time_scopes
@@ -170,6 +209,9 @@ module ActsAsParanoid
     def destroy
       if !deleted?
         with_transaction_returning_status do
+          if self.class.paranoid_configuration[:handle_delete_all_associations]
+            delete_dependent_delete_all_associations
+          end
           run_callbacks :destroy do
             if persisted?
               # Handle composite keys, otherwise we would just use
@@ -196,6 +238,8 @@ module ActsAsParanoid
       options = {
         recursive: self.class.paranoid_configuration[:recover_dependent_associations],
         recovery_window: self.class.paranoid_configuration[:dependent_recovery_window],
+        handle_delete_all_associations:
+          self.class.paranoid_configuration[:handle_delete_all_associations],
         raise_error: false
       }.merge(options)
 
@@ -243,6 +287,25 @@ module ActsAsParanoid
 
     private
 
+    def delete_dependent_delete_all_associations
+      self.class.dependent_associations.each do |reflection|
+        if reflection.options[:dependent] == :delete_all
+          delete_dependent_delete_all_association(reflection)
+        end
+      end
+    end
+
+    def delete_dependent_delete_all_association(reflection)
+      association = association(reflection.name)
+      klass = association.klass
+      return unless klass.paranoid?
+
+      scope = klass.merge(get_association_scope(association))
+
+      klass.recursive_delete_dependent_delete_all_associations(scope,
+                                                               first_level_child: true)
+    end
+
     def recover_dependent_associations(deleted_value, options)
       self.class.dependent_associations.each do |reflection|
         recover_dependent_association(reflection, deleted_value, options)
@@ -263,7 +326,6 @@ module ActsAsParanoid
     def recover_dependent_association(reflection, deleted_value, options)
       assoc = association(reflection.name)
       return unless (klass = assoc.klass).paranoid?
-
       if reflection.belongs_to? && attributes[reflection.association_foreign_key].nil?
         return
       end
@@ -276,13 +338,21 @@ module ActsAsParanoid
         scope = scope.deleted_inside_time_window(deleted_value, options[:recovery_window])
       end
 
-      recovered = false
-      scope.each do |object|
-        object.recover(options)
-        recovered = true
-      end
+      if options[:handle_delete_all_associations] &&
+          reflection.options[:dependent] == :delete_all
+        scope.klass.dependent_associations.each do |_dependent_association|
+          scope.klass.recover_dependent_delete_all_associations(scope, deleted_value,
+                                                                options[:recovery_window])
+        end
+      else
+        recovered = false
+        scope.each do |object|
+          object.recover(options)
+          recovered = true
+        end
 
-      assoc.reload if recovered && reflection.has_one? && assoc.loaded?
+        assoc.reload if recovered && reflection.has_one? && assoc.loaded?
+      end
     end
 
     def get_association_scope(dependent_association)
