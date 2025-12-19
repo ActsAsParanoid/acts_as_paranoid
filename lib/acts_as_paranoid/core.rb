@@ -98,7 +98,7 @@ module ActsAsParanoid
         end
       end
 
-      protected
+      private
 
       def define_deleted_time_scopes
         scope :deleted_inside_time_window, lambda { |time, window|
