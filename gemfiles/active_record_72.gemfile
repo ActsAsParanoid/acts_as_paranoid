@@ -8,6 +8,7 @@ gem "activerecord", "~> 7.2.0", require: "active_record"
 gem "activesupport", "~> 7.2.0", require: "active_support"
 
 group :development do
+  gem "activerecord-jdbcsqlite3-adapter", "~> 72.0", platforms: [:jruby]
   gem "sqlite3", "~> 2.0", platforms: [:ruby]
 end
 
