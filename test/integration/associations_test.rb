@@ -8,7 +8,6 @@ require "minitest/around"
 class AssociationsTest < ActiveSupport::TestCase
   describe "a many-to-many association specified with has_many through:" do
     before do
-      ActiveSupport::Dependencies::Reference.clear! if ActiveRecord::VERSION::MAJOR == 6
       ActiveRecord::Schema.define(version: 1) do
         create_table :authors do |t|
           t.datetime :deleted_at
