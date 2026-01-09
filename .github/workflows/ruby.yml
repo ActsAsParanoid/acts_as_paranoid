@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        ruby: ["3.1", "jruby-9.4", "3.2", "3.3", "3.4", "jruby-10.0"]
+        ruby: ["3.2", "3.3", "3.4", "jruby-10.0"]
         gemfile:
           - active_record_72
           - active_record_80
@@ -26,20 +26,10 @@ jobs:
         exclude:
           # The activerecord-jdbcsqlite3-adapter gem does not work with Rails
           # 8.0 and above yet
-          - ruby: "jruby-9.4"
-            gemfile: active_record_80
-          - ruby: "jruby-9.4"
-            gemfile: active_record_81
           - ruby: "jruby-10.0"
             gemfile: active_record_80
           - ruby: "jruby-10.0"
             gemfile: active_record_81
-          # Rails 8.1 requires Ruby 3.2
-          - ruby: "3.1"
-            gemfile: active_record_81
-          # Rails 8.0 requires Ruby 3.2
-          - ruby: "3.1"
-            gemfile: active_record_80
 
     env:
       JRUBY_OPTS: --dev
