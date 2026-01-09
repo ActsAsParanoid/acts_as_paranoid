@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        ruby: ["3.1", "3.2", "3.3", "3.4", "jruby-9.4"]
+        ruby: ["3.1", "jruby-9.4", "3.2", "3.3", "3.4", "jruby-10.0"]
         gemfile:
           - active_record_61
           - active_record_70
@@ -33,6 +33,10 @@ jobs:
             gemfile: active_record_80
           - ruby: "jruby-9.4"
             gemfile: active_record_81
+          - ruby: "jruby-10.0"
+            gemfile: active_record_80
+          - ruby: "jruby-10.0"
+            gemfile: active_record_81
           # Rails 8.1 requires Ruby 3.2
           - ruby: "3.1"
             gemfile: active_record_81
@@ -46,6 +50,7 @@ jobs:
             gemfile: active_record_70
 
     env:
+      JRUBY_OPTS: --dev
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
 
     steps:
