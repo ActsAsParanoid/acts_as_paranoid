@@ -50,6 +50,7 @@ jobs:
             gemfile: active_record_70
 
     env:
+      JRUBY_OPTS: --dev
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
 
     steps:
