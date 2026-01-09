@@ -20,9 +20,6 @@ jobs:
       matrix:
         ruby: ["3.1", "jruby-9.4", "3.2", "3.3", "3.4", "jruby-10.0"]
         gemfile:
-          - active_record_61
-          - active_record_70
-          - active_record_71
           - active_record_72
           - active_record_80
           - active_record_81
@@ -43,11 +40,6 @@ jobs:
           # Rails 8.0 requires Ruby 3.2
           - ruby: "3.1"
             gemfile: active_record_80
-          # Rails 6.1 and 7.0 do not support Ruby 3.4
-          - ruby: "3.4"
-            gemfile: active_record_61
-          - ruby: "3.4"
-            gemfile: active_record_70
 
     env:
       JRUBY_OPTS: --dev
