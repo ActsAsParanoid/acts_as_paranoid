@@ -9,7 +9,7 @@ require "acts_as_paranoid/association_reflection"
 
 module ActsAsParanoid
   def paranoid?
-    included_modules.include?(ActsAsParanoid::Core)
+    include?(ActsAsParanoid::Core)
   end
 
   def validates_as_paranoid
