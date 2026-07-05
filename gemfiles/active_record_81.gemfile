@@ -8,6 +8,7 @@ gem "activerecord", "~> 8.1.0", require: "active_record"
 gem "activesupport", "~> 8.1.0", require: "active_support"
 
 group :development do
+  gem "rbs", "4.1.0.pre2", platforms: [:jruby]
   gem "sqlite3", "~> 2.0", platforms: [:ruby]
 end
 
