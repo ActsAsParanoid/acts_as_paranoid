@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest-stub-const", "~> 0.6"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rake-manifest", "~> 0.2.0"
-  spec.add_development_dependency "rdoc", "~> 7.0"
+  spec.add_development_dependency "rdoc", "~> 8.0"
   spec.add_development_dependency "rubocop", "~> 1.84"
   spec.add_development_dependency "rubocop-minitest", "~> 0.39.1"
   spec.add_development_dependency "rubocop-packaging", "~> 0.6.0"
