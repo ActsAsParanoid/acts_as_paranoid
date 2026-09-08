@@ -44,8 +44,8 @@ file_path = File.join(log_dir, "test.log")
 ActiveRecord::Base.logger = Logger.new(file_path)
 
 def timestamps(table)
-  table.column  :created_at, :timestamp, null: false
-  table.column  :updated_at, :timestamp, null: false
+  table.column :created_at, :timestamp, null: false
+  table.column :updated_at, :timestamp, null: false
 end
 
 module ParanoidTestHelpers
