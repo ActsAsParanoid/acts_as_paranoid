@@ -158,7 +158,7 @@ class AssociationsTest < ActiveSupport::TestCase
     belongs_to :paranoid_parent, with_deleted: true, foreign_key: :paranoid_parent_id
   end
 
-  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable-next Metrics/AbcSize
   def setup
     ActiveRecord::Schema.define(version: 1) do # rubocop:disable Metrics/BlockLength
       create_table :paranoid_many_many_parent_lefts do |t|
@@ -301,7 +301,6 @@ class AssociationsTest < ActiveSupport::TestCase
       end
     end
   end
-  # rubocop:enable Metrics/AbcSize
 
   def teardown
     teardown_db

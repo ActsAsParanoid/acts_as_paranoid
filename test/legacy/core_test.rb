@@ -175,7 +175,7 @@ class ParanoidTest < ActiveSupport::TestCase
     self.table_name = "explicit_table"
   end
 
-  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable-next Metrics/AbcSize
   def setup_db
     ActiveRecord::Schema.define(version: 1) do # rubocop:disable Metrics/BlockLength
       create_table :paranoid_times do |t|
@@ -198,8 +198,8 @@ class ParanoidTest < ActiveSupport::TestCase
       end
 
       create_table :paranoid_strings do |t|
-        t.string    :name
-        t.string    :deleted
+        t.string :name
+        t.string :deleted
       end
 
       create_table :not_paranoids do |t|
@@ -284,7 +284,6 @@ class ParanoidTest < ActiveSupport::TestCase
       end
     end
   end
-  # rubocop:enable Metrics/AbcSize
 
   def setup
     setup_db
