@@ -20,7 +20,7 @@ group :development do
   gem "rubocop-rake", "~> 0.7.1"
   gem "simplecov", "~> 1.2"
 
-  gem "sqlite3", ">= 1.4", "< 3.0", platforms: [:ruby]
+  gem "sqlite3", "~> 2.0", platforms: [:ruby]
 end
 
 gemspec

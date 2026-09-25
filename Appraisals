@@ -15,24 +15,15 @@ appraise "active_record_72" do
 
   group :development do
     gem "activerecord-jdbcsqlite3-adapter", "~> 72.0", platforms: [:jruby]
-    gem "sqlite3", "~> 2.0", platforms: [:ruby]
   end
 end
 
 appraise "active_record_80" do
   gem "activerecord", "~> 8.0.0", require: "active_record"
   gem "activesupport", "~> 8.0.0", require: "active_support"
-
-  group :development do
-    gem "sqlite3", "~> 2.0", platforms: [:ruby]
-  end
 end
 
 appraise "active_record_81" do
   gem "activerecord", "~> 8.1.0", require: "active_record"
   gem "activesupport", "~> 8.1.0", require: "active_support"
-
-  group :development do
-    gem "sqlite3", "~> 2.0", platforms: [:ruby]
-  end
 end
