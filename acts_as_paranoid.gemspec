@@ -24,20 +24,4 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activerecord", ">= 7.2", "< 8.2"
   spec.add_dependency "activesupport", ">= 7.2", "< 8.2"
-
-  spec.add_development_dependency "appraisal", "~> 2.3"
-  spec.add_development_dependency "minitest", "~> 6.0"
-  spec.add_development_dependency "minitest-around", "~> 0.5"
-  spec.add_development_dependency "minitest-focus", "~> 1.3"
-  spec.add_development_dependency "minitest-mock", "~> 5.27"
-  spec.add_development_dependency "minitest-stub-const", "~> 0.6"
-  spec.add_development_dependency "rake", "~> 13.0"
-  spec.add_development_dependency "rake-manifest", "~> 0.2.0"
-  spec.add_development_dependency "rdoc", "~> 8.0"
-  spec.add_development_dependency "rubocop", "~> 1.90"
-  spec.add_development_dependency "rubocop-minitest", "~> 0.40.0"
-  spec.add_development_dependency "rubocop-packaging", "~> 0.6.0"
-  spec.add_development_dependency "rubocop-performance", "~> 1.27"
-  spec.add_development_dependency "rubocop-rake", "~> 0.7.1"
-  spec.add_development_dependency "simplecov", "~> 1.2"
 end

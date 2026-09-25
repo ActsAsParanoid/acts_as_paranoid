@@ -4,6 +4,22 @@ source "https://rubygems.org"
 
 # Development dependencies
 group :development do
+  gem "appraisal", "~> 2.3"
+  gem "minitest", "~> 6.0"
+  gem "minitest-around", "~> 0.5"
+  gem "minitest-focus", "~> 1.3"
+  gem "minitest-mock", "~> 5.27"
+  gem "minitest-stub-const", "~> 0.6"
+  gem "rake", "~> 13.0"
+  gem "rake-manifest", "~> 0.2.0"
+  gem "rdoc", "~> 8.0"
+  gem "rubocop", "~> 1.90"
+  gem "rubocop-minitest", "~> 0.40.0"
+  gem "rubocop-packaging", "~> 0.6.0"
+  gem "rubocop-performance", "~> 1.27"
+  gem "rubocop-rake", "~> 0.7.1"
+  gem "simplecov", "~> 1.2"
+
   gem "sqlite3", ">= 1.4", "< 3.0", platforms: [:ruby]
 end
 
