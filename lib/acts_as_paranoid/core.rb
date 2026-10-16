@@ -175,6 +175,7 @@ module ActsAsParanoid
               # Handle composite keys, otherwise we would just use
               # `self.class.primary_key.to_sym => self.id`.
               self.class
+                .unscoped.where(self.class.paranoid_default_scope)
                 .delete_all([Array(self.class.primary_key), Array(id)].transpose.to_h)
               decrement_counters_on_associations
             end

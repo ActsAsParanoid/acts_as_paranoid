@@ -89,4 +89,11 @@ class MultipleDefaultScopesTest < ActiveSupport::TestCase
     assert_equal 0, ParanoidPolygon.only_deleted.count
     assert_equal 1, ParanoidPolygon.unscoped.count
   end
+
+  def test_record_destroy_with_default_scope
+    polygon = ParanoidPolygon.create! sides: 5
+    polygon.destroy
+
+    assert_includes ParanoidPolygon.unscoped.only_deleted, polygon
+  end
 end
