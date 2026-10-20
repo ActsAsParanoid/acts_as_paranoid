@@ -171,18 +171,20 @@ module ActsAsParanoid
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
+            now = self.class.delete_now_value
             if persisted?
               # Handle composite keys, otherwise we would just use
               # `self.class.primary_key.to_sym => self.id`.
               self.class
                 .unscoped.where(self.class.paranoid_default_scope)
-                .delete_all([Array(self.class.primary_key), Array(id)].transpose.to_h)
+                .where([Array(self.class.primary_key), Array(id)].transpose.to_h)
+                .update_all(self.class.paranoid_column => now)
               decrement_counters_on_associations
             end
 
             @_trigger_destroy_callback = true
 
-            stale_paranoid_value
+            stale_paranoid_value(now)
             self
           end
         end
@@ -323,8 +325,8 @@ module ActsAsParanoid
       update_counters_on_associations :decrement_counter
     end
 
-    def stale_paranoid_value
-      self.paranoid_value = self.class.delete_now_value
+    def stale_paranoid_value(value = self.class.delete_now_value)
+      self.paranoid_value = value
       clear_attribute_changes([self.class.paranoid_column])
     end
   end
