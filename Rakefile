@@ -5,11 +5,11 @@ require "rake/manifest/task"
 require "rake/testtask"
 require "rdoc/task"
 require "rubocop/rake_task"
+require "rake/appraisal"
 
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
   t.pattern = "test/**/*_test.rb"
-  t.verbose = true
 end
 
 RuboCop::RakeTask.new
@@ -33,6 +33,9 @@ Rake::Manifest::Task.new do |t|
 end
 
 task build: ["manifest:check"]
+
+# Set up appraisal check task
+Rake::Appraisal::Task.new
 
 desc "Default: run tests and check manifest"
 task default: ["test", "manifest:check"]
