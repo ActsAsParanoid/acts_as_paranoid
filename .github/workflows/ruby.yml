@@ -45,7 +45,7 @@ jobs:
       - name: Run tests
         run: bundle exec rake test
 
-  rubocop:
+  lint:
 
     runs-on: ubuntu-latest
 
@@ -58,3 +58,5 @@ jobs:
           bundler-cache: true
       - name: Run RuboCop
         run: bundle exec rubocop -P
+      - name: Check appraisals
+        run: bundle exec rake appraisal:check

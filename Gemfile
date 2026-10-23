@@ -11,6 +11,7 @@ group :development do
   gem "minitest-mock", "~> 5.27"
   gem "minitest-stub-const", "~> 0.6"
   gem "rake", "~> 13.0"
+  gem "rake-appraisal", "~> 0.1.2"
   gem "rake-manifest", "~> 0.2.0"
   gem "rdoc", "~> 8.0"
   gem "rubocop", "~> 1.90"
