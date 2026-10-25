@@ -27,3 +27,8 @@ appraise "active_record_81" do
   gem "activerecord", "~> 8.1.0", require: "active_record"
   gem "activesupport", "~> 8.1.0", require: "active_support"
 end
+
+appraise "active_record_head" do
+  gem "activerecord", github: "rails/rails", require: "active_record"
+  gem "activesupport", github: "rails/rails", require: "active_support"
+end
