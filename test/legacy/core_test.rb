@@ -717,6 +717,26 @@ class ParanoidTest < ActiveSupport::TestCase
     assert_not pt.changed?
   end
 
+  def with_a_later_time_on_each_call(&)
+    start = Time.at(Time.now.to_i)
+    calls = 0
+    Time.stub(:now, -> { start + (calls += 1) }, &)
+  end
+
+  def test_destroy_keeps_the_persisted_deleted_at_in_memory
+    pt = ParanoidTime.create! name: "destroyed"
+    with_a_later_time_on_each_call { pt.destroy }
+
+    assert_equal ParanoidTime.only_deleted.find(pt.id).deleted_at, pt.deleted_at
+  end
+
+  def test_delete_keeps_the_persisted_deleted_at_in_memory
+    pt = ParanoidTime.create! name: "deleted"
+    with_a_later_time_on_each_call { pt.delete }
+
+    assert_equal ParanoidTime.only_deleted.find(pt.id).deleted_at, pt.deleted_at
+  end
+
   def test_deleted?
     ParanoidTime.first.destroy
 
