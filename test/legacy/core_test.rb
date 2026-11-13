@@ -47,6 +47,25 @@ class ParanoidTest < ActiveSupport::TestCase
     acts_as_paranoid column_type: "string", column: "deleted", deleted_value: "dead"
   end
 
+  class ParanoidCompositeKey < ActiveRecord::Base
+    self.primary_key = [:first_id, :second_id]
+    acts_as_paranoid
+  end
+
+  class ParanoidWithoutPrimaryKey < ActiveRecord::Base
+    acts_as_paranoid
+  end
+
+  class ParanoidWithDeleter < ActiveRecord::Base
+    acts_as_paranoid
+
+    relation_delegate_class(ActiveRecord::Relation).prepend(Module.new do
+      def paranoid_deletion_attributes
+        super.merge(deleted_by: "someone")
+      end
+    end)
+  end
+
   class NotParanoid < ActiveRecord::Base
     has_many :paranoid_times
   end
@@ -185,6 +204,22 @@ class ParanoidTest < ActiveSupport::TestCase
         t.integer   :not_paranoid_id
 
         timestamps t
+      end
+
+      create_table :paranoid_composite_keys, primary_key: [:first_id, :second_id] do |t|
+        t.integer   :first_id
+        t.integer   :second_id
+        t.datetime  :deleted_at
+      end
+
+      create_table :paranoid_without_primary_keys, id: false do |t|
+        t.string    :name
+        t.datetime  :deleted_at
+      end
+
+      create_table :paranoid_with_deleters do |t|
+        t.datetime  :deleted_at
+        t.string    :deleted_by
       end
 
       create_table :paranoid_booleans do |t|
@@ -715,6 +750,59 @@ class ParanoidTest < ActiveSupport::TestCase
     pt.destroy_fully!
 
     assert_not pt.changed?
+  end
+
+  def with_a_later_time_on_each_call(&)
+    start = Time.at(Time.now.to_i)
+    calls = 0
+    Time.stub(:now, -> { start + (calls += 1) }, &)
+  end
+
+  def test_destroy_keeps_the_persisted_deleted_at_in_memory
+    pt = ParanoidTime.create! name: "destroyed"
+    with_a_later_time_on_each_call { pt.destroy }
+
+    assert_equal ParanoidTime.only_deleted.find(pt.id).deleted_at, pt.deleted_at
+  end
+
+  def test_delete_keeps_the_persisted_deleted_at_in_memory
+    pt = ParanoidTime.create! name: "deleted"
+    with_a_later_time_on_each_call { pt.delete }
+
+    assert_equal ParanoidTime.only_deleted.find(pt.id).deleted_at, pt.deleted_at
+  end
+
+  def test_destroy_with_composite_primary_key
+    ParanoidCompositeKey.create!(first_id: 1, second_id: 1)
+    record = ParanoidCompositeKey.create!(first_id: 1, second_id: 2)
+    with_a_later_time_on_each_call { record.destroy }
+
+    assert_equal [[1, 1]], ParanoidCompositeKey.pluck(:first_id, :second_id)
+    assert_equal ParanoidCompositeKey.only_deleted.sole.deleted_at, record.deleted_at
+  end
+
+  def test_delete_with_composite_primary_key
+    ParanoidCompositeKey.create!(first_id: 1, second_id: 1)
+    record = ParanoidCompositeKey.create!(first_id: 1, second_id: 2)
+    with_a_later_time_on_each_call { record.delete }
+
+    assert_equal [[1, 1]], ParanoidCompositeKey.pluck(:first_id, :second_id)
+    assert_equal ParanoidCompositeKey.only_deleted.sole.deleted_at, record.deleted_at
+  end
+
+  def test_delete_without_primary_key_leaves_rows_alone
+    ParanoidWithoutPrimaryKey.create!(name: "a")
+    ParanoidWithoutPrimaryKey.create!(name: "b")
+    ParanoidWithoutPrimaryKey.where(name: "a").take.delete
+
+    assert_equal 2, ParanoidWithoutPrimaryKey.count
+  end
+
+  def test_destroy_and_delete_write_paranoid_deletion_attributes
+    ParanoidWithDeleter.create!.destroy
+    ParanoidWithDeleter.create!.delete
+
+    assert_equal %w[someone someone], ParanoidWithDeleter.only_deleted.pluck(:deleted_by)
   end
 
   def test_deleted?

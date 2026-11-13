@@ -135,10 +135,10 @@ module ActsAsParanoid
       send(self.class.paranoid_column)
     end
 
-    # Straight from ActiveRecord 5.1!
     def delete
-      self.class.delete(id) if persisted?
-      stale_paranoid_value
+      # With no id there is no row to target, so write nothing, as Model.delete(nil) does.
+      value = id.nil? ? self.class.delete_now_value : paranoid_delete_row(self.class.all)
+      stale_paranoid_value(value)
       freeze
     end
 
@@ -148,10 +148,7 @@ module ActsAsParanoid
           destroy_dependent_associations!
 
           if persisted?
-            # Handle composite keys, otherwise we would just use
-            # `self.class.primary_key.to_sym => self.id`.
-            self.class
-              .delete_all!([Array(self.class.primary_key), Array(id)].transpose.to_h)
+            self.class.delete_all!(paranoid_primary_key_conditions)
             decrement_counters_on_associations
           end
 
@@ -171,18 +168,14 @@ module ActsAsParanoid
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
-            if persisted?
-              # Handle composite keys, otherwise we would just use
-              # `self.class.primary_key.to_sym => self.id`.
-              self.class
-                .unscoped.where(self.class.paranoid_default_scope)
-                .delete_all([Array(self.class.primary_key), Array(id)].transpose.to_h)
-              decrement_counters_on_associations
-            end
+            value = paranoid_delete_row(
+              self.class.unscoped.where(self.class.paranoid_default_scope)
+            )
+            decrement_counters_on_associations if persisted?
 
             @_trigger_destroy_callback = true
 
-            stale_paranoid_value
+            stale_paranoid_value(value)
             self
           end
         end
@@ -323,8 +316,22 @@ module ActsAsParanoid
       update_counters_on_associations :decrement_counter
     end
 
-    def stale_paranoid_value
-      self.paranoid_value = self.class.delete_now_value
+    # Soft-deletes this record's row in +scope+ and returns the value it wrote,
+    # so that the record can hold the same value as the database.
+    def paranoid_delete_row(scope)
+      attributes = scope.paranoid_deletion_attributes
+      scope.where(paranoid_primary_key_conditions).update_all(attributes) if persisted?
+      attributes.fetch(self.class.paranoid_column)
+    end
+
+    # Handle composite keys, otherwise we would just use
+    # `self.class.primary_key.to_sym => self.id`.
+    def paranoid_primary_key_conditions
+      [Array(self.class.primary_key), Array(id)].transpose.to_h
+    end
+
+    def stale_paranoid_value(value)
+      self.paranoid_value = value
       clear_attribute_changes([self.class.paranoid_column])
     end
   end
