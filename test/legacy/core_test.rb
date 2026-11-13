@@ -52,6 +52,20 @@ class ParanoidTest < ActiveSupport::TestCase
     acts_as_paranoid
   end
 
+  class ParanoidWithoutPrimaryKey < ActiveRecord::Base
+    acts_as_paranoid
+  end
+
+  class ParanoidWithDeleter < ActiveRecord::Base
+    acts_as_paranoid
+
+    relation_delegate_class(ActiveRecord::Relation).prepend(Module.new do
+      def paranoid_deletion_attributes
+        super.merge(deleted_by: "someone")
+      end
+    end)
+  end
+
   class NotParanoid < ActiveRecord::Base
     has_many :paranoid_times
   end
@@ -196,6 +210,16 @@ class ParanoidTest < ActiveSupport::TestCase
         t.integer   :first_id
         t.integer   :second_id
         t.datetime  :deleted_at
+      end
+
+      create_table :paranoid_without_primary_keys, id: false do |t|
+        t.string    :name
+        t.datetime  :deleted_at
+      end
+
+      create_table :paranoid_with_deleters do |t|
+        t.datetime  :deleted_at
+        t.string    :deleted_by
       end
 
       create_table :paranoid_booleans do |t|
@@ -751,7 +775,7 @@ class ParanoidTest < ActiveSupport::TestCase
   def test_destroy_with_composite_primary_key
     ParanoidCompositeKey.create!(first_id: 1, second_id: 1)
     record = ParanoidCompositeKey.create!(first_id: 1, second_id: 2)
-    record.destroy
+    with_a_later_time_on_each_call { record.destroy }
 
     assert_equal [[1, 1]], ParanoidCompositeKey.pluck(:first_id, :second_id)
     assert_equal ParanoidCompositeKey.only_deleted.sole.deleted_at, record.deleted_at
@@ -760,10 +784,25 @@ class ParanoidTest < ActiveSupport::TestCase
   def test_delete_with_composite_primary_key
     ParanoidCompositeKey.create!(first_id: 1, second_id: 1)
     record = ParanoidCompositeKey.create!(first_id: 1, second_id: 2)
-    record.delete
+    with_a_later_time_on_each_call { record.delete }
 
     assert_equal [[1, 1]], ParanoidCompositeKey.pluck(:first_id, :second_id)
     assert_equal ParanoidCompositeKey.only_deleted.sole.deleted_at, record.deleted_at
+  end
+
+  def test_delete_without_primary_key_leaves_rows_alone
+    ParanoidWithoutPrimaryKey.create!(name: "a")
+    ParanoidWithoutPrimaryKey.create!(name: "b")
+    ParanoidWithoutPrimaryKey.where(name: "a").take.delete
+
+    assert_equal 2, ParanoidWithoutPrimaryKey.count
+  end
+
+  def test_destroy_and_delete_write_paranoid_deletion_attributes
+    ParanoidWithDeleter.create!.destroy
+    ParanoidWithDeleter.create!.delete
+
+    assert_equal %w[someone someone], ParanoidWithDeleter.only_deleted.pluck(:deleted_by)
   end
 
   def test_deleted?
