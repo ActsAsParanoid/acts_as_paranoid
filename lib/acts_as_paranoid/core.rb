@@ -140,7 +140,7 @@ module ActsAsParanoid
       now = self.class.delete_now_value
       if persisted?
         self.class
-          .where(self.class.primary_key => id)
+          .where([Array(self.class.primary_key), Array(id)].transpose.to_h)
           .update_all(self.class.paranoid_column => now)
       end
       stale_paranoid_value(now)

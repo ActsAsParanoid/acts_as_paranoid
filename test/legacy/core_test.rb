@@ -47,6 +47,11 @@ class ParanoidTest < ActiveSupport::TestCase
     acts_as_paranoid column_type: "string", column: "deleted", deleted_value: "dead"
   end
 
+  class ParanoidCompositeKey < ActiveRecord::Base
+    self.primary_key = [:first_id, :second_id]
+    acts_as_paranoid
+  end
+
   class NotParanoid < ActiveRecord::Base
     has_many :paranoid_times
   end
@@ -185,6 +190,12 @@ class ParanoidTest < ActiveSupport::TestCase
         t.integer   :not_paranoid_id
 
         timestamps t
+      end
+
+      create_table :paranoid_composite_keys, primary_key: [:first_id, :second_id] do |t|
+        t.integer   :first_id
+        t.integer   :second_id
+        t.datetime  :deleted_at
       end
 
       create_table :paranoid_booleans do |t|
@@ -735,6 +746,24 @@ class ParanoidTest < ActiveSupport::TestCase
     with_a_later_time_on_each_call { pt.delete }
 
     assert_equal ParanoidTime.only_deleted.find(pt.id).deleted_at, pt.deleted_at
+  end
+
+  def test_destroy_with_composite_primary_key
+    ParanoidCompositeKey.create!(first_id: 1, second_id: 1)
+    record = ParanoidCompositeKey.create!(first_id: 1, second_id: 2)
+    record.destroy
+
+    assert_equal [[1, 1]], ParanoidCompositeKey.pluck(:first_id, :second_id)
+    assert_equal ParanoidCompositeKey.only_deleted.sole.deleted_at, record.deleted_at
+  end
+
+  def test_delete_with_composite_primary_key
+    ParanoidCompositeKey.create!(first_id: 1, second_id: 1)
+    record = ParanoidCompositeKey.create!(first_id: 1, second_id: 2)
+    record.delete
+
+    assert_equal [[1, 1]], ParanoidCompositeKey.pluck(:first_id, :second_id)
+    assert_equal ParanoidCompositeKey.only_deleted.sole.deleted_at, record.deleted_at
   end
 
   def test_deleted?
