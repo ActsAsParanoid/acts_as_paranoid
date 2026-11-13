@@ -135,7 +135,6 @@ module ActsAsParanoid
       send(self.class.paranoid_column)
     end
 
-    # Straight from ActiveRecord 5.1!
     def delete
       now = self.class.delete_now_value
       if persisted?
