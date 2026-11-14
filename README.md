@@ -21,7 +21,6 @@ please require an older version of the `acts_as_paranoid` gem.
 * You cannot directly create a model in a deleted state, or update a model
   after it's been deleted.
 * Models without a primary key are not supported.
-  `destroy_fully!` raise `ActiveRecord::UnknownPrimaryKey` on such a model.
 
 ## Usage
 
