@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "minitest/spec"
-require "minitest/stub_const"
-require "minitest/around"
 
 class AssociationsTest < ActiveSupport::TestCase
   describe "a many-to-many association specified with has_many through:" do

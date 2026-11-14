@@ -11,9 +11,13 @@ end
 require "logger"
 
 require "acts_as_paranoid"
+
 require "minitest/autorun"
 require "minitest/focus"
 require "minitest/mock"
+require "minitest/spec"
+require "minitest/stub_const"
+require "minitest/around"
 
 # Silence deprecation halfway through the test
 I18n.enforce_available_locales = true
