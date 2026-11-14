@@ -137,12 +137,14 @@ module ActsAsParanoid
 
     # Straight from ActiveRecord 5.1!
     def delete
+      ensure_paranoid_primary_key
       self.class.delete(id) if persisted?
       stale_paranoid_value
       freeze
     end
 
     def destroy_fully!
+      ensure_paranoid_primary_key
       with_transaction_returning_status do
         run_callbacks :destroy do
           destroy_dependent_associations!
@@ -168,6 +170,7 @@ module ActsAsParanoid
     end
 
     def destroy
+      ensure_paranoid_primary_key
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
@@ -243,6 +246,11 @@ module ActsAsParanoid
     alias destroyed_fully? deleted_fully?
 
     private
+
+    # Without a primary key, the conditions for one record match every row.
+    def ensure_paranoid_primary_key
+      raise ActiveRecord::UnknownPrimaryKey, self.class if self.class.primary_key.nil?
+    end
 
     def recover_dependent_associations(deleted_value, options)
       self.class.dependent_associations.each do |reflection|

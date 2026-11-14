@@ -20,6 +20,7 @@ please require an older version of the `acts_as_paranoid` gem.
   [leads to a SystemStackError](https://github.com/ActsAsParanoid/acts_as_paranoid/issues/103).
 * You cannot directly create a model in a deleted state, or update a model
   after it's been deleted.
+* Models without a primary key are not supported.
 
 ## Usage
 
