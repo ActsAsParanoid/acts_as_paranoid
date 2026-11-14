@@ -9,7 +9,7 @@ module ActsAsParanoid
         end
 
         def paranoid_deletion_attributes
-          { klass.paranoid_column => klass.delete_now_value }
+          klass.paranoid_deletion_attributes
         end
 
         alias_method :orig_delete_all, :delete_all

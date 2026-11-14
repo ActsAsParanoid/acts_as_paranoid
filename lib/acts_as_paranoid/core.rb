@@ -40,7 +40,7 @@ module ActsAsParanoid
 
       def delete_all(conditions = nil)
         where(conditions)
-          .update_all(["#{paranoid_configuration[:column]} = ?", delete_now_value])
+          .update_all(paranoid_deletion_attributes)
       end
 
       def paranoid_default_scope
@@ -72,6 +72,10 @@ module ActsAsParanoid
 
       def paranoid_column_reference
         "#{table_name}.#{paranoid_column}"
+      end
+
+      def paranoid_deletion_attributes
+        { paranoid_column => delete_now_value }
       end
 
       DESTROYING_ASSOCIATION_DEPENDENCY_TYPES = [:destroy, :delete_all].freeze
