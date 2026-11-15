@@ -1,36 +1,18 @@
 # frozen_string_literal: true
 
-require "bundler"
-begin
-  Bundler.load
-rescue Bundler::BundlerError => e
-  warn e.message
-  warn "Run `bundle install` to install missing gems"
-  exit e.status_code
-end
-
-if RUBY_ENGINE == "jruby"
-  # Workaround for issue in I18n/JRuby combo.
-  # See https://github.com/jruby/jruby/issues/6547 and
-  # https://github.com/ruby-i18n/i18n/issues/555
-  require "i18n/backend"
-  require "i18n/backend/simple"
-end
-
 require "simplecov"
 SimpleCov.start do
   enable_coverage :branch
 end
 
-# Load logger early to avoid errors when loading activesupport
-# See https://github.com/rails/rails/issues/54260
-# FIXME: Remove once we drop support for Rails 7.0
-require "logger"
-
 require "acts_as_paranoid"
+
 require "minitest/autorun"
 require "minitest/focus"
 require "minitest/mock"
+require "minitest/spec"
+require "minitest/stub_const"
+require "minitest/around"
 
 # Silence deprecation halfway through the test
 I18n.enforce_available_locales = true
