@@ -180,6 +180,10 @@ class ParanoidTest < ActiveSupport::TestCase
     self.table_name = "explicit_table"
   end
 
+  class ParanoidWithoutPrimaryKey < ActiveRecord::Base
+    acts_as_paranoid
+  end
+
   # rubocop:disable-next Metrics/AbcSize
   def setup_db
     ActiveRecord::Schema.define(version: 1) do # rubocop:disable Metrics/BlockLength
@@ -283,6 +287,11 @@ class ParanoidTest < ActiveSupport::TestCase
       end
 
       create_table :paranoid_no_double_tap_destroys_fullies do |t|
+        t.datetime :deleted_at
+      end
+
+      create_table :paranoid_without_primary_keys, id: false do |t|
+        t.string :name
         t.datetime :deleted_at
       end
 
@@ -764,6 +773,33 @@ class ParanoidTest < ActiveSupport::TestCase
 
     assert_equal [[1, 1]], ParanoidCompositeKey.pluck(:first_id, :second_id)
     assert_equal ParanoidCompositeKey.only_deleted.sole.deleted_at, record.deleted_at
+  end
+
+  def create_records_without_primary_key
+    2.times { |i| ParanoidWithoutPrimaryKey.create!(name: "record #{i}") }
+    ParanoidWithoutPrimaryKey.take
+  end
+
+  def test_destroy_without_primary_key_raises
+    record = create_records_without_primary_key
+
+    assert_raises(ActiveRecord::StatementInvalid) { record.destroy }
+    assert_equal 0, ParanoidWithoutPrimaryKey.only_deleted.count
+  end
+
+  def test_delete_without_primary_key_raises
+    record = create_records_without_primary_key
+
+    assert_raises(ActiveRecord::StatementInvalid) { record.delete }
+    assert_not_predicate record, :deleted?
+    assert_equal 0, ParanoidWithoutPrimaryKey.only_deleted.count
+  end
+
+  def test_destroy_fully_without_primary_key_raises
+    record = create_records_without_primary_key
+
+    assert_raises(ActiveRecord::StatementInvalid) { record.destroy_fully! }
+    assert_equal 2, ParanoidWithoutPrimaryKey.with_deleted.count
   end
 
   def test_deleted?
