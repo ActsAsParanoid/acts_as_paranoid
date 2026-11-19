@@ -143,7 +143,7 @@ module ActsAsParanoid
       now = self.class.delete_now_value
       if persisted?
         self.class
-          .where([Array(self.class.primary_key), Array(id)].transpose.to_h)
+          .where(_query_constraints_hash)
           .update_all(self.class.paranoid_column => now)
       end
       stale_paranoid_value(now)
@@ -156,10 +156,8 @@ module ActsAsParanoid
           destroy_dependent_associations!
 
           if persisted?
-            # Handle composite keys, otherwise we would just use
-            # `self.class.primary_key.to_sym => self.id`.
             self.class
-              .delete_all!([Array(self.class.primary_key), Array(id)].transpose.to_h)
+              .delete_all!(_query_constraints_hash)
             decrement_counters_on_associations
           end
 
@@ -181,11 +179,9 @@ module ActsAsParanoid
           run_callbacks :destroy do
             now = self.class.delete_now_value
             if persisted?
-              # Handle composite keys, otherwise we would just use
-              # `self.class.primary_key.to_sym => self.id`.
               self.class
                 .unscoped.where(self.class.paranoid_default_scope)
-                .where([Array(self.class.primary_key), Array(id)].transpose.to_h)
+                .where(_query_constraints_hash)
                 .update_all(self.class.paranoid_column => now)
               decrement_counters_on_associations
             end
