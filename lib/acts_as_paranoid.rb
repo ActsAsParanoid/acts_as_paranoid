@@ -61,9 +61,6 @@ ActiveSupport.on_load(:active_record) do
   # Override ActiveRecord::Relation's behavior
   ActiveRecord::Relation.include ActsAsParanoid::Relation
 
-  # Push the recover callback onto the activerecord callback list
-  ActiveRecord::Callbacks::CALLBACKS.push(:before_recover, :after_recover)
-
   ActiveRecord::Reflection::AssociationReflection
     .prepend ActsAsParanoid::AssociationReflection
 end
